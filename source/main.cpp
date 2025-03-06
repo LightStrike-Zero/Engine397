@@ -23,7 +23,7 @@
 
 bool setupOpenGL(GLFWwindow*& window);
 bool showDecal = true;
-bool V_SYNC = 0;
+bool V_SYNC = 1;
 
 int main(int argc, char** argv)
 {
