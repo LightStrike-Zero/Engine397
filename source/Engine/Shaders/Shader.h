@@ -37,6 +37,10 @@ public:
     void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
     unsigned int GetShaderID() const { return m_shaderID; }
+
+    //TODO fix this - very dirty
+    std::string shaderDir = "source/Engine/Shaders/";
+
 private:
     int GetUniformLocation(const std::string& name);
     unsigned int CompileShader(unsigned int type, const std::string& source);

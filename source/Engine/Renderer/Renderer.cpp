@@ -13,7 +13,7 @@
 Renderer::Renderer()
 {
     // Load the default texture
-    defaultTexture = new Texture(R"(F:\Carbon\Assets\default\error.jpg)");
+    defaultTexture = new Texture("Assets/default/error.jpg");
     if (defaultTexture)
     {
         // std::cout << "Default texture loaded successfully." << std::endl;

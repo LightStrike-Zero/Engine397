@@ -106,3 +106,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} ${GLEW_I
 if (WIN32)
     target_link_libraries(${PROJECT_NAME})
 endif()
+
+
+# Post-build command to copy the Assimp DLL into the build directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/assimp/bin/Release/assimp-vc143-mt.dll"
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)

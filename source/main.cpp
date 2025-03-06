@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
-    io.FontDefault = io.Fonts->AddFontFromFileTTF(R"(Z:\Code Projects\CarbonEngine\Assets\font\roboto\static\Roboto-Regular.ttf)", 18.0f);
+    // io.FontDefault = io.Fonts->AddFontFromFileTTF(R"(Z:\Murdoch\ICT397\UnamedEngine\Assets\font\roboto\static\Roboto-Regular.ttf))", 18.0f);
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
     std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
     // comment out the blow to disable loading
-    scene.loadModelToRegistry(backPackPath);
+    // scene.loadModelToRegistry(backPackPath);
     scene.loadModelToRegistry(sponzaPath);
 
 
@@ -151,14 +151,8 @@ int main(int argc, char** argv)
     glBindVertexArray(0);
 
 
-    static float historicMinRenderTime = std::numeric_limits<float>::max();
-    static float historicMaxRenderTime = 0.0f;
 
     static const int historySize = 120;
-    static float shadowPassHistory[historySize] = {0.0f};
-    static int historyIndexShadow = 0;
-    static float renderHistory[historySize] = {0.0f};
-    static int historyIndexRender = 0;
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE);
@@ -223,10 +217,6 @@ int main(int argc, char** argv)
         glm::mat4 lightSpaceMatrix = shadowMap.CalculateLightSpaceMatrix(dirLight.getDirection());
 
         renderer.ShadowPass(scene.getRegistry(), shaderManager, shadowMap, lightSpaceMatrix);
-
-        // glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
-        // std::cout << "Current FBO pre-render: " << currentFBO << std::endl;
-
 
         framebuffer.Bind();
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);

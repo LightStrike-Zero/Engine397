@@ -9,7 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer.h"
 
-std::string shaderDir = "Z:\\Code Projects\\CarbonEngine\\source\\Engine\\Shaders\\";
 
 Shader::Shader(const std::string& vs_filepath, const std::string& fs_filepath)
     : m_VSFilePath(vs_filepath), m_FSFilePath(fs_filepath)
