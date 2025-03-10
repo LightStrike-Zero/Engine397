@@ -49,7 +49,10 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Actors/Lights/PointLight.h
         Engine/Actors/Lights/DirectionalLight.cpp
         Engine/Actors/Lights/DirectionalLight.h
-        Engine/Actors/Lights/Light.cpp)
+        Engine/Actors/Lights/Light.cpp
+        Engine/Interfaces/IMeshBuffer.h
+        Engine/OpenGL/OpenGLMeshBuffer.cpp
+        Engine/OpenGL/OpenGLMeshBuffer.h)
 
 # Add executable based on source files
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

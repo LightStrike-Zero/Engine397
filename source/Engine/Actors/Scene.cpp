@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "Components/MaterialComponent.h"
-#include "Components/MeshComponent.h"
+#include "Components/RenderableComponent.h"
 #include "Components/TransformComponent.h"
 #include "Importers/ModelLoader.h"
 
@@ -44,9 +44,9 @@ void Scene::loadModelToRegistry(const std::string& filepath) {
     for (const auto& rawMesh : modelData.meshes) {
         entt::entity entity = m_registry.create();
 
-        MeshComponent meshComponent(rawMesh);
+        RenderableComponent meshComponent(rawMesh);
         importer.setupMesh(meshComponent);
-        m_registry.emplace<MeshComponent>(entity, meshComponent);
+        m_registry.emplace<RenderableComponent>(entity, meshComponent);
 
         TransformComponent transformComponent;
         transformComponent.setFromModelMatrix(rawMesh.transform);

@@ -79,8 +79,8 @@ int main(int argc, char** argv)
     std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
     std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
     // comment out the blow to disable loading
-    // scene.loadModelToRegistry(backPackPath);
-    scene.loadModelToRegistry(sponzaPath);
+    scene.loadModelToRegistry(backPackPath);
+    // scene.loadModelToRegistry(sponzaPath);
 
 
     int windowWidth, windowHeight;
@@ -331,7 +331,7 @@ bool setupOpenGL(GLFWwindow*& window)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(1920*2, 1080*2, "Carbon Renderer", glfwGetPrimaryMonitor(), nullptr);
+    window = glfwCreateWindow(1920, 1080, "Carbon Renderer", glfwGetPrimaryMonitor(), nullptr);
     if (!window)
     {
         std::cerr << "glfwCreateWindow(): Failed to create GLFW window" << std::endl;

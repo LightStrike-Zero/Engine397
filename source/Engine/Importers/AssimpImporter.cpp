@@ -9,6 +9,8 @@
 #include <GL/glew.h> // Include OpenGL for VAO/VBO/EBO
 #include <glm/gtc/type_ptr.hpp>
 
+#include "OpenGL/OpenGLMeshBuffer.h"
+
 // Materials are not being used here anymore, remove.
 bool AssimpImporter::loadModel(const std::string& filepath, std::vector<RawMeshData>& meshes/*, std::vector<RawMaterialData>& materials*/) {
     Assimp::Importer importer;
@@ -99,51 +101,15 @@ RawMeshData AssimpImporter::processMesh(aiMesh* mesh, const aiScene* scene, cons
     return meshData; // No material is attached here.
 }
 
-void AssimpImporter::setupMesh(MeshComponent& meshComponent) {
-    // Generate and bind VAO
-    glGenVertexArrays(1, &meshComponent.vao);
-    glGenBuffers(1, &meshComponent.vbo);
-    glGenBuffers(1, &meshComponent.ebo);
+void AssimpImporter::setupMesh(RenderableComponent& renderableComponent) {
 
-    glBindVertexArray(meshComponent.vao);
+    renderableComponent.meshBuffer = std::make_shared<OpenGLMeshBuffer>(renderableComponent.indices.size(),
+        renderableComponent.vertices.size(),
+        renderableComponent.indices.data(),
+        renderableComponent.vertices.data());
 
-    // Upload vertex data to the GPU
-    glBindBuffer(GL_ARRAY_BUFFER, meshComponent.vbo);
-    glBufferData(GL_ARRAY_BUFFER, meshComponent.vertices.size() * sizeof(Vertex), meshComponent.vertices.data(), GL_STATIC_DRAW);
 
-    // Upload index data to the GPU
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshComponent.ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, meshComponent.indices.size() * sizeof(unsigned int), meshComponent.indices.data(), GL_STATIC_DRAW);
 
-    // Set vertex attribute pointers
-    /*
-     * Vertex array will look something like this
-     * --------------------------------------------------------
-     * | Position | Normal | TexCoords | Tangent | Bi-tangent |
-     * --------------------------------------------------------
-     * |   0      |   1    |     2     |    3    |     4      |
-     * --------------------------------------------------------
-     */
-    glEnableVertexAttribArray(0); // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-
-    glEnableVertexAttribArray(1); // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-    glEnableVertexAttribArray(2); // TexCoords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
-
-    glEnableVertexAttribArray(3); // Tangent
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-
-    glEnableVertexAttribArray(4); // Bi-tangent
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
-
-    // Unbind VAO
-    glBindVertexArray(0);
-
-    // Set the index count
-    meshComponent.indexCount = meshComponent.indices.size();
 }
 
 

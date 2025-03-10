@@ -4,7 +4,9 @@
 
 #ifndef MESHDATA_H
 #define MESHDATA_H
-#include <string>
+#include <glm/glm.hpp>
+
+#include "MaterialData.h"
 
 struct Vertex {
     glm::vec3 position;

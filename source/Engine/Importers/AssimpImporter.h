@@ -10,7 +10,7 @@
 
 #include "MaterialData.h"
 #include "MeshData.h"
-#include "Components/MeshComponent.h"
+#include "Components/RenderableComponent.h"
 
 
 
@@ -23,7 +23,7 @@ public:
     // Load a model file and populate ModelData
     bool loadModel(const std::string& filepath, std::vector<RawMeshData>& meshes/*, std::vector<RawMaterialData>& materials*/);
 
-    void setupMesh(MeshComponent& meshComponent);
+    void setupMesh(RenderableComponent& renderableComponent);
 private:
     // Helper functions to process Assimp structures
     void processNode(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform, std::vector<RawMeshData>& meshes/*, std::vector<RawMaterialData>& materials*/, const std::string& filepath);

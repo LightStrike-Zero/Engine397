@@ -7,4 +7,9 @@
 /dataSources/
 /dataSources.local.xml
 
-cmake-build-*
+# Assets and dependencies
+/Assets
+/Dependencies
+
+# Ignore the build files
+/cmake-build-*
