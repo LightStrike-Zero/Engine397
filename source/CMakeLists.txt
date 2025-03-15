@@ -34,7 +34,6 @@ set(SOURCE_FILES
         Engine/Actors/Lights/Light.h
         Engine/Actors/Scene.cpp
         Engine/Actors/Scene.h
-        Engine/Components/MeshComponent.h
         Engine/Components/TransformComponent.h
         Engine/Components/MaterialComponent.h
 )
@@ -52,7 +51,12 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Actors/Lights/Light.cpp
         Engine/Interfaces/IMeshBuffer.h
         Engine/OpenGL/OpenGLMeshBuffer.cpp
-        Engine/OpenGL/OpenGLMeshBuffer.h)
+        Engine/OpenGL/OpenGLMeshBuffer.h
+        Engine/Interfaces/IDataBuffer.h
+        Engine/OpenGL/OpenGLFrameBuffer.cpp
+        Engine/OpenGL/OpenGLFrameBuffer.h
+        Engine/OpenGL/OpenGLShadowMapBuffer.cpp
+        Engine/OpenGL/OpenGLShadowMapBuffer.h)
 
 # Add executable based on source files
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

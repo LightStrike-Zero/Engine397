@@ -103,6 +103,7 @@ RawMeshData AssimpImporter::processMesh(aiMesh* mesh, const aiScene* scene, cons
 
 void AssimpImporter::setupMesh(RenderableComponent& renderableComponent) {
 
+    //TODO this is where we'd need a factory i think? So that we dont have to specify the type of mesh buffer here
     renderableComponent.meshBuffer = std::make_shared<OpenGLMeshBuffer>(renderableComponent.indices.size(),
         renderableComponent.vertices.size(),
         renderableComponent.indices.data(),

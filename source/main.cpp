@@ -18,8 +18,11 @@
 
 #include <chrono>
 
+#include "Interfaces/IDataBuffer.h"
 #include "Lights/DirectionalLight.h"
 #include "Lights/PointLight.h"
+#include "OpenGL/OpenGLFrameBuffer.h"
+#include "OpenGL/OpenGLShadowMapBuffer.h"
 
 bool setupOpenGL(GLFWwindow*& window);
 bool showDecal = true;
@@ -56,8 +59,6 @@ int main(int argc, char** argv)
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
-
-    glEnable(GL_DEPTH_TEST);    //TODO why are we doing this here?
 
     // Load shaders
     // Shader lightingShader("new_vertex.glsl", "new_fragment.glsl");
@@ -118,10 +119,12 @@ int main(int argc, char** argv)
     // scene.addLight(dirLight);
     // scene.addLight(pointLight);
 
-    ShadowMap shadowMap(2048.0, 2048.0);
+    // ShadowMap shadowMap(2048.0, 2048.0);
+    OpenGLShadowMapBuffer shadowmapbuffer(2048.0, 2048.0);
 
 
-    Carbon::FrameBuffer framebuffer(windowWidth, windowHeight);
+    // FrameBuffer framebuffer(windowWidth, windowHeight);
+    OpenGLFrameBuffer ogl_frameBuffer(windowWidth, windowHeight);
 
     float rectangle[] = {
         // First Triangle
@@ -134,25 +137,19 @@ int main(int argc, char** argv)
         -1.0f, 1.0f, 0.0f, 1.0f
     };
 
+    //TODO this should be able to be replaced with the IMeshBuffer now - Shaun to fix/clean
     unsigned int quadVAO, rectVBO;
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &rectVBO);
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle), rectangle, GL_STATIC_DRAW);
-
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-
-
-    static const int historySize = 120;
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE);
@@ -214,11 +211,11 @@ int main(int argc, char** argv)
         }
 
         // TODO fix this as it only takes in the directional light atm
-        glm::mat4 lightSpaceMatrix = shadowMap.CalculateLightSpaceMatrix(dirLight.getDirection());
+        glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(dirLight.getDirection());
 
-        renderer.ShadowPass(scene.getRegistry(), shaderManager, shadowMap, lightSpaceMatrix);
+        renderer.ShadowPass(scene.getRegistry(), shaderManager, shadowmapbuffer, lightSpaceMatrix);
 
-        framebuffer.Bind();
+        ogl_frameBuffer.bind();
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
         glEnable(GL_DEPTH_TEST);
@@ -238,19 +235,19 @@ int main(int argc, char** argv)
         lightingShader->SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
 
         glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, shadowMap.GetDepthTexture());
+        glBindTexture(GL_TEXTURE_2D, shadowmapbuffer.GetDepthTexture());
         lightingShader->SetUniform1i("shadowMap", 4);
         lightingShader->SetUniform2f("gMapSize", glm::vec2(2048.0f, 2048.0f));
 
         renderer.Render(scene.getRegistry(), shaderManager, lightingShader);
 
 
-        framebuffer.Unbind();
+        ogl_frameBuffer.unbind();
 
         framebufferShader->Bind();
         glBindVertexArray(quadVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, framebuffer.GetTextureColorBuffer());
+        glBindTexture(GL_TEXTURE_2D, ogl_frameBuffer.getTextureColorBuffer());
         framebufferShader->SetUniform1i("framebuf", 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -277,7 +274,7 @@ int main(int argc, char** argv)
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
             ImGui::Begin("Viewport");
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-            unsigned int textureID = framebuffer.GetTextureColorBuffer();
+            unsigned int textureID = ogl_frameBuffer.getTextureColorBuffer();
             ImGui::Image(textureID, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
             ImGui::PopStyleVar();
             ImGui::End();

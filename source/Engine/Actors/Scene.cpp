@@ -11,6 +11,10 @@
 #include "Components/TransformComponent.h"
 #include "Importers/ModelLoader.h"
 
+
+//TODO This really should be more like a interface to Entt, we should have a separate scene management file
+// this isn't really managing the scene, its just a collection of entities
+
 class ModelLoader;
 Scene::Scene() = default;
 
@@ -29,9 +33,6 @@ void Scene::destroyEntity(entt::entity entity)
 }
 
 
-/*
- * This method should really be something to do with managing entities, maybe part of a wrapper??
- */
 void Scene::loadModelToRegistry(const std::string& filepath) {
     // std::cout << "Registry address inside Scene: " << &m_registry << std::endl;
     ModelLoader& loader = ModelLoader::getInstance();

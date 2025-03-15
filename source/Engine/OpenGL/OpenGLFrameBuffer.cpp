@@ -1,15 +1,13 @@
 //
-// Created by Shaun on 29/01/2025.
+// Created by Shaun on 15/03/2025.
 //
 
-#include "Framebuffer.h"
-
+#include "OpenGLFrameBuffer.h"
 #include <iostream>
 #include <GL/glew.h>
 
-
-FrameBuffer::FrameBuffer(const unsigned int width, const unsigned int height)
-    : m_frameBuffer(0), m_renderBuffer(0), m_textureColorBuffer(0), m_width(width), m_height(height)
+OpenGLFrameBuffer::OpenGLFrameBuffer(const unsigned int width, const unsigned int height)
+       : m_frameBuffer(0), m_renderBuffer(0), m_textureColorBuffer(0), m_width(width), m_height(height)
 {
     glGenFramebuffers(1, &m_frameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
@@ -35,7 +33,7 @@ FrameBuffer::FrameBuffer(const unsigned int width, const unsigned int height)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-FrameBuffer::~FrameBuffer()
+OpenGLFrameBuffer::~OpenGLFrameBuffer()
 {
     glDeleteRenderbuffers(1, &m_renderBuffer);
     glDeleteTextures(1, &m_textureColorBuffer);
@@ -43,13 +41,15 @@ FrameBuffer::~FrameBuffer()
 }
 
 
-void FrameBuffer::Bind()
+
+    
+void OpenGLFrameBuffer::bind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
     glViewport(0, 0, m_width, m_height);
 }
 
-void FrameBuffer::Unbind()
+void OpenGLFrameBuffer::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);

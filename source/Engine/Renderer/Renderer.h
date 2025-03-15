@@ -11,6 +11,8 @@
 #include "Importers/AssimpImporter.h"
 
 
+class IDataBuffer;
+
 class Renderer
 {
 public:
@@ -25,7 +27,7 @@ public:
     // void Render(const std::vector<ModelData>& models, Shader& shader) const;
 
     // Draws the scene to the shadow map
-    void ShadowPass(entt::registry& registry, ShaderManager& shaderManager, ShadowMap& shadowMap,
+    void ShadowPass(entt::registry& registry, ShaderManager& shaderManager, IDataBuffer& shadowMap,
                     const glm::mat4& lightSpaceMatrix);
     // render the final scene including the shadow map
     void LightingPass(entt::registry& registry, Shader& shader) const;

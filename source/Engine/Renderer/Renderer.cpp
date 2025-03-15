@@ -8,6 +8,7 @@
 #include "Components/MaterialComponent.h"
 #include "Components/RenderableComponent.h"
 #include "Components/TransformComponent.h"
+#include "Interfaces/IDataBuffer.h"
 
 
 Renderer::Renderer()
@@ -162,13 +163,13 @@ void Renderer::Render(entt::registry& registry, ShaderManager& shaderManager, st
 //
 // }
 
-void Renderer::ShadowPass(entt::registry& registry, ShaderManager& shaderManager, ShadowMap& shadowMap, const glm::mat4& lightSpaceMatrix)
+void Renderer::ShadowPass(entt::registry& registry, ShaderManager& shaderManager, IDataBuffer& shadowMap, const glm::mat4& lightSpaceMatrix)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glCullFace(GL_FRONT); // Avoid shadow acne
 
-    shadowMap.Bind();
+    shadowMap.bind();
     glClear(GL_DEPTH_BUFFER_BIT);
 
 
@@ -203,7 +204,7 @@ void Renderer::ShadowPass(entt::registry& registry, ShaderManager& shaderManager
 
 
     // shadowShader->Unbind();
-    shadowMap.Unbind();
+    shadowMap.unbind();
     glCullFace(GL_BACK); // Reset to default cull face
     glDepthMask(GL_TRUE);
 }

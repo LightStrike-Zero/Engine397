@@ -1,22 +1,29 @@
+//
+// Created by Shaun on 15/03/2025.
+//
+
+#include "OpenGLShadowMapBuffer.h"
+
+
 /**
- * @file ShadowMap.cpp
- * @brief Implementation of the ShadowMap class.
+ * @file OpenGLShadowMapBuffer.cpp
+ * @brief Implementation of the OpenGLShadowMapBuffer class.
  *
  * @author Shaun
  * @date Created: 7/12/2024
+ * @date Updated: 15/03/2025
  */
 
-#include "ShadowMap.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-ShadowMap::ShadowMap(unsigned int width, unsigned int height)
-    : shadowMapFBO(0), shadowMapTexture(0), width(width), height(height) {
+OpenGLShadowMapBuffer::OpenGLShadowMapBuffer(unsigned int width, unsigned int height)
+    : m_shadowMapBuffer(0), m_textureID(0), width(width), height(height) {
     // Generate the framebuffer
-    glGenFramebuffers(1, &shadowMapFBO);
+    glGenFramebuffers(1, &m_shadowMapBuffer);
 
     // Generate the depth texture
-    glGenTextures(1, &shadowMapTexture);
-    glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+    glGenTextures(1, &m_textureID);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -33,8 +40,8 @@ ShadowMap::ShadowMap(unsigned int width, unsigned int height)
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     // Attach the depth texture to the framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapTexture, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_textureID, 0);
     glDrawBuffer(GL_NONE); // No color buffer is drawn
     glReadBuffer(GL_NONE);
 
@@ -46,20 +53,20 @@ ShadowMap::ShadowMap(unsigned int width, unsigned int height)
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind the framebuffer
 }
 
-ShadowMap::~ShadowMap() {
-    glDeleteFramebuffers(1, &shadowMapFBO);
-    glDeleteTextures(1, &shadowMapTexture);
+OpenGLShadowMapBuffer::~OpenGLShadowMapBuffer() {
+    glDeleteFramebuffers(1, &m_shadowMapBuffer);
+    glDeleteTextures(1, &m_textureID);
 }
 
 
 
 
-void ShadowMap::Bind() {
-    glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+void OpenGLShadowMapBuffer::bind() {
+    glBindFramebuffer(GL_FRAMEBUFFER, m_shadowMapBuffer);
     glViewport(0, 0, width, height); // Set viewport size to shadow map resolution
 }
 
-void ShadowMap::Unbind() {
+void OpenGLShadowMapBuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0); // Unbind the framebuffer
 }
 
@@ -68,11 +75,11 @@ void ShadowMap::Unbind() {
 
 
 
-GLuint ShadowMap::GetDepthTexture() const {
-    return shadowMapTexture;
+GLuint OpenGLShadowMapBuffer::GetDepthTexture() const {
+    return m_textureID;
 }
 
-glm::mat4 ShadowMap::CalculateLightSpaceMatrix(const glm::vec3& lightDirection) {
+glm::mat4 OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(const glm::vec3& lightDirection) {
     // Normalize the light direction
     glm::vec3 normalizedLightDir = glm::normalize(lightDirection);
 
