@@ -6,6 +6,7 @@ Changelist version 0.1.2
 - Created an IDataBuffer interface to abstract the OpenGL buffer object
 - Created an OpenGLDataBuffer class to implement the IDataBuffer interface
 - Created the OpenGLShadowMapBuffer class to handle shadow map
+- Created an OpenGLQuadBuffer to represent a screen quad for the viewport rendering
 
 ### Changelist v0.1.1
 **10/03/2025** SM

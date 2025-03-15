@@ -22,6 +22,7 @@
 #include "Lights/DirectionalLight.h"
 #include "Lights/PointLight.h"
 #include "OpenGL/OpenGLFrameBuffer.h"
+#include "OpenGL/OpenGLQuadBuffer.h"
 #include "OpenGL/OpenGLShadowMapBuffer.h"
 
 bool setupOpenGL(GLFWwindow*& window);
@@ -137,20 +138,8 @@ int main(int argc, char** argv)
         -1.0f, 1.0f, 0.0f, 1.0f
     };
 
-    //TODO this should be able to be replaced with the IMeshBuffer now - Shaun to fix/clean
-    unsigned int quadVAO, rectVBO;
-    glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &rectVBO);
-    glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle), rectangle, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
+    OpenGLQuadBuffer quadBuffer;
+    
     glfwWindowHint(GLFW_SAMPLES, 4);
     glEnable(GL_MULTISAMPLE);
 
@@ -245,12 +234,13 @@ int main(int argc, char** argv)
         ogl_frameBuffer.unbind();
 
         framebufferShader->Bind();
-        glBindVertexArray(quadVAO);
+        // glBindVertexArray(quadVAO);
+        quadBuffer.bind();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, ogl_frameBuffer.getTextureColorBuffer());
         framebufferShader->SetUniform1i("framebuf", 0);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
+        quadBuffer.render();
+        quadBuffer.unbind();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
