@@ -1,16 +1,19 @@
 // OpenGLQuadBuffer.cpp
 #include "OpenGLQuadBuffer.h"
+
+#include <iostream>
 #include <GL/glew.h>
 
-OpenGLQuadBuffer::OpenGLQuadBuffer() : m_vao(0), m_vbo(0) {
-    constexpr float quadVertices[] = {
-        // Positions (xy)  // Texture coords (uv)
-        -1.0f, -1.0f,      0.0f, 0.0f,
-         1.0f, -1.0f,      1.0f, 0.0f,
-         1.0f,  1.0f,      1.0f, 1.0f,
-        -1.0f, -1.0f,      0.0f, 0.0f,
-         1.0f,  1.0f,      1.0f, 1.0f,
-        -1.0f,  1.0f,      0.0f, 1.0f
+OpenGLQuadBuffer::OpenGLQuadBuffer() {
+    float quad[] = {
+        // First Triangle
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        // Second Triangle
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f
     };
 
     glGenVertexArrays(1, &m_vao);
@@ -19,7 +22,7 @@ OpenGLQuadBuffer::OpenGLQuadBuffer() : m_vao(0), m_vbo(0) {
     glBindVertexArray(m_vao);
     
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
     
     // Position attribute
     glEnableVertexAttribArray(0);

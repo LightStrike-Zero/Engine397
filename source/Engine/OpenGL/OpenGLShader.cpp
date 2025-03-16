@@ -1,41 +1,36 @@
+//
+// Created by Shaun on 15/03/2025.
+//
 
-#include "Shader.h"
-
-#include <fstream>
+#include "OpenGLShader.h"
 #include <iostream>
-#include <ostream>
-#include <sstream>
+#include <fstream>
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Renderer.h"
 
-
-Shader::Shader(const std::string& vs_filepath, const std::string& fs_filepath)
+OpenGLShader::OpenGLShader(const std::string& vs_filepath, const std::string& fs_filepath)
     : m_VSFilePath(vs_filepath), m_FSFilePath(fs_filepath)
 {
 
     ShaderProgramSource source;
     source.FragmentSource = ParseShader(shaderDir + fs_filepath);
-    std::cout << "Fragment Shader path: " << shaderDir + fs_filepath << std::endl;
     source.VertexSource = ParseShader(shaderDir +  vs_filepath);
-    std::cout << "Vertex Shader path: " << shaderDir + vs_filepath << std::endl;
     m_shaderID = CreateShader(source.VertexSource, source.FragmentSource);
-    std::cout << "Shader ID: " << m_shaderID << std::endl;
 
 }
 
-Shader::~Shader()
+OpenGLShader::~OpenGLShader()
 {
     glDeleteProgram(m_shaderID);
 }
 
-void Shader::Bind() const
+void OpenGLShader::bind() 
 {
     glUseProgram(m_shaderID);
-    std::cout << "Shader ID we bound: " << m_shaderID << std::endl;
 }
 
-void Shader::Unbind() const
+void OpenGLShader::unbind() 
 {
     glUseProgram(0);
 }
@@ -43,37 +38,42 @@ void Shader::Unbind() const
 /**
  * Sets a vec4 uniform.
  */
-void Shader::SetUniform4f(const std::string& name, const float v0, const float v1, const float v2, const float v3)
+void OpenGLShader::SetUniform4f(const std::string& name, const glm::vec4& value)
 {
-    glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+    glUniform4f(GetUniformLocation(name), value.x, value.y, value.z, value.w);
+}
+
+void OpenGLShader::SetUniformMat3(const std::string& name, const glm::mat3& matrix)
+{
+    glUniformMatrix3fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 /**
  * Sets a mat4 uniform.
  */
-void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+void OpenGLShader::SetUniformMat4(const std::string& name, const glm::mat4& matrix)
 {
-    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 /**
  * Sets an integer uniform.
  */
-void Shader::SetUniform1i(const std::string& name, int value)
+void OpenGLShader::SetUniform1i(const std::string& name, int value)
 {
     glUniform1i(GetUniformLocation(name), value);
 }
 /**
  * Sets a vec2 uniform.
  */
-void Shader::SetUniform2f(const std::string& name, const glm::vec2& value)
+void OpenGLShader::SetUniform2f(const std::string& name, const glm::vec2& value)
 {
     glUniform2f(GetUniformLocation(name), value.x, value.y);
 }
 /**
  * Sets a vec3 uniform.
  */
-void Shader::SetUniform3f(const std::string& name, const glm::vec3& value)
+void OpenGLShader::SetUniform3f(const std::string& name, const glm::vec3& value)
 {
     glUniform3f(GetUniformLocation(name), value.x, value.y, value.z);
 }
@@ -81,12 +81,12 @@ void Shader::SetUniform3f(const std::string& name, const glm::vec3& value)
 /**
  * Sets a float uniform.
  */
-void Shader::SetUniform1f(const std::string& name, float value)
+void OpenGLShader::SetUniform1f(const std::string& name, float value)
 {
     glUniform1f(GetUniformLocation(name), value);
 }
 
-int Shader::GetUniformLocation(const std::string& name)
+int OpenGLShader::GetUniformLocation(const std::string& name)
 {
 
     if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
@@ -105,7 +105,7 @@ int Shader::GetUniformLocation(const std::string& name)
 }
 
 
-unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
+unsigned int OpenGLShader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
@@ -129,7 +129,7 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
     return id;
 }
 
-unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
+unsigned int OpenGLShader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
     unsigned int program = glCreateProgram();
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
@@ -146,15 +146,13 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
     return program;
 }
 
-std::string Shader::ParseShader(const std::string& filepath)
+std::string OpenGLShader::ParseShader(const std::string& filepath)
 {
     std::ifstream file(filepath);
     std::string str;
     std::string shader;
     while (std::getline(file, str)) {
-        shader.append(str + "\n");
+        shader += str + "\n";
     }
     return shader;
 }
-
-

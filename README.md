@@ -1,5 +1,17 @@
-Changelist version 0.1.2
+Changelist version 0.1.3
 ========================
+
+### Changelist v0.1.3
+**15/03/2025** SM
+- Moved all rendering related code into the renderer
+- Camera moved into renderer
+- FrameBuffer moved into renderer
+- Shader moved into renderer
+- Created IRenderer interface
+- Created OpenGLRenderer class to implement IRenderer
+- Created IShader interface
+- Created OpenGLShader class to implement IShader
+- Modified Renderer to accept Scene object only
 
 ### Changelist v0.1.2
 **15/03/2025** SM

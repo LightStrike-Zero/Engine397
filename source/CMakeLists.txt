@@ -58,7 +58,13 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/OpenGL/OpenGLShadowMapBuffer.cpp
         Engine/OpenGL/OpenGLShadowMapBuffer.h
         Engine/OpenGL/OpenGLQuadBuffer.cpp
-        Engine/OpenGL/OpenGLQuadBuffer.h)
+        Engine/OpenGL/OpenGLQuadBuffer.h
+        Engine/Interfaces/IRenderer.h
+        Engine/OpenGL/OpenGLRenderer.cpp
+        Engine/OpenGL/OpenGLRenderer.h
+        Engine/Interfaces/IShader.h
+        Engine/OpenGL/OpenGLShader.cpp
+        Engine/OpenGL/OpenGLShader.h)
 
 # Add executable based on source files
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

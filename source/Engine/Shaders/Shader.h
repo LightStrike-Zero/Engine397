@@ -8,12 +8,12 @@
 #include <unordered_map>
 #include <glm/fwd.hpp>
 
-struct ShaderProgramSource
-{
-    std::string VertexSource;
-    std::string FragmentSource;
-
-};
+// struct ShaderProgramSource
+// {
+//     std::string VertexSource;
+//     std::string FragmentSource;
+//
+// };
 
 class Shader
 {

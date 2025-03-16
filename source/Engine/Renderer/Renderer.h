@@ -18,19 +18,13 @@ class Renderer
 public:
     Renderer();
     ~Renderer();
-    // Clear the screen
     void Clear() const;
 
-    // Render a single ModelData object
     void Render(entt::registry& registry, ShaderManager& shaderManager, std::shared_ptr<Shader>& shaderTest);
-    // Render multiple ModelData objects
-    // void Render(const std::vector<ModelData>& models, Shader& shader) const;
 
     // Draws the scene to the shadow map
     void ShadowPass(entt::registry& registry, ShaderManager& shaderManager, IDataBuffer& shadowMap,
                     const glm::mat4& lightSpaceMatrix);
-    // render the final scene including the shadow map
-    void LightingPass(entt::registry& registry, Shader& shader) const;
 
 private:
     // why is this still here? it needs to go

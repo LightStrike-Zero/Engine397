@@ -5,21 +5,22 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
 #include <memory>
-#include <Shader.h>
 #include <unordered_map>
+
+#include "OpenGL/OpenGLShader.h"
 
 
 class ShaderManager {
 private:
-    std::unordered_map<std::string, std::shared_ptr<Shader>> m_shaders;
+    std::unordered_map<std::string, std::shared_ptr<OpenGLShader>> m_shaders;
 public:
-    std::shared_ptr<Shader> getShader(const std::string& shaderName) {
+    std::shared_ptr<OpenGLShader> getShader(const std::string& shaderName) {
         return m_shaders.at(shaderName);
     }
 
     void loadShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath)
     {
-        m_shaders.emplace(shaderName, std::make_shared<Shader>(vertexPath, fragmentPath));
+        m_shaders.emplace(shaderName, std::make_shared<OpenGLShader>(vertexPath, fragmentPath));
     }
 };
 

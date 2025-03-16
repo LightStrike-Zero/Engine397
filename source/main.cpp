@@ -2,28 +2,18 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <Camera.h>
 #include <iostream>
-#include <Lights/Light.h>
-#include <Renderer.h>
-#include <Shader.h>
 
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Framebuffer.h"
 #include "Scene.h"
-#include "ShaderManager.h"
 
 #include <chrono>
 
-#include "Interfaces/IDataBuffer.h"
-#include "Lights/DirectionalLight.h"
-#include "Lights/PointLight.h"
 #include "OpenGL/OpenGLFrameBuffer.h"
-#include "OpenGL/OpenGLQuadBuffer.h"
-#include "OpenGL/OpenGLShadowMapBuffer.h"
+#include "OpenGL/OpenGLRenderer.h"
 
 bool setupOpenGL(GLFWwindow*& window);
 bool showDecal = true;
@@ -33,7 +23,7 @@ int main(int argc, char** argv)
 {
     GLFWwindow* window;
     setupOpenGL(window);
-
+    
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -42,13 +32,9 @@ int main(int argc, char** argv)
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-
-    // io.FontDefault = io.Fonts->AddFontFromFileTTF(R"(Z:\Murdoch\ICT397\UnamedEngine\Assets\font\roboto\static\Roboto-Regular.ttf))", 18.0f);
-
+    
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    // ImGui::StyleColorsLight();
-
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -56,97 +42,49 @@ int main(int argc, char** argv)
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
-
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
 
-    // Load shaders
-    // Shader lightingShader("new_vertex.glsl", "new_fragment.glsl");
-    // Shader shadowShader("shadow_vertex.glsl","shadow_fragment.glsl");
-    // Shader framebufferShader("framebuffer.vert","framebuffer.frag");
-
-    ShaderManager shaderManager;
-
-    shaderManager.loadShader("lightingShader", "new_vertex.glsl", "new_fragment.glsl");
-    shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
-    shaderManager.loadShader("framebufferShader", "framebuffer.vert", "framebuffer.frag");
-
-    auto lightingShader = shaderManager.getShader("lightingShader");
-    // auto shadowShader = shaderManager.getShader("shadowShader");
-    auto framebufferShader = shaderManager.getShader("framebufferShader");
-
-    Scene scene;
-
+    
+    /*
+     * This is setting the paths to the current models available
+     * TODO move this to a config file - ideally a lua file
+     * Scene is also established here, and models loaded in
+     */
     std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
     std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
-    // comment out the blow to disable loading
+    Scene scene;
     scene.loadModelToRegistry(backPackPath);
     // scene.loadModelToRegistry(sponzaPath);
 
-
+    /*
+     * TODO move this into a windowing manager
+     */
     int windowWidth, windowHeight;
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    
+    /*
+     * Singleton renderer instance
+     * TODO create factory that selects openGL etc
+     */
+    OpenGLRenderer renderer;
 
-    // Initialize the camera
-    Camera camera(
-        glm::vec3(0.0f, 0.0f, 6.0f), // Position
-        glm::vec3(1.0f, 1.0f, 0.0f), // Target
-        glm::vec3(0.0f, 1.0f, 0.0f), // Up
-        2.5f, // Speed
-        0.5f, // Collider radius
-        45.0f, // Field of view
-        aspectRatio, // Aspect ratio
-        0.1f, // Near plane
-        100.0f // Far plane
-    );
-
-    Renderer renderer;
-
+    /*
+     * TODO move this to an input manager (potentially the window management since it's GLFW)
+     */
     double lastX = 960.0, lastY = 540.0; // Center of the screen
     bool firstMouse = true;
-
     // Capture mouse input
     glfwSetInputMode(window, GLFW_CURSOR, /*GLFW_CURSOR_DISABLED*/GLFW_CURSOR_NORMAL);
-
-    DirectionalLight dirLight(glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.09f, 0.09f, 0.1f),
-        glm::vec3(0.79f, 0.79f, 0.85f), glm::vec3(0.39f, 0.39f, 0.45f), 0.5f);
-
-
-    PointLight pointLight(glm::vec3(4.0f, 8.0f, 4.0f), glm::vec3(0.29f, 0.29f, 0.3f),
-        glm::vec3(0.29f, 0.29f, 0.3f), glm::vec3(0.29f, 0.29f, 0.3f));
-
-    // scene.addLight(dirLight);
-    // scene.addLight(pointLight);
-
-    // ShadowMap shadowMap(2048.0, 2048.0);
-    OpenGLShadowMapBuffer shadowmapbuffer(2048.0, 2048.0);
-
-
-    // FrameBuffer framebuffer(windowWidth, windowHeight);
-    OpenGLFrameBuffer ogl_frameBuffer(windowWidth, windowHeight);
-
-    float rectangle[] = {
-        // First Triangle
-        -1.0f, -1.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 1.0f,
-        // Second Triangle
-        -1.0f, -1.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f
-    };
-
-    OpenGLQuadBuffer quadBuffer;
     
     glfwWindowHint(GLFW_SAMPLES, 4);
-    glEnable(GL_MULTISAMPLE);
 
     while (!glfwWindowShouldClose(window))
     {
-        camera.setAspectRatio(aspectRatio);
-
+        //TODO FIX camera - moved into renderer but we need to separate movement from rendering
+        // camera.setAspectRatio(aspectRatio);
         // delta time
         static float lastFrame = 0.0f;
         float currentFrame = glfwGetTime();
@@ -162,13 +100,13 @@ int main(int argc, char** argv)
             {
                 // WASD movement
                 if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-                    camera.processKeyboard("FORWARD", deltaTime);
+                    // camera.processKeyboard("FORWARD", deltaTime);
                 if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-                    camera.processKeyboard("BACKWARD", deltaTime);
+                    // camera.processKeyboard("BACKWARD", deltaTime);
                 if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-                    camera.processKeyboard("LEFT", deltaTime);
+                    // camera.processKeyboard("LEFT", deltaTime);
                 if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-                    camera.processKeyboard("RIGHT", deltaTime);
+                    // camera.processKeyboard("RIGHT", deltaTime);
 
                 if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
                 {
@@ -191,85 +129,38 @@ int main(int argc, char** argv)
                 lastX = xpos;
                 lastY = ypos;
 
-                camera.processMouseMovement(xOffset, yOffset, true);
-            }
-            else
-            {
-                // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                // camera.processMouseMovement(xOffset, yOffset, true);
             }
         }
-
-        // TODO fix this as it only takes in the directional light atm
-        glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(dirLight.getDirection());
-
-        renderer.ShadowPass(scene.getRegistry(), shaderManager, shadowmapbuffer, lightSpaceMatrix);
-
-        ogl_frameBuffer.bind();
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
-        glEnable(GL_DEPTH_TEST);
-
-
-        // shader and set uniforms
-        lightingShader->Bind();
-        lightingShader->SetUniformMat4f("view", camera.getViewMatrix());
-        lightingShader->SetUniformMat4f("projection", camera.getProjectionMatrix());
-        lightingShader->SetUniform3f("viewPos", camera.getPosition());
-
-        // all of this lighting information should be inside the scene or something else that can be accessed in the renderer
-        lightingShader->SetUniform3f("light.direction", dirLight.getDirection());
-        lightingShader->SetUniform3f("light.ambient", dirLight.getAmbient());
-        lightingShader->SetUniform3f("light.diffuse", dirLight.getDiffuse());
-        lightingShader->SetUniform3f("light.specular", dirLight.getSpecular());
-        lightingShader->SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
-
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, shadowmapbuffer.GetDepthTexture());
-        lightingShader->SetUniform1i("shadowMap", 4);
-        lightingShader->SetUniform2f("gMapSize", glm::vec2(2048.0f, 2048.0f));
-
-        renderer.Render(scene.getRegistry(), shaderManager, lightingShader);
-
-
-        ogl_frameBuffer.unbind();
-
-        framebufferShader->Bind();
-        // glBindVertexArray(quadVAO);
-        quadBuffer.bind();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, ogl_frameBuffer.getTextureColorBuffer());
-        framebufferShader->SetUniform1i("framebuf", 0);
-        quadBuffer.render();
-        quadBuffer.unbind();
-
+        
+        renderer.Render(scene);
+        
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         {
             ImGui::NewFrame();
             ImGui::DockSpaceOverViewport();
-
+        
             // Left hand window pane
             ImGui::Begin("Hello, world!");
             ImGui::Text("Direction");
             ImGui::End();
-
+        
             // Bottom window pane
             ImGui::Begin("Another Window");
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
             ImGui::End();
-
-
+        
+        
             // Viewport that the scene is rendered in
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
             ImGui::Begin("Viewport");
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-            unsigned int textureID = ogl_frameBuffer.getTextureColorBuffer();
-            ImGui::Image(textureID, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
+            ImGui::Image(renderer.getFrameBuffer().getTextureColorBuffer(), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
             ImGui::PopStyleVar();
             ImGui::End();
         }
-        // Rendering
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -305,6 +196,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
+//TODO this needs to be done elsewhere, its quite old and does multiple things
 bool setupOpenGL(GLFWwindow*& window)
 {
     bool OpenGLSuccess = true;

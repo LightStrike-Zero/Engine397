@@ -4,7 +4,6 @@
 
 #include "Scene.h"
 
-#include <iostream>
 
 #include "Components/MaterialComponent.h"
 #include "Components/RenderableComponent.h"
