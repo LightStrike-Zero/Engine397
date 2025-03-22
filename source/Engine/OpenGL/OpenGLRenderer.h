@@ -21,7 +21,7 @@ class OpenGLRenderer : public IRenderer
 {
 public:
     OpenGLRenderer();
-    void Render(Scene& scene) override;
+    [[nodiscard]] unsigned int Render(Scene& scene) override;
     void Clear() override;
     ~OpenGLRenderer() override;
 

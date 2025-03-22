@@ -9,7 +9,7 @@ class IRenderer
 {
 public:
     IRenderer() = default;
-    virtual void Render(Scene& scene) = 0;
+    virtual unsigned int Render(Scene& scene) = 0;
     virtual void Clear() = 0;
     virtual ~IRenderer() = default;
 };

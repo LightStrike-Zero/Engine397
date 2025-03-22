@@ -13,17 +13,37 @@
 
 #include <chrono>
 
-#include "OpenGL/OpenGLFrameBuffer.h"
-#include "OpenGL/OpenGLRenderer.h"
+#include "Factorys/RendererFactory.h"
 
-bool setupOpenGL(GLFWwindow*& window);
+
+void beginGLFW(GLFWwindow*& window);
 bool showDecal = true;
 bool V_SYNC = 1;
 
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
-    setupOpenGL(window);
+    beginGLFW(window);
+
+
+    // TODO pulled this code out of what used to be called "setupOPENGL"
+    // now that function only handles GLFW and this code will entually go into
+    // the openGL renderer - but this is the last of the opengl code in main
+    {
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            std::cerr << "glewInit(): GLEW failed to initialize" << std::endl;
+        }
+        std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+        std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    }
+    /*
+     * Renderer Factory
+     */
+    RendererType type = RendererType::OpenGL; // we can change this so that we select the API in a Lua config later
+    IRenderer* renderer = RendererFactory::CreateRenderer(type);
     
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -66,12 +86,8 @@ int main(int argc, char** argv)
     glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
     
-    /*
-     * Singleton renderer instance
-     * TODO create factory that selects openGL etc
-     */
-    OpenGLRenderer renderer;
 
+    
     /*
      * TODO move this to an input manager (potentially the window management since it's GLFW)
      */
@@ -133,8 +149,21 @@ int main(int argc, char** argv)
                 // camera.processMouseMovement(xOffset, yOffset, true);
             }
         }
-        
-        renderer.Render(scene);
+
+        // replaced with the call below (see note)
+        // renderer->Render(scene);
+
+        /*
+         * #### Design change ####
+         * Instead of the renderer being a black box where you call render() and it handles everything
+         * including displaying to the screen, the renderer now works as input and output.
+         * You give the renderer some data (scene) and it does render math - then returns an image buffer.
+         * This means it is up to you on what to do with the image afterward, I believe this makes it more
+         * flexible as it decouples it from the windowing system, and allows for more control over how the
+         * image is displayed. (bonus points for being able to save screenshots now)
+         *
+         * Render call is currently below inside the ImGui stuff - might pull it out up here later for readability
+         */
         
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -158,13 +187,15 @@ int main(int argc, char** argv)
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
             ImGui::Begin("Viewport");
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-            ImGui::Image(renderer.getFrameBuffer().getTextureColorBuffer(), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
+            // Renderer is called here, and returns an image buffer to the ImGui window
+            ImGui::Image(renderer->Render(scene), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
             ImGui::PopStyleVar();
             ImGui::End();
         }
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+        //TODO this doesnt count as openGL code - but i'll move it later (can be deleted worse case)
         GLenum error = glGetError();
         if (error != GL_NO_ERROR)
         {
@@ -197,15 +228,13 @@ int main(int argc, char** argv)
     return 0;
 }
 
-//TODO this needs to be done elsewhere, its quite old and does multiple things
-bool setupOpenGL(GLFWwindow*& window)
+//TODO now this only does GLFW stuff but needs to be abstracted into a window manager
+void beginGLFW(GLFWwindow*& window)
 {
-    bool OpenGLSuccess = true;
 
     if (!glfwInit())
     {
         std::cerr << "glfwInit(): GLFW failed to initialize" << std::endl;
-        OpenGLSuccess = false;
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -216,28 +245,8 @@ bool setupOpenGL(GLFWwindow*& window)
     {
         std::cerr << "glfwCreateWindow(): Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        OpenGLSuccess = false;
     }
-
     glfwMakeContextCurrent(window);
     glfwSwapInterval(V_SYNC); // Enable vsync
 
-
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
-    {
-        std::cerr << "glewInit(): GLEW failed to initialize" << std::endl;
-        OpenGLSuccess = false;
-    }
-
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-    if (glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE) != GLFW_OPENGL_CORE_PROFILE)
-    {
-        std::cerr << "Failed to create OpenGL core profile context!" << std::endl;
-        return false;
-    }
-
-    return OpenGLSuccess;
 }

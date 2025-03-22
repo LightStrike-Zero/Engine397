@@ -16,7 +16,7 @@
 #include "Components/TransformComponent.h"
 
 
-OpenGLRenderer::OpenGLRenderer(): m_shadowMapBuffer(OpenGLShadowMapBuffer(2048, 2048)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer()), m_shaderManager(ShaderManager()) ,m_camera(Camera(
+OpenGLRenderer::OpenGLRenderer():  m_shadowMapBuffer(OpenGLShadowMapBuffer(2048, 2048)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer()), m_shaderManager(ShaderManager()) ,m_camera(Camera(
         glm::vec3(0.0f, 0.0f, 6.0f), // Position
         glm::vec3(1.0f, 1.0f, 0.0f), // Target
         glm::vec3(0.0f, 1.0f, 0.0f), // Up
@@ -28,9 +28,10 @@ OpenGLRenderer::OpenGLRenderer(): m_shadowMapBuffer(OpenGLShadowMapBuffer(2048, 
         100.0f // Far plane
     ))
 {
-    // TODO wtf is going on here..
+
+    // TODO default texture should be loaded in a better way
     //Load the default texture
-    assert(defaultTexture = new Texture("Assets/default/error.jpg"));
+    assert((defaultTexture = new Texture("Assets/default/error.jpg")));
     m_shaderManager.loadShader("lightingShader", "new_vertex.glsl", "new_fragment.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "framebuffer.vert", "framebuffer.frag");
@@ -47,7 +48,10 @@ void OpenGLRenderer::Clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLRenderer::Render(Scene& scene)
+/*
+ * Renders the scene data to an image buffer, and returns the buffer
+ */
+unsigned int OpenGLRenderer::Render(Scene& scene)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
@@ -90,7 +94,8 @@ void OpenGLRenderer::Render(Scene& scene)
     framebufferShader->SetUniform1i("framebuf", 0);
     m_quadBuffer.render();
     m_quadBuffer.unbind();
-    
+
+    return m_frameBuffer.getTextureColorBuffer();
 }
  
 void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
