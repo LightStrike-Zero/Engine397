@@ -64,7 +64,10 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/OpenGL/OpenGLRenderer.h
         Engine/Interfaces/IShader.h
         Engine/OpenGL/OpenGLShader.cpp
-        Engine/OpenGL/OpenGLShader.h)
+        Engine/OpenGL/OpenGLShader.h
+        Engine/Math/Math.cpp
+        Engine/Math/Math.h
+        Engine/Math/IMath.h)
 
 # Add executable based on source files
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
