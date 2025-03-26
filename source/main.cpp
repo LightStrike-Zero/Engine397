@@ -203,8 +203,8 @@ int main(int argc, char** argv)
 
     // --- Buko testing Sol -------------------------
     sol::state lua;
-    //lua.open_libraries(sol::lib::base);
-    //lua.script_file("../GameScripts/test_script.lua");
+    lua.open_libraries(sol::lib::base);
+    lua.script_file("../GameScripts/test_script.lua");
 
 
     return 0;
