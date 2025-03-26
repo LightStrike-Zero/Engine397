@@ -55,6 +55,6 @@ target_include_directories(Engine PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Sol/
 )
 
+# this is not working
+target_link_libraries(Engine lua5.3)
 
-#target_link_libraries(Engine lua5.3)
-#link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/Lib)

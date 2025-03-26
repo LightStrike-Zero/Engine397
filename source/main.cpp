@@ -202,7 +202,7 @@ int main(int argc, char** argv)
     glfwTerminate();
 
     // --- Buko testing Sol -------------------------
-    //sol::state lua;
+    sol::state lua;
     //lua.open_libraries(sol::lib::base);
     //lua.script_file("../GameScripts/test_script.lua");
 
