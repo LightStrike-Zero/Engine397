@@ -30,31 +30,19 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Entt)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImGUI)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLM/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/assimp/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Sol2)
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLFW/lib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/GLEW/lib/Release/x64)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/assimp/lib/Release)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/lua)
 # Add subdirectories for dependencies
 add_subdirectory(Dependencies/GLEW)
 add_subdirectory(Dependencies/GLFW)
 add_subdirectory(Dependencies/assimp)
 add_subdirectory(Dependencies/ImGUI)
+add_subdirectory(Dependencies/lua)
+add_subdirectory(Dependencies/Sol2)
 add_subdirectory(source)
-
-# buko -----------------------------------------
-# for scripting with Lua and Sol
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Sol)
-#message(STATUS "Lua include path: ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include")
-
-target_include_directories(Engine PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include
-)
-
-target_include_directories(Engine PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Sol/
-)
-
-# this is not working
-target_link_libraries(Engine lua5.3)
 

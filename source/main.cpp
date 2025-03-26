@@ -18,9 +18,9 @@
 
 // Buko -------------------------
 // Libraries for scripting
-#include "lua.hpp"
+#include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
-#include <sol.hpp>
+#include <sol/sol.hpp>
 //-------------------------------
 
 bool setupOpenGL(GLFWwindow*& window);
@@ -204,7 +204,7 @@ int main(int argc, char** argv)
     // --- Buko testing Sol -------------------------
     sol::state lua;
     lua.open_libraries(sol::lib::base);
-    lua.script_file("../GameScripts/test_script.lua");
+    lua.script_file("./GameScripts/test_script_01.lua");
 
 
     return 0;

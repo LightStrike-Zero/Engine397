@@ -85,13 +85,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # Link libraries
-if (WIN32)
+#if (WIN32)
     # Windows-specific linking
     target_link_libraries(${PROJECT_NAME}
             OpenGL::GL
             ${GLFW_LIBRARIES}
             ${GLEW_LIBRARIES}
             ${Assimp_LIBRARIES}
+            ${LUA_LIBRARIES}
             opengl32.lib
             glu32.lib
             user32.lib
@@ -102,31 +103,41 @@ if (WIN32)
             imm32.lib
             version.lib
     )
-elseif (UNIX)
-    # Unix/Linux-specific linking
-    target_link_libraries(${PROJECT_NAME}
-            OpenGL::GL              # Equivalent of opengl32.lib
-            GLU                     # Equivalent of glu32.lib
-            X11                     # Equivalent of user32.lib
-            asound                  # Equivalent of winmm.lib
-            udev                    # Equivalent of hid.lib
-            ${GLFW_LIBRARIES}
-            ${GLEW_LIBRARIES}
-            ${Assimp_LIBRARIES}
-    )
-endif()
+#elseif (UNIX)
+#    # Unix/Linux-specific linking
+#    target_link_libraries(${PROJECT_NAME}
+#            OpenGL::GL              # Equivalent of opengl32.lib
+#            GLU                     # Equivalent of glu32.lib
+#            X11                     # Equivalent of user32.lib
+#            asound                  # Equivalent of winmm.lib
+#            udev                    # Equivalent of hid.lib
+#            ${GLFW_LIBRARIES}
+#            ${GLEW_LIBRARIES}
+#            ${Assimp_LIBRARIES}
+#            ${LUA_LIBRARIES}
+#    )
+#endif()
 # Include directories for header files
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${Assimp_INCLUDE_DIRS} ${STB_Image_INCLUDE_DIRS} ${Entt_INCLUDE_DIRS} ${ImGUI_INCLUDE_DIRS} headers)
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} 
+        ${GLEW_INCLUDE_DIRS} 
+        ${Assimp_INCLUDE_DIRS} 
+        ${STB_Image_INCLUDE_DIRS} 
+        ${Entt_INCLUDE_DIRS} 
+        ${ImGUI_INCLUDE_DIRS} 
+        ${LUA_INCLUDE_DIRS} 
+        ${Sol2_INCLUDE_DIRS} 
+        headers)
 
 # Additional dependencies for static linking on Windows
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME})
-endif()
+#if (WIN32)
+#    target_link_libraries(${PROJECT_NAME})
+#endif()
 
 
 # Post-build command to copy the Assimp DLL into the build directory
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/assimp/bin/Release/assimp-vc143-mt.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/lua/lua54.dll"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
