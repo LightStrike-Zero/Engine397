@@ -16,6 +16,13 @@
 #include "OpenGL/OpenGLFrameBuffer.h"
 #include "OpenGL/OpenGLRenderer.h"
 
+// Buko -------------------------
+// Libraries for scripting
+#include "lua.hpp"
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol.hpp>
+//-------------------------------
+
 bool setupOpenGL(GLFWwindow*& window);
 bool showDecal = true;
 bool V_SYNC = 1;
@@ -193,6 +200,12 @@ int main(int argc, char** argv)
 
     glfwDestroyWindow(window);
     glfwTerminate();
+
+    // --- Buko testing Sol -------------------------
+    //sol::state lua;
+    //lua.open_libraries(sol::lib::base);
+    //lua.script_file("../GameScripts/test_script.lua");
+
 
     return 0;
 }

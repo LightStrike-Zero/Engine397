@@ -41,3 +41,20 @@ add_subdirectory(Dependencies/assimp)
 add_subdirectory(Dependencies/ImGUI)
 add_subdirectory(source)
 
+# buko -----------------------------------------
+# for scripting with Lua and Sol
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Sol)
+#message(STATUS "Lua include path: ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include")
+
+target_include_directories(Engine PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/include
+)
+
+target_include_directories(Engine PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Sol/
+)
+
+
+#target_link_libraries(Engine lua5.3)
+#link_directories(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Scripting/Lua/Lib)
