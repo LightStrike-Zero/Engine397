@@ -58,16 +58,12 @@ int main(int argc, char** argv)
 
     // --- Buko setting up Lua/Sol -------------------------
     /*
-     * Scene instance is instantiated
-     * Lua Manager instance is instantiated
-     * Register the "scene" class with Lua
-     * Run the Lua script
      * Lua script handles the asset paths
      * Lua script loads the models into the scene through a method in scene
      */
 
-    LuaManager luaManager;
-    Scene scene;
+    LuaManager luaManager;                  // Lua Manager instance is instantiated
+    Scene scene;                            // Scene instance is instantiated
 
     luaManager.registerScene(scene);                           // Expose Scene to Lua
     luaManager.runScript("GameScripts/GameManager.lua"); // Run a Lua script
