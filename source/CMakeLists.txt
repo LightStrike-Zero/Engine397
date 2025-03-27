@@ -67,6 +67,7 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/OpenGL/OpenGLShader.h
         Engine/Scripting/LuaManager.h
         Engine/Scripting/LuaManager.cpp
+        Engine/Scripting/ScriptManager.h
 )
 
 # Add executable based on source files

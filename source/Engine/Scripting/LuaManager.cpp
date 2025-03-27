@@ -20,7 +20,7 @@ LuaManager::LuaManager()
 //--------------------------- Lua Manager Destructor --------------------------
 LuaManager::~LuaManager()
 {
-
+    // Lua cleanup (handled automatically by sol2)
 }
 
 //------------------------ Register Scene Method ------------------------------

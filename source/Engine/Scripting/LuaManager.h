@@ -9,20 +9,21 @@
 
 #include <sol/sol.hpp>
 #include <iostream>
+#include "ScriptManager.h"
 
 class Scene;
 
-class LuaManager{
+class LuaManager : public ScriptManager
+{
+    public:
+        LuaManager();
+        ~LuaManager();
 
-public:
-    LuaManager();
-    ~LuaManager();
+        void registerScene(Scene& scene) override;              // Expose Scene to Lua
+        void runScript(const std::string& scriptPath) override; // runs the Lua script
 
-    void registerScene(Scene& scene);              // Expose Scene to Lua
-    void runScript(const std::string& scriptPath); // runs the Lua script
-
-private:
-    sol::state m_lua;                              // Lua state
+    private:
+        sol::state m_lua;                              // Lua state
 };
 
 #endif //LUAMANAGER_H

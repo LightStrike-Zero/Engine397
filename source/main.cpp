@@ -58,15 +58,16 @@ int main(int argc, char** argv)
 
     // --- Buko setting up Lua/Sol -------------------------
     /*
+     * ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
      * Lua script handles the asset paths
      * Lua script loads the models into the scene through a method in scene
      */
 
-    LuaManager luaManager;                  // Lua Manager instance is instantiated
-    Scene scene;                            // Scene instance is instantiated
+    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
+    Scene scene;                                          // Scene instance is instantiated
 
-    luaManager.registerScene(scene);                           // Expose Scene to Lua
-    luaManager.runScript("GameScripts/GameManager.lua"); // Run a Lua script
+    scriptManager->registerScene(scene);                                // Expose Scene to Lua
+    scriptManager->runScript("GameScripts/GameManager.lua");      // Run a Lua script
 
     // --- END OF Buko setting up Lua/Sol -------------------------
 
@@ -205,11 +206,11 @@ int main(int argc, char** argv)
     glfwDestroyWindow(window);
     glfwTerminate();
 
-
-
+    // clean up after yourself an all
+    delete scriptManager;
 
     return 0;
-}
+} // --- END OF MAIN ---
 
 //TODO this needs to be done elsewhere, its quite old and does multiple things
 bool setupOpenGL(GLFWwindow*& window)
