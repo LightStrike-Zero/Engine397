@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
     // --- Buko testing Sol -------------------------
     sol::state lua;
-    lua.open_libraries(sol::lib::base);
+    lua.open_libraries(sol::lib::base, sol::lib::io);
     lua.script_file("./GameScripts/GameManager.lua");
 
     //std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
