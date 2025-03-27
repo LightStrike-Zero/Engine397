@@ -9,12 +9,14 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Scripting/LuaManager.h"
 #include "Scene.h"
 
 #include <chrono>
 
 #include "OpenGL/OpenGLFrameBuffer.h"
 #include "OpenGL/OpenGLRenderer.h"
+#include "Scripting/LuaManager.h"
 
 // Buko -------------------------
 // Libraries for scripting
@@ -65,13 +67,13 @@ int main(int argc, char** argv)
     sol::state lua;
     lua.open_libraries(sol::lib::base);
 
-        // Expose the Scene class to Lua
-    lua.new_usertype<Scene>("Scene", sol::constructors<Scene()>(), "loadModelToRegistry", &Scene::loadModelToRegistry);
-        // Create an instance of Scene and give it to Lua
+    LuaManager luaManager;
     Scene scene;
-    lua["scene"] = &scene;
 
-    lua.script_file("./GameScripts/GameManager.lua");
+    // lua through interface clas
+    luaManager.registerScene(scene); // Expose Scene to Lua
+    luaManager.runScript("GameScripts/GameManager.lua"); // Run a Lua script
+
     // --- END OF Buko testing Sol -------------------------
 
     /*
