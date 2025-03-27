@@ -56,25 +56,23 @@ int main(int argc, char** argv)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
 
-    
+    // --- Buko setting up Lua/Sol -------------------------
     /*
-     * This is setting the paths to the current models available
-     * TODO move this to a config file - ideally a lua file
-     * Scene is also established here, and models loaded in
+     * Scene instance is instantiated
+     * Lua Manager instance is instantiated
+     * Register the "scene" class with Lua
+     * Run the Lua script
+     * Lua script handles the asset paths
+     * Lua script loads the models into the scene through a method in scene
      */
-
-    // --- Buko testing Sol -------------------------
-    sol::state lua;
-    lua.open_libraries(sol::lib::base);
 
     LuaManager luaManager;
     Scene scene;
 
-    // lua through interface clas
-    luaManager.registerScene(scene); // Expose Scene to Lua
+    luaManager.registerScene(scene);                           // Expose Scene to Lua
     luaManager.runScript("GameScripts/GameManager.lua"); // Run a Lua script
 
-    // --- END OF Buko testing Sol -------------------------
+    // --- END OF Buko setting up Lua/Sol -------------------------
 
     /*
      * TODO move this into a windowing manager
