@@ -1,5 +1,15 @@
-Changelist version 0.1.3
+Changelist version 0.1.4
 ========================
+### Changelist v0.1.4
+**27/03/2025** BS
+- Created ScriptManager base class
+- Created LuaManager that inherits from ScriptManager
+- Code used in main uses ScriptManager so minimal changes are required if scripting language is changed in the future.
+- Two methods are interfaced so far:
+  - Run script
+  - Load assets method from scene class is exposed to Lua
+- Lua handles the asset loading
+  - Any new asset paths should be added to the lua GameManager.lua script under GameScripts directory
 
 ### Changelist v0.1.3
 **15/03/2025** SM
