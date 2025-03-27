@@ -63,16 +63,16 @@ int main(int argc, char** argv)
 
     // --- Buko testing Sol -------------------------
     sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::io);
-    lua.script_file("./GameScripts/GameManager.lua");
+    lua.open_libraries(sol::lib::base);
 
-    //std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
-    //std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
-    std::string backPackPath = lua["assetPath"];
-
+        // Expose the Scene class to Lua
+    lua.new_usertype<Scene>("Scene", sol::constructors<Scene()>(), "loadModelToRegistry", &Scene::loadModelToRegistry);
+        // Create an instance of Scene and give it to Lua
     Scene scene;
-    scene.loadModelToRegistry(backPackPath);
-    // scene.loadModelToRegistry(sponzaPath);
+    lua["scene"] = &scene;
+
+    lua.script_file("./GameScripts/GameManager.lua");
+    // --- END OF Buko testing Sol -------------------------
 
     /*
      * TODO move this into a windowing manager
