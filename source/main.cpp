@@ -60,8 +60,16 @@ int main(int argc, char** argv)
      * TODO move this to a config file - ideally a lua file
      * Scene is also established here, and models loaded in
      */
-    std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
-    std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
+
+    // --- Buko testing Sol -------------------------
+    sol::state lua;
+    lua.open_libraries(sol::lib::base);
+    lua.script_file("./GameScripts/GameManager.lua");
+
+    //std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
+    //std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
+    std::string backPackPath = lua["assetPath"];
+
     Scene scene;
     scene.loadModelToRegistry(backPackPath);
     // scene.loadModelToRegistry(sponzaPath);
@@ -201,10 +209,7 @@ int main(int argc, char** argv)
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    // --- Buko testing Sol -------------------------
-    sol::state lua;
-    lua.open_libraries(sol::lib::base);
-    lua.script_file("./GameScripts/test_script_01.lua");
+
 
 
     return 0;
