@@ -41,7 +41,7 @@ uniform vec2 gMapSize;
 float shadowAmount = 0.7;
 
 const float kPi = 3.14159265;
-const float kShininess = 16.0;
+const float kShininess = 8.0;
 
 struct Light {
     vec3 direction;
@@ -71,7 +71,6 @@ float CalcShadowFactor(vec4 LightSpacePos)
     float texelSizeX = 1.0 / gMapSize.x;
     float texelSizeY = 1.0 / gMapSize.y;
 
-    // Gaussian weights for smoother shadows
     float weights[3] = float[](0.25, 0.5, 0.25);
 
     for (int y = -1; y <= 1; y++)
@@ -92,8 +91,8 @@ void main() {
 
 
     vec3 normal = texture(normalMap, TexCoords).rgb;
-    normal = normalize(normal * 2.0 - 1.0); // Convert normal from [0, 1] to [-1, 1]
-    normal.y = -normal.y; // Flip Y-channel to fix inverted normals
+    normal = normalize(normal * 2.0 - 1.0); 
+    normal.y = -normal.y; 
     vec3 transformedNormal = normalize(TBN * normal);
 
     float roughness = texture(roughnessMap, TexCoords).r;
@@ -135,7 +134,7 @@ void main() {
     vec3 specular = light.specular * spec;
 
     float shadow = CalcShadowFactor(LightSpacePos);
-    vec3 lighting = ambient + shadow * (diffuse + specular);
+    vec3 lighting = ambient + shadow * (diffuse/* + specular*/);
 
 //    FragColor = vec4(transformedNormal * 0.5 + 0.5, 1.0); // Visualize normals
 //    FragColor = vec4(tangentLightDir * 0.5 + 0.5, 1.0);   // Visualize light direction

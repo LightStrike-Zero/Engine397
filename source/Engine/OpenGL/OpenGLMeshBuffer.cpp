@@ -1,13 +1,8 @@
-//
-// Created by Shaun on 7/03/2025.
-//
 
 #include "OpenGLMeshBuffer.h"
-#include <GL/glew.h> // Include OpenGL for VAO/VBO/EBO
+#include <GL/glew.h> 
 
-// TODO
-// this is for Vertex but vertex needs to be defined somewhere better
-
+#include "Systems/EventSystem.h"
 
 OpenGLMeshBuffer::OpenGLMeshBuffer(const int numIndices, const int numVertices, const std::vector<unsigned int>::pointer indexData, const std::vector<Vertex>::pointer vertexData)
 {
@@ -54,6 +49,17 @@ OpenGLMeshBuffer::OpenGLMeshBuffer(const int numIndices, const int numVertices, 
 
     // Set the index count
     m_indexCount = numIndices;
+
+    m_lineMode = false;
+        
+    // Register for draw mode change events
+    EventSystem::getInstance().addListener(
+        EventType::DrawModeChanged,
+        [this](const Event& event) {
+            auto& drawEvent = static_cast<const DrawModeChangedEvent&>(event);
+            m_lineMode = drawEvent.lineMode;
+        }
+    );
 }
 
 void OpenGLMeshBuffer::bind()
@@ -63,7 +69,11 @@ void OpenGLMeshBuffer::bind()
 
 void OpenGLMeshBuffer::draw()
 {
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indexCount), GL_UNSIGNED_INT, nullptr);
+    if (m_lineMode) {
+        glDrawElements(GL_LINES, static_cast<GLsizei>(m_indexCount), GL_UNSIGNED_INT, nullptr);
+    } else {
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indexCount), GL_UNSIGNED_INT, nullptr);
+    }
 
 }
 

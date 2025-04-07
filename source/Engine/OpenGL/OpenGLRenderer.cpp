@@ -2,6 +2,7 @@
 // Created by Shaun on 15/03/2025.
 //
 
+
 #include "OpenGLRenderer.h"
 
 #include <iostream>
@@ -11,30 +12,20 @@
 
 #include "OpenGLShadowMapBuffer.h"
 #include "Scene.h"
-#include "TextureLoader.h"
+#include "texture/TextureLoader.h"
 #include "Components/MaterialComponent.h"
 #include "Components/TransformComponent.h"
 
-
-OpenGLRenderer::OpenGLRenderer():  m_shadowMapBuffer(OpenGLShadowMapBuffer(2048, 2048)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer()), m_shaderManager(ShaderManager()) ,m_camera(Camera(
-        glm::vec3(0.0f, 0.0f, 6.0f), // Position
-        glm::vec3(1.0f, 1.0f, 0.0f), // Target
-        glm::vec3(0.0f, 1.0f, 0.0f), // Up
-        2.5f, // Speed
-        0.5f, // Collider radius
-        45.0f, // Field of view
-        1920 / 1080, // Aspect ratio
-        0.1f, // Near plane
-        100.0f // Far plane
-    ))
+OpenGLRenderer::OpenGLRenderer()
+    :  m_shaderManager(ShaderManager()),
+        m_shadowMapBuffer(OpenGLShadowMapBuffer(4096, 4096)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer())
 {
 
-    // TODO default texture should be loaded in a better way
-    //Load the default texture
-    assert((defaultTexture = new Texture("Assets/default/error.jpg")));
-    m_shaderManager.loadShader("lightingShader", "new_vertex.glsl", "new_fragment.glsl");
+//TODO this needs to be loaded from a LUA config
+    assert((defaultTexture = new Texture("Assets/default/default.jpg")));
+    m_shaderManager.loadShader("lightingShader", "Vert.glsl", "Frag.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
-    m_shaderManager.loadShader("framebufferShader", "framebuffer.vert", "framebuffer.frag");
+    m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
 
 }
 
@@ -51,7 +42,7 @@ void OpenGLRenderer::Clear()
 /*
  * Renders the scene data to an image buffer, and returns the buffer
  */
-unsigned int OpenGLRenderer::Render(Scene& scene)
+unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
@@ -66,9 +57,9 @@ unsigned int OpenGLRenderer::Render(Scene& scene)
     glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection());
     lightingShader->bind(); //1
     m_currentShaderID = lightingShader->getID();
-    lightingShader->SetUniformMat4("view", m_camera.getViewMatrix());
-    lightingShader->SetUniformMat4("projection", m_camera.getProjectionMatrix());
-    lightingShader->SetUniform3f("viewPos", m_camera.getPosition());
+    lightingShader->SetUniformMat4("view", viewMatrix);
+    lightingShader->SetUniformMat4("projection", projectionMatrix);
+    lightingShader->SetUniform3f("viewPos", viewPos);
 
     lightingShader->SetUniform3f("light.direction", scene.getDirectionalLight().getDirection());
     lightingShader->SetUniform3f("light.ambient", scene.getDirectionalLight().getAmbient());
@@ -79,7 +70,7 @@ unsigned int OpenGLRenderer::Render(Scene& scene)
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, m_shadowMapBuffer.GetDepthTexture());
     lightingShader->SetUniform1i("shadowMap", 4);
-    lightingShader->SetUniform2f("gMapSize", glm::vec2(2048.0f, 2048.0f));
+    lightingShader->SetUniform2f("gMapSize", glm::vec2(4096.0f, 4096.0f));
     
     LightingPass(scene, m_shaderManager); //1
 
@@ -95,7 +86,13 @@ unsigned int OpenGLRenderer::Render(Scene& scene)
     m_quadBuffer.render();
     m_quadBuffer.unbind();
 
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
+    {
+        std::cerr << "OpenGL Error: " << error << std::endl;
+    }
     return m_frameBuffer.getTextureColorBuffer();
+    
 }
  
 void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
@@ -109,7 +106,7 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
         auto& mesh = scene.getRegistry().get<RenderableComponent>(entity);
         auto& transform = scene.getRegistry().get<TransformComponent>(entity);
         auto& material = scene.getRegistry().get<MaterialComponent>(entity);
-
+        
         auto shader = shaderManager.getShader(material.shaderID);
         // essentially we just want to check if the currently bound shader is the same as the shader we want to use
         if (shader->getID() != m_currentShaderID)
@@ -121,17 +118,8 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
         glm::mat4 modelMatrix = transform.getModelMatrix();
         shader->SetUniformMat4("model", modelMatrix);
 
-        // check for decals and enable transparency CURRENTLY JUST NOT RENDERING DECAL MESHES
         if (!material.isDecal)
         {
-            // if (!material.isDecal)
-            // {
-            //     glEnable(GL_BLEND);
-            //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            // } else
-            // {
-            //     glDisable(GL_BLEND);
-            // }
 
             // Bind the diffuse texture
             if (material.baseColorTextureID != 0) {
@@ -144,13 +132,13 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
             }
             if (material.normalTextureID != 0)
             {
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, material.normalTextureID);
-                shader->SetUniform1i("normalMap", 1);
+                // glActiveTexture(GL_TEXTURE1);
+                // glBindTexture(GL_TEXTURE_2D, material.normalTextureID);
+                // shader->SetUniform1i("normalMap", 1);
             }
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, material.roughnessTextureID);
-            shader->SetUniform1i("roughnessMap", 2);
+            // glActiveTexture(GL_TEXTURE2);
+            // glBindTexture(GL_TEXTURE_2D, material.roughnessTextureID);
+            // shader->SetUniform1i("roughnessMap", 2);
 
             mesh.meshBuffer->bind();
             mesh.meshBuffer->draw();
@@ -160,6 +148,7 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
     }
 
 }
+
 
 void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
 {

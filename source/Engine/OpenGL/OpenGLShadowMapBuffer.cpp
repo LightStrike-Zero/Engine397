@@ -84,14 +84,14 @@ glm::mat4 OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(const glm::vec3& ligh
     glm::vec3 normalizedLightDir = glm::normalize(lightDirection);
 
     // Define a fixed orthographic projection for the shadow map
-    float orthoSize = 15.0f; // Adjust based on your scene's size
-    glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 1.0f, 50.0f);
+    float orthoSize = 60.0f; // Adjust based on your scene's size
+    glm::mat4 lightProjection = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 1.0f, 180.0f);
     // glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
 
 
     // Calculate the light's view matrix
     // Position the light sufficiently far to cover the scene
-    glm::mat4 lightView = glm::lookAt(-normalizedLightDir * 30.0f, // Increased distance for broader coverage
+    glm::mat4 lightView = glm::lookAt(-normalizedLightDir * 100.0f, // Increased distance for broader coverage
                                       glm::vec3(0.0f),
                                       glm::vec3(0.0f, 1.0f, 0.0f));
 

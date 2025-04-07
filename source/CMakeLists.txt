@@ -2,50 +2,29 @@
 
 # Source files go here
 set(SOURCE_FILES
-#       # Starts with Engine and goes down
-
-        ## ENGINE
-        # Actors
-        Engine/Actors/Camera.cpp
-        Engine/Actors/Material.cpp
-        Engine/Actors/Mesh.cpp
-        Engine/Actors/Texture.cpp
-        Engine/Actors/TextureManager.cpp
-
-        # Renderer
-        Engine/Renderer/Renderer.cpp
-        # Shaders
+        Engine/Texture/Texture.cpp
+        Engine/Texture/TextureManager.cpp
         Engine/Shaders/Shader.cpp
-
-        # Main
         main.cpp
-
         Engine/Importers/AssimpImporter.cpp
         Engine/Importers/AssimpImporter.h
         Engine/Importers/ModelLoader.cpp
         Engine/Importers/ModelLoader.h
-        Engine/Actors/MeshData.h
-        Engine/Actors/MaterialData.h
-        Engine/Actors/ModelData.h
-        Engine/Actors/TextureLoader.cpp
-        Engine/Actors/TextureLoader.h
-        Engine/Renderer/ShadowMap.cpp
-        Engine/Renderer/ShadowMap.h
+        Engine/Texture/TextureLoader.cpp
+        Engine/Texture/TextureLoader.h
         Engine/Actors/Lights/Light.h
         Engine/Actors/Scene.cpp
         Engine/Actors/Scene.h
         Engine/Components/TransformComponent.h
         Engine/Components/MaterialComponent.h
+        Engine/GUI/ImGui_UI.cpp
+
 )
 
 # Add ImGUI source files
 set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
-        Engine/Renderer/Framebuffer.cpp
-        Engine/Renderer/Framebuffer.h
         Engine/Shaders/ShaderManager.cpp
         Engine/Shaders/ShaderManager.h
-        Engine/Actors/Lights/PointLight.cpp
-        Engine/Actors/Lights/PointLight.h
         Engine/Actors/Lights/DirectionalLight.cpp
         Engine/Actors/Lights/DirectionalLight.h
         Engine/Actors/Lights/Light.cpp
@@ -65,10 +44,31 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Interfaces/IShader.h
         Engine/OpenGL/OpenGLShader.cpp
         Engine/OpenGL/OpenGLShader.h
-        Engine/Math/Math.cpp
-        Engine/Math/Math.h
-        Engine/Math/IMath.h
-        Engine/Factorys/RendererFactory.h)
+        Engine/Factorys/RendererFactory.h
+        Engine/Terrain/Terrain.cpp
+        Engine/Terrain/Terrain.h
+        Engine/Terrain/HeightmapTerrain.cpp
+        Engine/Terrain/HeightmapTerrain.h
+        Engine/Terrain/FractalTerrain.cpp
+        Engine/Terrain/FractalTerrain.h
+        Engine/Terrain/TerrainType.h
+        Engine/Terrain/TerrainTexture.h
+        Engine/Terrain/TerrainTexture.cpp
+        Engine/Terrain/TerrainFactory.h
+        Engine/Terrain/TerrainFactory.cpp
+        Engine/Components/CameraComponent.h
+        Engine/Systems/CameraSystem.cpp
+        Engine/Systems/CameraSystem.h
+        Engine/Systems/EventSystem.h
+        Engine/Components/DataTypes.h
+        Engine/Systems/GridCollision.cpp
+        Engine/Systems/GridCollision.h
+        Engine/Interfaces/IWindow.h
+        Engine/Window/glfwWindow.cpp
+        Engine/Window/glfwWindow.h
+        Engine/Terrain/TerrainMenuHelper.cpp
+        Engine/Terrain/TerrainMenuHelper.h
+)
 
 # Add executable based on source files
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

@@ -9,7 +9,7 @@
 #include <assimp/scene.h>
 
 #include "MaterialData.h"
-#include "MeshData.h"
+#include "Components/DataTypes.h"
 #include "Components/RenderableComponent.h"
 
 

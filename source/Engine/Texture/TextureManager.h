@@ -5,6 +5,7 @@
  * @author Shaun Matthews
  * @date Created: 4/09/2024
  * @date Modified: 1/12/2024
+ * @date Modified: 30/03/2025
  */
 
 #pragma once
@@ -15,7 +16,7 @@
 
 #include <GL/glew.h>
 #include <string>
-#include <texture.h>
+#include <texture/texture.h>
 #include <unordered_map>
 #include <assimp/texture.h>
 

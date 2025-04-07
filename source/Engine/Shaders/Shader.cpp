@@ -7,7 +7,7 @@
 #include <sstream>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "Renderer.h"
+#include "OpenGL/OpenGLShader.h"
 
 
 Shader::Shader(const std::string& vs_filepath, const std::string& fs_filepath)

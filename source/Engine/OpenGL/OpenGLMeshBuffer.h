@@ -23,6 +23,7 @@ public:
 
 // private:
     unsigned int m_vao, m_vbo, m_ebo;
+    bool m_lineMode;
     size_t m_indexCount;
 };
 

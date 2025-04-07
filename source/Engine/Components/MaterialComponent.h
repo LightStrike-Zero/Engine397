@@ -7,7 +7,7 @@
 
 #include <GL/glew.h>
 
-#include "MaterialData.h"
+#include "Components/DataTypes.h"
 
 class Texture;
 
