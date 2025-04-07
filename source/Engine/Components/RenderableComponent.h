@@ -6,7 +6,8 @@
 #define RENDERABLECOMPONENT_H
 #include <memory>
 #include <vector>
-#include "MeshData.h"
+
+#include "DataTypes.h"
 #include "Interfaces/IMeshBuffer.h"
 
 

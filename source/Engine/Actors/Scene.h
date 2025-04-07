@@ -5,8 +5,10 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <Components/RenderableComponent.h>
 #include <entt/entt.hpp>
 
+#include "Terrain/Terrain.h"
 #include "Lights/DirectionalLight.h"
 #include "Lights/Light.h"
 
@@ -28,6 +30,8 @@ public:
 
     void setDirectionalLight(const DirectionalLight& light) { m_dirLight = light; }
     [[nodiscard]] const DirectionalLight& getDirectionalLight() const { return m_dirLight; }
+
+    void addTerrainToScene(const Terrain &terrain);
 
 private:
     entt::registry m_registry;

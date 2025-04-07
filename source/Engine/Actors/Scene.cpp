@@ -1,7 +1,3 @@
-//
-// Created by Shaun on 28/12/2024.
-//
-
 #include "Scene.h"
 
 
@@ -9,6 +5,7 @@
 #include "Components/RenderableComponent.h"
 #include "Components/TransformComponent.h"
 #include "Importers/ModelLoader.h"
+#include "OpenGL/OpenGLMeshBuffer.h"
 
 
 //TODO This really should be more like a interface to Entt, we should have a separate scene management file
@@ -56,4 +53,25 @@ void Scene::loadModelToRegistry(const std::string& filepath) {
         MaterialComponent materialComponent(rawMesh.material, "lightingShader");
         m_registry.emplace<MaterialComponent>(entity, materialComponent);
     }
+}
+
+void Scene::addTerrainToScene(const Terrain &terrain) {
+    RenderableComponent terrainComponent(terrain.getMeshData());
+    
+    terrainComponent.meshBuffer = std::make_shared<OpenGLMeshBuffer>(
+        terrainComponent.indices.size(),
+        terrainComponent.vertices.size(),
+        terrainComponent.indices.data(),
+        terrainComponent.vertices.data()
+    );
+    
+    entt::entity entity = m_registry.create();
+    m_registry.emplace<RenderableComponent>(entity, terrainComponent);
+    
+    TransformComponent transformComponent;
+    transformComponent.setFromModelMatrix(terrain.getMeshData().transform);
+    m_registry.emplace<TransformComponent>(entity, transformComponent);
+    
+    MaterialComponent materialComponent(terrain.getMeshData().material, "lightingShader");
+    m_registry.emplace<MaterialComponent>(entity, materialComponent);
 }

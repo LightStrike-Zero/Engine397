@@ -21,26 +21,27 @@ class OpenGLRenderer : public IRenderer
 {
 public:
     OpenGLRenderer();
-    void Render(Scene& scene) override;
+    [[nodiscard]] unsigned int Render(Scene& scene, 
+                                      const glm::mat4& viewMatrix,
+                                      const glm::mat4& projectionMatrix,
+                                      const glm::vec3& viewPos) override;
     void Clear() override;
     ~OpenGLRenderer() override;
 
-    const OpenGLFrameBuffer& getFrameBuffer() const { return m_frameBuffer; }
+    [[nodiscard]] const OpenGLFrameBuffer& getFrameBuffer() const { return m_frameBuffer; }
 
 private:
-    // TODO why is this still here? it needs to go
-    Texture* defaultTexture;
-    
+    // Camera removed from here
     unsigned int m_currentShaderID = 0;
     ShaderManager m_shaderManager;
     OpenGLShadowMapBuffer m_shadowMapBuffer;
     OpenGLFrameBuffer m_frameBuffer;
     OpenGLQuadBuffer m_quadBuffer;
-    Camera m_camera;
+    Texture* defaultTexture;
     
-    void ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
 
     void LightingPass(Scene& scene, ShaderManager& shaderManager);
+    void ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
 };
 
 #endif //OPENGLRENDERER_H

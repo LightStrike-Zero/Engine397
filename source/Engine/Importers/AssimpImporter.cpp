@@ -5,7 +5,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
-#include <TextureManager.h>
+#include <Texture/TextureManager.h>
 #include <GL/glew.h> // Include OpenGL for VAO/VBO/EBO
 #include <glm/gtc/type_ptr.hpp>
 

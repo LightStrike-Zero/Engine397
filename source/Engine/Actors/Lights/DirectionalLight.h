@@ -8,10 +8,26 @@
 
 #include "Light.h"
 
-
+/**
+ * @class DirectionalLight
+ * @brief A class representing a directional light source.
+ * 
+ * This class inherits from the Light class and provides additional
+ * functionality specific to directional lights, such as setting and
+ * getting the direction of the light.
+ */
 class DirectionalLight : public Light
 {
 public:
+    /**
+    * @brief Constructor for DirectionalLight.
+    * 
+    * @param direction The direction of the light.
+    * @param ambient The ambient color of the light.
+    * @param diffuse The diffuse color of the light.
+    * @param specular The specular color of the light.
+    * @param specular_power The specular power of the light.
+    */
     DirectionalLight(const glm::vec3& direction, const glm::vec3& ambient, const glm::vec3& diffuse,
                      const glm::vec3& specular, const float specular_power)
 

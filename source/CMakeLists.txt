@@ -2,50 +2,29 @@
 
 # Source files go here
 set(SOURCE_FILES
-#       # Starts with Engine and goes down
-
-        ## ENGINE
-        # Actors
-        Engine/Actors/Camera.cpp
-        Engine/Actors/Material.cpp
-        Engine/Actors/Mesh.cpp
-        Engine/Actors/Texture.cpp
-        Engine/Actors/TextureManager.cpp
-
-        # Renderer
-        Engine/Renderer/Renderer.cpp
-        # Shaders
+        Engine/Texture/Texture.cpp
+        Engine/Texture/TextureManager.cpp
         Engine/Shaders/Shader.cpp
-
-        # Main
         main.cpp
-
         Engine/Importers/AssimpImporter.cpp
         Engine/Importers/AssimpImporter.h
         Engine/Importers/ModelLoader.cpp
         Engine/Importers/ModelLoader.h
-        Engine/Actors/MeshData.h
-        Engine/Actors/MaterialData.h
-        Engine/Actors/ModelData.h
-        Engine/Actors/TextureLoader.cpp
-        Engine/Actors/TextureLoader.h
-        Engine/Renderer/ShadowMap.cpp
-        Engine/Renderer/ShadowMap.h
+        Engine/Texture/TextureLoader.cpp
+        Engine/Texture/TextureLoader.h
         Engine/Actors/Lights/Light.h
         Engine/Actors/Scene.cpp
         Engine/Actors/Scene.h
         Engine/Components/TransformComponent.h
         Engine/Components/MaterialComponent.h
+        Engine/GUI/ImGui_UI.cpp
+
 )
 
 # Add ImGUI source files
 set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
-        Engine/Renderer/Framebuffer.cpp
-        Engine/Renderer/Framebuffer.h
         Engine/Shaders/ShaderManager.cpp
         Engine/Shaders/ShaderManager.h
-        Engine/Actors/Lights/PointLight.cpp
-        Engine/Actors/Lights/PointLight.h
         Engine/Actors/Lights/DirectionalLight.cpp
         Engine/Actors/Lights/DirectionalLight.h
         Engine/Actors/Lights/Light.cpp
@@ -65,9 +44,30 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Interfaces/IShader.h
         Engine/OpenGL/OpenGLShader.cpp
         Engine/OpenGL/OpenGLShader.h
-        Engine/Scripting/LuaManager.h
-        Engine/Scripting/LuaManager.cpp
-        Engine/Scripting/ScriptManager.h
+        Engine/Factorys/RendererFactory.h
+        Engine/Terrain/Terrain.cpp
+        Engine/Terrain/Terrain.h
+        Engine/Terrain/HeightmapTerrain.cpp
+        Engine/Terrain/HeightmapTerrain.h
+        Engine/Terrain/FractalTerrain.cpp
+        Engine/Terrain/FractalTerrain.h
+        Engine/Terrain/TerrainType.h
+        Engine/Terrain/TerrainTexture.h
+        Engine/Terrain/TerrainTexture.cpp
+        Engine/Terrain/TerrainFactory.h
+        Engine/Terrain/TerrainFactory.cpp
+        Engine/Components/CameraComponent.h
+        Engine/Systems/CameraSystem.cpp
+        Engine/Systems/CameraSystem.h
+        Engine/Systems/EventSystem.h
+        Engine/Components/DataTypes.h
+        Engine/Systems/GridCollision.cpp
+        Engine/Systems/GridCollision.h
+        Engine/Interfaces/IWindow.h
+        Engine/Window/glfwWindow.cpp
+        Engine/Window/glfwWindow.h
+        Engine/Terrain/TerrainMenuHelper.cpp
+        Engine/Terrain/TerrainMenuHelper.h
 )
 
 # Add executable based on source files
@@ -88,14 +88,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # Link libraries
-#if (WIN32)
+if (WIN32)
     # Windows-specific linking
     target_link_libraries(${PROJECT_NAME}
             OpenGL::GL
             ${GLFW_LIBRARIES}
             ${GLEW_LIBRARIES}
             ${Assimp_LIBRARIES}
-            ${LUA_LIBRARIES}
             opengl32.lib
             glu32.lib
             user32.lib
@@ -106,41 +105,31 @@ target_include_directories(${PROJECT_NAME} PRIVATE
             imm32.lib
             version.lib
     )
-#elseif (UNIX)
-#    # Unix/Linux-specific linking
-#    target_link_libraries(${PROJECT_NAME}
-#            OpenGL::GL              # Equivalent of opengl32.lib
-#            GLU                     # Equivalent of glu32.lib
-#            X11                     # Equivalent of user32.lib
-#            asound                  # Equivalent of winmm.lib
-#            udev                    # Equivalent of hid.lib
-#            ${GLFW_LIBRARIES}
-#            ${GLEW_LIBRARIES}
-#            ${Assimp_LIBRARIES}
-#            ${LUA_LIBRARIES}
-#    )
-#endif()
+elseif (UNIX)
+    # Unix/Linux-specific linking
+    target_link_libraries(${PROJECT_NAME}
+            OpenGL::GL              # Equivalent of opengl32.lib
+            GLU                     # Equivalent of glu32.lib
+            X11                     # Equivalent of user32.lib
+            asound                  # Equivalent of winmm.lib
+            udev                    # Equivalent of hid.lib
+            ${GLFW_LIBRARIES}
+            ${GLEW_LIBRARIES}
+            ${Assimp_LIBRARIES}
+    )
+endif()
 # Include directories for header files
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} 
-        ${GLEW_INCLUDE_DIRS} 
-        ${Assimp_INCLUDE_DIRS} 
-        ${STB_Image_INCLUDE_DIRS} 
-        ${Entt_INCLUDE_DIRS} 
-        ${ImGUI_INCLUDE_DIRS} 
-        ${LUA_INCLUDE_DIRS} 
-        ${Sol2_INCLUDE_DIRS} 
-        headers)
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${Assimp_INCLUDE_DIRS} ${STB_Image_INCLUDE_DIRS} ${Entt_INCLUDE_DIRS} ${ImGUI_INCLUDE_DIRS} headers)
 
 # Additional dependencies for static linking on Windows
-#if (WIN32)
-#    target_link_libraries(${PROJECT_NAME})
-#endif()
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME})
+endif()
 
 
 # Post-build command to copy the Assimp DLL into the build directory
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/assimp/bin/Release/assimp-vc143-mt.dll"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/lua/lua54.dll"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )

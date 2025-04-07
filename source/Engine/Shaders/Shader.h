@@ -1,5 +1,6 @@
 //
 // Created by Shaun on 5/10/2024.
+// modified by Shaun on 30/03/2025
 //
 
 #ifndef SHADER_H
@@ -7,13 +8,6 @@
 #include <string>
 #include <unordered_map>
 #include <glm/fwd.hpp>
-
-// struct ShaderProgramSource
-// {
-//     std::string VertexSource;
-//     std::string FragmentSource;
-//
-// };
 
 class Shader
 {
