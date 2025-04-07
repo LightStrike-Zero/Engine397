@@ -8,7 +8,6 @@
 #include <string>
 #include <assimp/scene.h>
 
-#include "MaterialData.h"
 #include "Components/DataTypes.h"
 #include "Components/RenderableComponent.h"
 

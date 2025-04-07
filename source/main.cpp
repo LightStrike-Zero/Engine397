@@ -1,4 +1,6 @@
 #include <iostream>
+#include <Scripting/LuaManager.h>
+#include <Scripting/ScriptManager.h>
 
 #include "GUI/ImGui_UI.h"
 #include "Scene.h"
@@ -9,6 +11,12 @@
 #include "Systems/GridCollision.h"
 #include "Terrain/TerrainMenuHelper.h"
 #include "Window/glfwWindow.h"
+// Buko -------------------------
+// Libraries for scripting
+#include <lua.hpp>
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+//----------------------
 
 int main(int argc, char** argv)
 {
@@ -35,6 +43,7 @@ int main(int argc, char** argv)
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
     
+    Scene scene;
     
     // --- Buko setting up Lua/Sol -------------------------
     /*
@@ -42,11 +51,15 @@ int main(int argc, char** argv)
      * Lua script handles the asset paths
      * Lua script loads the models into the scene through a method in scene
      */
-    // std::string backPackPath = (R"(Assets\survival_guitar_backpack_scaled\scene.gltf)");
-    // std::string sponzaPath = (R"(Assets\main1_sponza\NewSponza_Main_glTF_003.gltf)");
+
+    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
+
+    scriptManager->registerScene(scene);                                // Expose Scene to Lua
+    scriptManager->runScript("GameScripts/GameManager.lua");      // Run a Lua script
+
+    // --- END OF Buko setting up Lua/Sol -------------------------
 
     
-    Scene scene;
     DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
         glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);
     

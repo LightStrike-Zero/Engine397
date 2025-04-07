@@ -68,6 +68,7 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Window/glfwWindow.h
         Engine/Terrain/TerrainMenuHelper.cpp
         Engine/Terrain/TerrainMenuHelper.h
+        Engine/Scripting/LuaManager.cpp
 )
 
 # Add executable based on source files
@@ -95,6 +96,7 @@ if (WIN32)
             ${GLFW_LIBRARIES}
             ${GLEW_LIBRARIES}
             ${Assimp_LIBRARIES}
+            ${LUA_LIBRARIES}
             opengl32.lib
             glu32.lib
             user32.lib

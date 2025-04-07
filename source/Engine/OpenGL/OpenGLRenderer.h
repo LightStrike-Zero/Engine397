@@ -4,7 +4,6 @@
 
 #ifndef OPENGLRENDERER_H
 #define OPENGLRENDERER_H
-#include <Camera.h>
 #include <entt/entt.hpp>
 
 #include "OpenGLFrameBuffer.h"
