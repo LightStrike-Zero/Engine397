@@ -54,8 +54,46 @@ int main(int argc, char** argv)
 
     ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
 
-    scriptManager->registerScene(scene);                                // Expose Scene to Lua
-    scriptManager->runScript("GameScripts/GameManager.lua");      // Run a Lua script
+    scriptManager->registerScene(scene);                                      // Expose Scene to Lua
+    scriptManager->runScript("GameScripts/GameManager.lua");            // Run a Lua script
+    scriptManager->runScript("GameScripts/TerrainConfig_fractal.lua");  // Get terrain parameters
+
+    // Read terrain config from Lua
+    sol::table terrainConfig = static_cast<LuaManager*>(scriptManager)->getTerrainConfig();
+
+    // Print parameter values from lua script
+    std::string paramType = terrainConfig["type"].get<std::string>();
+    std::cout << "[DEBUG LUA] Terrain type: " << paramType << "\n";
+
+    int paramRows = terrainConfig["rows"].get<int>();
+    std::cout << "[DEBUG LUA] Terrain rows: " << paramRows << "\n";
+
+    int paramCols = terrainConfig["cols"].get<int>();
+    std::cout << "[DEBUG LUA] Terrain columns: " << paramCols << "\n";
+
+    float paramSpacing = terrainConfig["spacing"].get<float>();
+    std::cout << "[DEBUG LUA] Terrain spacing: " << paramSpacing << "\n";
+
+    int paramIterations = terrainConfig["parameters"]["iterations"].get<int>();
+    std::cout << "[DEBUG LUA] Terrain iterations: " << paramIterations << "\n";
+
+    float paramInitialDisplacement = terrainConfig["parameters"]["initialDisplacement"].get<float>();
+    std::cout << "[DEBUG LUA] Terrain initialDisplacement: " << paramInitialDisplacement << "\n";
+
+    float paramDisplacementDecay = terrainConfig["parameters"]["displacementDecay"].get<float>();
+    std::cout << "[DEBUG LUA] Terrain displacementDecay: " << paramDisplacementDecay << "\n";
+
+    float paramHeightScale = terrainConfig["parameters"]["heightScale"].get<float>();
+    std::cout << "[DEBUG LUA] Terrain heightScale: " << paramHeightScale << "\n";
+
+    int paramSeed = terrainConfig["parameters"]["seed"].get<int>();
+    std::cout << "[DEBUG LUA] Terrain seed: " << paramSeed << "\n";
+
+    float paramSmoothness = terrainConfig["parameters"]["smoothness"].get<float>();
+    std::cout << "[DEBUG LUA] Terrain smoothness: " << paramSmoothness << "\n";
+
+    int paramSmoothingPasses = terrainConfig["parameters"]["smoothingPasses"].get<int>();
+    std::cout << "[DEBUG LUA] Terrain smoothingPasses: " << paramSmoothingPasses << "\n";
 
     // --- END OF Buko setting up Lua/Sol -------------------------
 

@@ -54,4 +54,10 @@ void LuaManager::runScript(const std::string& scriptPath)
     }
 }
 
+//-----------------------------------------------------------------------------
+//grabs the table called TerrainConfig from the lua file
+sol::table LuaManager::getTerrainConfig() const
+{
+    return m_lua["terrainConfig"];
+}
 //====================== END OF LUA MANAGER CLASS =============================

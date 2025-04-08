@@ -6,10 +6,11 @@
 
 backpack_assetPath = "Assets/survival_guitar_backpack_scaled/scene.gltf"
 sponza_assetPath = "Assets/main1_sponza/NewSponza_Main_glTF_003.gltf"
+tank_assetPath = "Assets/game_tank/tank.gltf"
 
 print("Loading assets...")
-scene:loadModelToRegistry(backpack_assetPath)
-print("Loading:" .. backpack_assetPath)
+scene:loadModelToRegistry(tank_assetPath)
+print("Loading:" .. tank_assetPath)
 print("Finished loading assets.")
 --
 print("End of GameManager.lua")
