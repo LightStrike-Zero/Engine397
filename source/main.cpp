@@ -21,9 +21,6 @@
 //--
 int main(int argc, char** argv)
 {
-    int terrainGridRows = 1000, terrainGridCols = 1000;
-    float terrainScale = 0.1f;
-
     float playerHeight = 1.0f;
 
     IWindow* window = new GLFWWindow(1920, 1080, "Lab 4", true);
@@ -54,14 +51,18 @@ int main(int argc, char** argv)
     scriptManager->runScript("GameScripts/GameManager.lua");            // Run a Lua script
 
     sol::table terrainConfig = static_cast<LuaManager*>(scriptManager)->getTerrainConfig(); // Read terrain config from Lua
-    std::unique_ptr<Terrain> terrain = TerrainFactory::createFromLuaConfig(terrainConfig);
+    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();
     scene.addTerrainToScene(*terrain);
+
+    const RawMeshData& terrainMeshData = terrain->getMeshData();
+
+    int terrainGridRows = scriptManager->getTerrainRows();
+    int terrainGridCols = scriptManager->getTerrainCols();
+    float terrainScale   = scriptManager->getTerrainSpacing();
 
     // --- END OF Buko setting up Lua/Sol -------------------------
 
-    const RawMeshData& terrainMeshData = terrain->getMeshData();
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
-
 
     DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
         glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);

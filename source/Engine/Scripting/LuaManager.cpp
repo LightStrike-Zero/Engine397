@@ -6,6 +6,7 @@
 
 #include "LuaManager.h"
 #include "Scene.h"
+#include "Terrain/TerrainFactory.h"
 #include <iostream>
 #include <fstream>
 
@@ -60,4 +61,29 @@ sol::table LuaManager::getTerrainConfig() const
 {
     return m_lua["terrainConfig"];
 }
+
+//-----------------------------------------------------------------------------
+std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig() {
+    runScript("GameScripts/GameManager.lua");
+    return TerrainFactory::createFromLuaConfig(m_lua["terrainConfig"]);
+}
+
+//-----------------------------------------------------------------------------
+int LuaManager::getTerrainRows() const
+{
+    return m_lua["terrainConfig"]["rows"].get<int>();
+}
+
+//-----------------------------------------------------------------------------
+int LuaManager::getTerrainCols() const
+{
+    return m_lua["terrainConfig"]["cols"].get<int>();
+}
+
+//-----------------------------------------------------------------------------
+float LuaManager::getTerrainSpacing() const
+{
+    return m_lua["terrainConfig"]["spacing"].get<float>();
+}
+
 //====================== END OF LUA MANAGER CLASS =============================
