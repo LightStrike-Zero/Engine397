@@ -4,7 +4,6 @@
 
 #ifndef PLAYERCONTROLLERCOMPONENT_H
 #define PLAYERCONTROLLERCOMPONENT_H
-#include "RenderableComponent.h"
 
 struct PlayerControllerComponent {
     int id;
