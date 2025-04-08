@@ -7,11 +7,12 @@
 
 #include <iostream>
 #include <Components/RenderableComponent.h>
-#include <entt/entt.hpp>
+// #include <entt/entt.hpp>
 #include <GL/glew.h>
 
 #include "OpenGLShadowMapBuffer.h"
-#include "Scene.h"
+// #include "Scene.h"
+#include "ResourceManagement/NewScene.h"
 #include "texture/TextureLoader.h"
 #include "Components/MaterialComponent.h"
 #include "Components/TransformComponent.h"
@@ -42,7 +43,7 @@ void OpenGLRenderer::Clear()
 /*
  * Renders the scene data to an image buffer, and returns the buffer
  */
-unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
+unsigned int OpenGLRenderer::Render(NewScene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
@@ -95,17 +96,17 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
     
 }
  
-void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
+void OpenGLRenderer::LightingPass(NewScene& scene, ShaderManager& shaderManager)
 {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
     // Iterate over entities with Mesh, Transform, and Material components
-    auto view = scene.getRegistry().view<RenderableComponent, TransformComponent, MaterialComponent>();
+    auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent, MaterialComponent>();
     for (auto entity : view) {
-        auto& mesh = scene.getRegistry().get<RenderableComponent>(entity);
-        auto& transform = scene.getRegistry().get<TransformComponent>(entity);
-        auto& material = scene.getRegistry().get<MaterialComponent>(entity);
+        auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
+        auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
+        auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
         
         auto shader = shaderManager.getShader(material.shaderID);
         // essentially we just want to check if the currently bound shader is the same as the shader we want to use
@@ -150,7 +151,7 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
 }
 
 
-void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
+void OpenGLRenderer::ShadowPass(NewScene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -162,11 +163,11 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
 
    
     // Iterate over entities with Mesh and Transform components
-    auto view = scene.getRegistry().view<RenderableComponent, TransformComponent>();
+    auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent>();
     for (auto entity : view) {
-        auto& mesh = scene.getRegistry().get<RenderableComponent>(entity);
-        auto& transform = scene.getRegistry().get<TransformComponent>(entity);
-        auto& material = scene.getRegistry().get<MaterialComponent>(entity);
+        auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
+        auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
+        auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
 
         auto shadowShader = shaderManager.getShader("shadowShader"); // for now we'll hard code this, remove it from main.
         if (shadowShader->getID() != m_currentShaderID)

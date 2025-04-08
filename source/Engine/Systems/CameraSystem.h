@@ -8,15 +8,16 @@
 
 #include "Components/CameraComponent.h"
 #include "Components/TransformComponent.h"
+#include "ResourceManagement/EnttFacade.h"
 
 class CameraSystem {
 public:
     CameraSystem(GLFWwindow* window, float aspectRatio)
         : m_window(window), m_aspectRatio(aspectRatio) {}
     
-    void update(entt::registry& registry, float deltaTime);
+    void update(EnttFacade& ecs, float deltaTime);
     
-    std::tuple<glm::mat4, glm::mat4, glm::vec3> getActiveCameraMatrices(entt::registry& registry);
+    std::tuple<glm::mat4, glm::mat4, glm::vec3> getActiveCameraMatrices(EnttFacade& ecs);
     
 private:
     GLFWwindow* m_window;
@@ -30,9 +31,9 @@ private:
     
     void updateCameraVectors(CameraComponent& camera);
     
-    entt::entity getActiveCameraEntity(entt::registry& registry);
+    EnttFacade::Entity getActiveCameraEntity(EnttFacade::Registry& registry);
     
-    bool isActiveCamera(entt::entity entity, entt::registry& registry);
+    bool isActiveCamera(EnttFacade::Entity entity, EnttFacade::Registry& registry);
 };
 
 #endif //CAMERASYSTEM_H

@@ -2,23 +2,24 @@
 #include "CameraSystem.h"
 
 #include "EventSystem.h"
+#include "ResourceManagement/EnttFacade.h"
 
-void CameraSystem::update(entt::registry& registry, float deltaTime)
+void CameraSystem::update(EnttFacade& ecs, float deltaTime)
 {
-    auto view = registry.view<CameraComponent, TransformComponent>();
+    auto view = ecs.view<CameraComponent, TransformComponent>();
         
     for (auto entity : view) {
         auto& camera = view.get<CameraComponent>(entity);
         auto& transform = view.get<TransformComponent>(entity);
             
-        if (isActiveCamera(entity, registry)) {
+        if (isActiveCamera(entity, ecs.getRegistry())) {
             handleCameraInput(transform, camera, deltaTime);
         }
     }
 }
 
-std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrices(entt::registry& registry) {
-    auto activeCameraEntity = getActiveCameraEntity(registry);
+std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrices(EnttFacade& ecs) {
+    auto activeCameraEntity = getActiveCameraEntity(ecs.getRegistry());
         
     if (activeCameraEntity == entt::null) {
         return {
@@ -28,8 +29,8 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
         };
     }
         
-    auto& camera = registry.get<CameraComponent>(activeCameraEntity);
-    auto& transform = registry.get<TransformComponent>(activeCameraEntity);
+    auto& camera = ecs.getRegistry().get<CameraComponent>(activeCameraEntity);
+    auto& transform = ecs.getRegistry().get<TransformComponent>(activeCameraEntity);
         
     return {
         camera.getViewMatrix(transform.position),

@@ -4,15 +4,14 @@
 
 #ifndef OPENGLRENDERER_H
 #define OPENGLRENDERER_H
-#include <entt/entt.hpp>
 
 #include "OpenGLFrameBuffer.h"
 #include "OpenGLQuadBuffer.h"
 #include "OpenGLShadowMapBuffer.h"
-#include "Scene.h"
 #include "ShaderManager.h"
 #include "Interfaces/IDataBuffer.h"
 #include "Interfaces/IRenderer.h"
+#include "ResourceManagement/NewScene.h"
 
 class Texture;
 
@@ -20,7 +19,7 @@ class OpenGLRenderer : public IRenderer
 {
 public:
     OpenGLRenderer();
-    [[nodiscard]] unsigned int Render(Scene& scene, 
+    [[nodiscard]] unsigned int Render(NewScene& scene, 
                                       const glm::mat4& viewMatrix,
                                       const glm::mat4& projectionMatrix,
                                       const glm::vec3& viewPos) override;
@@ -39,8 +38,8 @@ private:
     Texture* defaultTexture;
     
 
-    void LightingPass(Scene& scene, ShaderManager& shaderManager);
-    void ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
+    void LightingPass(NewScene& scene, ShaderManager& shaderManager);
+    void ShadowPass(NewScene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
 };
 
 #endif //OPENGLRENDERER_H

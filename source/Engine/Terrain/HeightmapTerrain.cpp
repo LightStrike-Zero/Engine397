@@ -59,6 +59,7 @@ float HeightmapTerrain::getPixelAsFloat(float x, float y)
     return static_cast<float>(m_heightMapData[static_cast<int>(position)]) / 255.0f;
 }
 
+//TODO might move this into the texture file as a helper
 float HeightmapTerrain::bilinearSample(float xf, float yf)
 {
     const float w = m_heightMapWidth - 1;

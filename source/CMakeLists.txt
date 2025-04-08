@@ -73,6 +73,15 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Actors/Player.cpp
         Engine/Actors/Player.h
         StuffThatNeedsToBeLoadedInLua.h
+        Engine/ResourceManagement/IEntityComponentSystem.h
+        Engine/ResourceManagement/EnttECS.cpp
+        Engine/ResourceManagement/EnttECS.h
+        Engine/ResourceManagement/NewScene.cpp
+        Engine/ResourceManagement/NewScene.h
+        Engine/Factorys/EntityFactory.cpp
+        Engine/Factorys/EntityFactory.h
+        Engine/ResourceManagement/EnttFacade.cpp
+        Engine/ResourceManagement/EnttFacade.h
 )
 
 # Add executable based on source files

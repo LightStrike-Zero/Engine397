@@ -34,8 +34,8 @@ int main(int argc, char** argv)
 
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-    
-    Scene scene;
+
+    NewScene scene;
     
     // --- Buko setting up Lua/Sol -------------------------
     /*
@@ -58,24 +58,27 @@ int main(int argc, char** argv)
     scene.setDirectionalLight(dirLight);
     // scene.loadModelToRegistry(backPackPath);
 
-    auto cameraEntity = scene.getRegistry().create();
-    scene.getRegistry().emplace<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f)); // this set the player/camera start pos
-    scene.getRegistry().emplace<CameraComponent>(cameraEntity);
+    /*TODO
+     * this wont stay like this
+     */
+    auto cameraEntity = scene.getEntityManager().createEntity();
+    scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f)); // this set the player/camera start pos
+    scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
 
     auto terrainType = TerrainFactory::createTerrainType(chosenType, chosenParams);
     Terrain terrain(terrainGridRows, terrainGridCols, terrainScale);
     terrain.setTerrainType(terrainType);
     terrain.generateTerrain();
-    scene.addTerrainToScene(terrain);
+    scene.addTerrainEntity(terrain);
 
     const RawMeshData& terrainMeshData = terrain.getMeshData();
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
     static float lastFrame = 0.0f;
 
-    scene.loadPlayerModelToRegistry(playerTankPath);
-    auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
+    scene.loadPlayerModelEntity(playerTankPath);
+    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     // entt::entity playerTankEntity = entt::null;
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
         // playerTankEntity = *playerView.begin();
@@ -98,19 +101,19 @@ int main(int argc, char** argv)
         lastFrame = currentFrame;
 
         // camera system 
-        cameraSystem.update(scene.getRegistry(), deltaTime);
-        auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getRegistry());
+        cameraSystem.update(scene.getEntityManager(), deltaTime);
+        auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
 
         // terrian collision
         // comment this out to disable terrain collision
-        auto* cameraTransform = scene.getRegistry().try_get<TransformComponent>(cameraEntity);
+        auto cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
         for (auto entity : playerView) {
             auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-            playerTankTransform.position = cameraTransform->position + cameraOffset;
+            playerTankTransform.position = cameraTransform.position + cameraOffset;
             glm::vec3 playerTankPos =  playerTankTransform.position;
             float terrainHeight = collision.getHeightAt(playerTankPos);
             playerTankTransform.position.y = terrainHeight + playerHeight;
-            cameraTransform->position = playerTankTransform.position - cameraOffset;
+            cameraTransform.position = playerTankTransform.position - cameraOffset;
         }
         
         Gui.BeginFrame();
