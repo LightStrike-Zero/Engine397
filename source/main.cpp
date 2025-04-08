@@ -97,12 +97,15 @@ int main(int argc, char** argv)
     std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
     scene.loadPlayerModelToRegistry(playerTankPath);
     auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
-    entt::entity playerTankEntity = entt::null;
-    if (playerView.begin() != playerView.end()) {//checking if playerView is empty
-        playerTankEntity = *playerView.begin();
+    // entt::entity playerTankEntity = entt::null;
+    // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
+        // playerTankEntity = *playerView.begin();
+    // }
+    for (auto entity : playerView) {
+        auto& playerTankTransform = playerView.get<TransformComponent>(entity);
+        playerTankTransform.rotation.y -= 180.f;
     }
-    auto& playerTankTransform = playerView.get<TransformComponent>(playerTankEntity);
-    playerTankTransform.rotation.y -= 180.f;
+
 
     glm::vec3 cameraOffset = {-0.f, -5.f, -10.f};
     // for (auto entity : playerView) {
@@ -123,10 +126,16 @@ int main(int argc, char** argv)
         // terrian collision
         // comment this out to disable terrain collision
         auto* cameraTransform = scene.getRegistry().try_get<TransformComponent>(cameraEntity);
-        playerTankTransform.position = cameraTransform->position + cameraOffset;
-        glm::vec3 playerTankPos =  playerTankTransform.position;
-        float terrainHeight = collision.getHeightAt(playerTankPos);
-        playerTankTransform.position.y = terrainHeight + playerHeight;
+        for (auto entity : playerView) {
+            auto& playerTankTransform = playerView.get<TransformComponent>(entity);
+            playerTankTransform.position = cameraTransform->position + cameraOffset;
+            glm::vec3 playerTankPos =  playerTankTransform.position;
+            float terrainHeight = collision.getHeightAt(playerTankPos);
+            playerTankTransform.position.y = terrainHeight + playerHeight;
+            cameraTransform->position = playerTankTransform.position - cameraOffset;
+        }
+
+
 
         //player tank update
 
