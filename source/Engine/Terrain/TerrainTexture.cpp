@@ -5,9 +5,15 @@
 
 #include "texture/TextureLoader.h"
 
-TerrainTexture::TerrainTexture(std::shared_ptr<TerrainType> wrappedTerrainType, const std::string& texturePath)
-    : m_wrappedTerrainType(wrappedTerrainType), m_texturePath(texturePath)
+//TerrainTexture::TerrainTexture(std::shared_ptr<TerrainType> wrappedTerrainType, const std::string& texturePath)
+//    : m_wrappedTerrainType(wrappedTerrainType), m_texturePath(texturePath)
+//{
+//}
+
+TerrainTexture::TerrainTexture(std::shared_ptr<TerrainType> base, const std::string& texturePath, int repeatX, int repeatY)
+        : m_wrappedTerrainType(base), m_texturePath(texturePath), m_repeatX(repeatX), m_repeatY(repeatY)
 {
+
 }
 
 void TerrainTexture::apply(RawMeshData& meshData, int numRows, int numCols)

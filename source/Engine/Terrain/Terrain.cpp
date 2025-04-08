@@ -13,6 +13,7 @@ Terrain::Terrain(const int numRows, const int numCols, const float spacing)
 
 void Terrain::generateTerrain()
 {
+
     generateGrid();
     if (m_terrainType)
     {
@@ -22,7 +23,9 @@ void Terrain::generateTerrain()
 
 void Terrain::setTerrainType(const std::shared_ptr<TerrainType>& terrainType)
 {
+
     m_terrainType = terrainType;
+
 }
 
 void Terrain::generateGrid() {

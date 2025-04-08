@@ -21,10 +21,10 @@ enum class TerrainTypeEnum {
 class TerrainFactory {
 public:
   static std::unique_ptr<Terrain> createFromLuaConfig(const sol::table& config); //BUKO
-  static std::shared_ptr<TerrainType> createTerrainType(TerrainTypeEnum type, const std::map<std::string, std::string> & params = {});
+  //static std::shared_ptr<TerrainType> createTerrainType(TerrainTypeEnum type, const std::map<std::string, std::string> & params = {});
 
 private:
-  static std::shared_ptr<TerrainType> createHeightmapTerrain(const std::map<std::string, std::string>& params);
+  //static std::shared_ptr<TerrainType> createHeightmapTerrain(const std::map<std::string, std::string>& params);
   static std::shared_ptr<TerrainType> createFractalTerrain(const std::map<std::string, std::string>& params);
   static std::shared_ptr<TerrainType> createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain, const std::map<std::string, std::string>& params);
 };

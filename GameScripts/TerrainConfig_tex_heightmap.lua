@@ -11,7 +11,7 @@
 
 terrainConfig =
 {
-    type = "Fractal",
+    type = "TexturedHeightmap",
 
     rows = 1000,
     cols = 1000,
@@ -19,21 +19,14 @@ terrainConfig =
 
     parameters =
     {
-        iterations = 500,
-        initialDisplacement = 1000.0,
-        displacementDecay = 0.97,
-        heightScale = 15.0,
-        seed = 3,
-        smoothness = 0.5,
-        smoothingPasses = 20
+        file = "Assets/Terrain/Textures/Terrain003_2K.png",
+        heightScale = 30.0
+    },
+
+    texture =
+    {
+        path = "Assets/Terrain/Textures/Color.png",
+        repeatX = 20,
+        repeatY = 20
     }
 }
-
--- Hugo's values
---iterations = 250,
---initialDisplacement = 1000.0,
---displacementDecay = 0.97,
---heightScale = 20.5,
---seed = 4,
---smoothness = 0.8,
---smoothingPasses = 20

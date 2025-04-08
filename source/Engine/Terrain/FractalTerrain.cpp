@@ -3,6 +3,7 @@
 
 #include <random>
 #include <glm/ext/scalar_constants.hpp>
+#include <iostream>
 
 FractalTerrain::FractalTerrain(int iterations, float initialDisplacement, float displacementDecay, float heightScale, unsigned int seed, float smoothness, int smoothingPasses)
     : m_iterations(iterations),
@@ -34,6 +35,16 @@ void FractalTerrain::apply(RawMeshData& meshData, const int numRows, const int n
         float height = static_cast<float>(m_generatedHeightMap[index]) / 255.0f;
         
         vertex.position.y = height * m_heightScale;
+
+
+    //        std::cout << "[DEBUG] FractalTerrain Params:\n";
+    //        std::cout << "  Iterations: " << m_iterations << "\n";
+    //        std::cout << "  Initial Displacement: " << m_initialDisplacement << "\n";
+    //        std::cout << "  Displacement Decay: " << m_displacementDecay << "\n";
+    //        std::cout << "  Height Scale: " << m_heightScale << "\n";
+    //        std::cout << "  Seed: " << m_seed << "\n";
+    //        std::cout << "  Smoothness: " << m_kernalStrength << "\n";
+    //        std::cout << "  Passes: " << m_smoothingPasses << "\n";
     }
 }
 
@@ -75,6 +86,7 @@ void FractalTerrain::generateFractalHeightmap(int numRows, int numCols, int iter
     float minVal = *std::min_element(heightMap.begin(), heightMap.end());
     float maxVal = *std::max_element(heightMap.begin(), heightMap.end());
     float range = maxVal - minVal;
+    //std::cout << "[DEBUG] Fractal height range: " << minVal << " to " << maxVal << " (range: " << range << ")\n";
 
     m_generatedHeightMap.resize(numRows * numCols);
     for (size_t i = 0; i < heightMap.size(); i++)
@@ -85,6 +97,7 @@ void FractalTerrain::generateFractalHeightmap(int numRows, int numCols, int iter
     }
 
     applyFIRFilter(numRows, numCols, smoothness, smoothingPasses);
+
 }
 void FractalTerrain::applyFIRFilter(int numRows, int numCols, float filterStrength, int passes)
 {

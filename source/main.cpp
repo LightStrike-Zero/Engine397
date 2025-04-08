@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
-    float terrainScale   = scriptManager->getTerrainSpacing();
+    float terrainScale  = scriptManager->getTerrainSpacing();
 
     // --- END OF Buko setting up Lua/Sol -------------------------
 
