@@ -18,7 +18,7 @@
 #include <sol/sol.hpp>
 
 #include "Components/PlayerControllerComponent.h"
-#include "Components/CollidableComponent.h"
+#include "Components/CollisionComponents/CollidableComponent.h"
 //----------------------
 
 int main(int argc, char** argv)

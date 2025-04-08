@@ -24,8 +24,8 @@ public:
     entt::registry& getRegistry() { return m_registry; }
 
     void loadModelToRegistry(const std::string& filepath);
-    void Scene::loadPlayerModelToRegistry(const std::string& filepath);
-    void Scene::loadCollidableModelToRegistry(const std::string& filepath);
+    void loadPlayerModelToRegistry(const std::string& filepath);
+    void loadCollidableModelToRegistry(const std::string& filepath);
 
 
     void addLight(const Light& light) { m_lights.push_back(light); }
