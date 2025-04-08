@@ -16,6 +16,8 @@
 #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+
+#include "Components/PlayerControllerComponent.h"
 //----------------------
 
 int main(int argc, char** argv)
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
     };
     // getTerrainMenu(chosenType, chosenParams);
 
-    float playerHeight = 1.0f;
+    float playerHeight = 2.0f;
 
     IWindow* window = new GLFWWindow(1920, 1080, "Lab 4", true);
     int windowWidth, windowHeight;
@@ -61,11 +63,11 @@ int main(int argc, char** argv)
      * Lua script handles the asset paths
      * Lua script loads the models into the scene through a method in scene
      */
-
-    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
-
-    scriptManager->registerScene(scene);                                // Expose Scene to Lua
-    scriptManager->runScript("GameScripts/GameManager.lua");      // Run a Lua script
+    //
+    // ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
+    //
+    // scriptManager->registerScene(scene);                                // Expose Scene to Lua
+    // scriptManager->runScript("GameScripts/GameManager.lua");      // Run a Lua script
 
     // --- END OF Buko setting up Lua/Sol -------------------------
 
@@ -92,6 +94,22 @@ int main(int argc, char** argv)
 
     static float lastFrame = 0.0f;
 
+    std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
+    scene.loadPlayerModelToRegistry(playerTankPath);
+    auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
+    entt::entity playerTankEntity = entt::null;
+    if (playerView.begin() != playerView.end()) {//checking if playerView is empty
+        playerTankEntity = *playerView.begin();
+    }
+    auto& playerTankTransform = playerView.get<TransformComponent>(playerTankEntity);
+    playerTankTransform.rotation.y -= 180.f;
+
+    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f};
+    // for (auto entity : playerView) {
+    //     auto& transform = playerView.get<TransformComponent>(entity);
+    //     // transform.position = scene.getRegistry().get<TransformComponent>(cameraEntity).position + cameraOffset;
+    // }
+
     while (!window->ShouldClose())
     {
         float currentFrame = window->GetTime();
@@ -104,10 +122,14 @@ int main(int argc, char** argv)
 
         // terrian collision
         // comment this out to disable terrain collision
-        auto* playerTransform = scene.getRegistry().try_get<TransformComponent>(cameraEntity);
-        glm::vec3 playerPos = playerTransform->position;
-        float terrainHeight = collision.getHeightAt(playerPos);
-        playerTransform->position.y = terrainHeight + playerHeight;
+        auto* cameraTransform = scene.getRegistry().try_get<TransformComponent>(cameraEntity);
+        playerTankTransform.position = cameraTransform->position + cameraOffset;
+        glm::vec3 playerTankPos =  playerTankTransform.position;
+        float terrainHeight = collision.getHeightAt(playerTankPos);
+        playerTankTransform.position.y = terrainHeight + playerHeight;
+
+        //player tank update
+
         
         Gui.BeginFrame();
         Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});

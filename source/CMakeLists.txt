@@ -69,6 +69,9 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Terrain/TerrainMenuHelper.cpp
         Engine/Terrain/TerrainMenuHelper.h
         Engine/Scripting/LuaManager.cpp
+        Engine/Components/PlayerControllerComponent.h
+        Engine/Actors/Player.cpp
+        Engine/Actors/Player.h
 )
 
 # Add executable based on source files
