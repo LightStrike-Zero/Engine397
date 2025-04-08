@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
     float playerHeight = 1.0f;
 
-    IWindow* window = new GLFWWindow(1920, 1080, "Lab 4", true);
+    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
@@ -39,20 +39,13 @@ int main(int argc, char** argv)
     Scene scene;
     
     // --- Buko setting up Lua/Sol -------------------------
-    /*
-     * ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
-     * Lua script handles the asset paths
-     * Lua script loads the models into the scene through a method in scene
-     */
+    //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
     ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
 
-    scriptManager->registerScene(scene);                                      // Expose Scene to Lua
-    scriptManager->runScript("GameScripts/GameManager.lua");            // Run a Lua script
-
-    sol::table terrainConfig = static_cast<LuaManager*>(scriptManager)->getTerrainConfig(); // Read terrain config from Lua
-    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();
-    scene.addTerrainToScene(*terrain);
+    scriptManager->registerScene(scene);                                         // Expose Scene to Lua
+    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
+    scene.addTerrainToScene(*terrain);                                       // add terrain to scene
 
     const RawMeshData& terrainMeshData = terrain->getMeshData();
 

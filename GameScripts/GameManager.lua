@@ -5,8 +5,9 @@
 -- other stuff I can't think of
 
 tank_assetPath = "Assets/game_tank/tank.gltf"
---terrainType = "Fractal"
 terrainType = "Heightmap"
+--terrainType = "Fractal"
+
 
 -- load asset(s) ---------------------------------------------
 print("Loading:" .. tank_assetPath)
