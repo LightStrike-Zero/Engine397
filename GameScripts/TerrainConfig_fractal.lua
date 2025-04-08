@@ -19,10 +19,10 @@ terrainConfig =
 
     parameters =
     {
-        iterations = 500,
+        iterations = 1000,
         initialDisplacement = 1000.0,
         displacementDecay = 0.97,
-        heightScale = 15.0,
+        heightScale = 5.0,
         seed = 3,
         smoothness = 0.5,
         smoothingPasses = 20

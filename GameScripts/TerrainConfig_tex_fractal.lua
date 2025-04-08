@@ -21,9 +21,9 @@ terrainConfig =
         iterations = 250,
         initialDisplacement = 1000.0,
         displacementDecay = 0.97,
-        heightScale = 20.5,
+        heightScale = 15,
         seed = 3,
-        smoothness = 0.5,
+        smoothness = 0.8,
         smoothingPasses = 20
     },
 

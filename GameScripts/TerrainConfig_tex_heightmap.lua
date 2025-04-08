@@ -20,7 +20,7 @@ terrainConfig =
     parameters =
     {
         file = "Assets/Terrain/Textures/Terrain003_2K.png",
-        heightScale = 30.0
+        heightScale = 15.0
     },
 
     texture =
