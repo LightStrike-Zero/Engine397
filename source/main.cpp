@@ -24,9 +24,19 @@ int main(int argc, char** argv)
     int terrainGridRows = 1000, terrainGridCols = 1000;
     float terrainScale = 0.1f;
 
-    TerrainTypeEnum chosenType;
-    std::map<std::string, std::string> chosenParams;
-    getTerrainMenu(chosenType, chosenParams);
+
+    TerrainTypeEnum chosenType = TerrainTypeEnum::TEXTURED_FRACTAL;
+    std::map<std::string, std::string> chosenParams = {
+        {"iterations", "250"},
+        {"initialDisplacement", "1000.0f"},
+        {"displacementDecay", "0.97f"},
+        {"heightScale", "20.5f"},
+        {"seed", std::to_string(4)},
+        {"smoothness", std::to_string(0.8f)},
+        {"smoothingPasses", "20"},
+        {"texturePath", R"(Assets\Terrain\Textures\sand.png)"}
+    };
+    // getTerrainMenu(chosenType, chosenParams);
 
     float playerHeight = 1.0f;
 
