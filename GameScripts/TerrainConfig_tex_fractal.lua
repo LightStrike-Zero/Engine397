@@ -30,7 +30,7 @@ terrainConfig =
     texture =
     {
         path = "Assets/Terrain/Textures/sand.png",
-        repeatX = 10,
-        repeatY = 10
+        repeatX = 1,
+        repeatY = 1
     }
 }

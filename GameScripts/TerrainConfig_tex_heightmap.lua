@@ -26,7 +26,7 @@ terrainConfig =
     texture =
     {
         path = "Assets/Terrain/Textures/Color.png",
-        repeatX = 20,
-        repeatY = 20
+        repeatX = 50,
+        repeatY = 50
     }
 }
