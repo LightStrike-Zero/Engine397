@@ -110,6 +110,8 @@ int main(int argc, char** argv)
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
+    std::string jeepTestPath = R"(Assets\game_jeep_gltf\jeep2.gltf)";
+    std::string jeepTestPath2 = R"(Assets\game_jeep_glb\jeep2.glb)";
     std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
     std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
     std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
@@ -118,8 +120,8 @@ int main(int argc, char** argv)
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
     for (int i = 0; i < 3; ++i) {
         scene.loadCollidableModelToRegistry(tree1Path);
-        scene.loadCollidableModelToRegistry(rock2Path);
-        scene.loadCollidableModelToRegistry(jeepPath);
+        // scene.loadCollidableModelToRegistry(rock2Path);
+        scene.loadCollidableModelToRegistry(jeepTestPath2);
     }
     auto staticObjectsView = scene.getRegistry().view<TransformComponent,CollidableComponent>();
 
