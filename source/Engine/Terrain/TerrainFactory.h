@@ -6,6 +6,9 @@
 #include <memory>
 #include <string>
 
+#include "Terrain.h"   // Buko
+#include <sol/sol.hpp> // Buko
+
 #include <map>
 
 enum class TerrainTypeEnum {
@@ -17,6 +20,7 @@ enum class TerrainTypeEnum {
 
 class TerrainFactory {
 public:
+  static std::unique_ptr<Terrain> createFromLuaConfig(const sol::table& config); //BUKO
   static std::shared_ptr<TerrainType> createTerrainType(TerrainTypeEnum type, const std::map<std::string, std::string> & params = {});
 
 private:

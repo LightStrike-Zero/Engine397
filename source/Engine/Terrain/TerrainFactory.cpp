@@ -83,3 +83,47 @@ std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_p
 
     return std::make_shared<TerrainTexture>(baseTerrain, texturePath);
 }
+
+
+// buko -----------------------------------------------------------------------
+std::unique_ptr<Terrain> TerrainFactory::createFromLuaConfig(const sol::table& config)
+{
+    std::string type = config["type"].get<std::string>();
+    int rows = config["rows"].get<int>();
+    int cols = config["cols"].get<int>();
+    float spacing = config["spacing"].get<float>();
+
+    std::unique_ptr<Terrain> terrain = std::make_unique<Terrain>(rows, cols, spacing);
+    sol::table params = config["parameters"];
+
+    std::shared_ptr<TerrainType> terrainType;
+
+    if (type == "Fractal")
+    {
+        terrainType = std::make_shared<FractalTerrain>(
+                params["iterations"].get<int>(),
+                params["initialDisplacement"].get<float>(),
+                params["displacementDecay"].get<float>(),
+                params["heightScale"].get<float>(),
+                params["seed"].get<int>(),
+                params["smoothness"].get<float>(),
+                params["smoothingPasses"].get<int>()
+        );
+    }
+    else if (type == "Heightmap")
+    {
+        terrainType = std::make_shared<HeightmapTerrain>(
+                params["file"].get<std::string>(),
+                params.get_or("heightScale", 1.0f)
+        );
+    }
+    else
+    {
+        throw std::runtime_error("Unsupported terrain type in Lua config: " + type);
+    }
+
+    terrain->setTerrainType(terrainType);
+    terrain->generateTerrain();
+
+    return terrain;
+}

@@ -13,13 +13,13 @@ terrainConfig =
 {
     type = "Heightmap",
 
-    rows = 512,
-    cols = 512,
+    rows = 1000,
+    cols = 1000,
     spacing = 0.2,
 
     parameters =
     {
-        file = "assets/heightmaps/mountain.raw",
-        heightScale = 3.5
+        file = "Assets/Terrain/Textures/Terrain003_2K.png",
+        heightScale = 12.0
     }
 }

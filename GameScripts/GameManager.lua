@@ -4,13 +4,24 @@
 -- game state : win/lose
 -- other stuff I can't think of
 
-backpack_assetPath = "Assets/survival_guitar_backpack_scaled/scene.gltf"
-sponza_assetPath = "Assets/main1_sponza/NewSponza_Main_glTF_003.gltf"
 tank_assetPath = "Assets/game_tank/tank.gltf"
+--terrainType = "Fractal"
+terrainType = "Heightmap"
 
-print("Loading assets...")
-scene:loadModelToRegistry(tank_assetPath)
+-- load asset(s) ---------------------------------------------
 print("Loading:" .. tank_assetPath)
-print("Finished loading assets.")
+scene:loadModelToRegistry(tank_assetPath)
+
+-- load terrain ----------------------------------------------
+print("Loading terrain...")
+
+if terrainType == "Fractal" then
+    dofile("GameScripts/TerrainConfig_fractal.lua")
+elseif terrainType == "Heightmap" then
+    dofile("GameScripts/TerrainConfig_heightmap.lua")
+else
+    error("Unknown terrain type: " .. tostring(terrainType))
+end
+
 --
 print("End of GameManager.lua")
