@@ -25,6 +25,7 @@ public:
 
     void loadModelToRegistry(const std::string& filepath);
     void Scene::loadPlayerModelToRegistry(const std::string& filepath);
+    void Scene::loadCollidableModelToRegistry(const std::string& filepath);
 
 
     void addLight(const Light& light) { m_lights.push_back(light); }

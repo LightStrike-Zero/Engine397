@@ -18,6 +18,7 @@
 #include <sol/sol.hpp>
 
 #include "Components/PlayerControllerComponent.h"
+#include "Components/CollidableComponent.h"
 //----------------------
 
 int main(int argc, char** argv)
@@ -94,24 +95,43 @@ int main(int argc, char** argv)
 
     static float lastFrame = 0.0f;
 
+    //load player tank
     std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
     scene.loadPlayerModelToRegistry(playerTankPath);
     auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
-    // entt::entity playerTankEntity = entt::null;
-    // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
-        // playerTankEntity = *playerView.begin();
-    // }
+    //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
+        std::cout << "player pos:" << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", "
+        << playerTankTransform.position.z << std::endl;
+    }
+    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
+
+    std::string tankPath = R"(Assets\game_tank\tank.gltf)";
+    std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
+    std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
+    std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
+    std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
+    std::string tree2Path = R"(Assets\game_tree2_dead_big\trees_dead_big.gltf)";
+    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
+    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
+    for (int i = 0; i < 3; ++i) {
+        scene.loadCollidableModelToRegistry(tree1Path);
+        scene.loadCollidableModelToRegistry(rock2Path);
+        scene.loadCollidableModelToRegistry(jeepPath);
+    }
+    auto staticObjectsView = scene.getRegistry().view<TransformComponent,CollidableComponent>();
+
+    for (auto entity : staticObjectsView) {
+        auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
+        float a = staticObjectTransform.position.x = rand()%100-50;
+        float b = staticObjectTransform.position.z = rand()%100-50;
+        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
 
-    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f};
-    // for (auto entity : playerView) {
-    //     auto& transform = playerView.get<TransformComponent>(entity);
-    //     // transform.position = scene.getRegistry().get<TransformComponent>(cameraEntity).position + cameraOffset;
-    // }
+
 
     while (!window->ShouldClose())
     {
@@ -126,7 +146,7 @@ int main(int argc, char** argv)
         // terrian collision
         // comment this out to disable terrain collision
         auto* cameraTransform = scene.getRegistry().try_get<TransformComponent>(cameraEntity);
-        for (auto entity : playerView) {
+        for (auto entity : playerView) { //tank updates y value according to terrain, adjust camera accordingly
             auto& playerTankTransform = playerView.get<TransformComponent>(entity);
             playerTankTransform.position = cameraTransform->position + cameraOffset;
             glm::vec3 playerTankPos =  playerTankTransform.position;
@@ -136,8 +156,6 @@ int main(int argc, char** argv)
         }
 
 
-
-        //player tank update
 
         
         Gui.BeginFrame();

@@ -5,6 +5,7 @@
 #include "Components/PlayerControllerComponent.h"
 #include "Components/RenderableComponent.h"
 #include "Components/TransformComponent.h"
+#include "Components/CollidableComponent.h"
 #include "Importers/ModelLoader.h"
 #include "OpenGL/OpenGLMeshBuffer.h"
 
@@ -82,6 +83,35 @@ void Scene::loadPlayerModelToRegistry(const std::string& filepath) {
 
         PlayerControllerComponent controllerComponent{1};
         m_registry.emplace<PlayerControllerComponent>(entity, controllerComponent);
+    }
+}
+
+void Scene::loadCollidableModelToRegistry(const std::string& filepath) {
+    // std::cout << "Registry address inside Scene: " << &m_registry << std::endl;
+    ModelLoader& loader = ModelLoader::getInstance();
+
+    // Load the raw model data
+    LoadedModel modelData = loader.loadModel(filepath);
+
+    // Process raw meshes into MeshComponents
+    AssimpImporter importer;
+    for (const auto& rawMesh : modelData.meshes) {
+        entt::entity entity = m_registry.create();
+
+        RenderableComponent meshComponent(rawMesh);
+        importer.setupMesh(meshComponent);
+        m_registry.emplace<RenderableComponent>(entity, meshComponent);
+
+        TransformComponent transformComponent;
+        transformComponent.setFromModelMatrix(rawMesh.transform);
+        m_registry.emplace<TransformComponent>(entity, transformComponent);
+
+        // for now im hard-coding the lighting shader into this, but it needs a way of being dynamically set
+        MaterialComponent materialComponent(rawMesh.material, "lightingShader");
+        m_registry.emplace<MaterialComponent>(entity, materialComponent);
+
+        CollidableComponent collidableComponent{1};
+        m_registry.emplace<CollidableComponent>(entity, collidableComponent);
     }
 }
 
