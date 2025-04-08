@@ -18,38 +18,18 @@
 #include <sol/sol.hpp>
 
 #include "Components/PlayerControllerComponent.h"
+#include "StuffThatNeedsToBeLoadedInLua.h"
 //----------------------
 
 int main(int argc, char** argv)
 {
     
-    int terrainGridRows = 1000, terrainGridCols = 1000;
-    float terrainScale = 0.1f;
-
-
-    TerrainTypeEnum chosenType = TerrainTypeEnum::TEXTURED_FRACTAL;
-    std::map<std::string, std::string> chosenParams = {
-        {"iterations", "250"},
-        {"initialDisplacement", "1000.0f"},
-        {"displacementDecay", "0.97f"},
-        {"heightScale", "20.5f"},
-        {"seed", std::to_string(4)},
-        {"smoothness", std::to_string(0.8f)},
-        {"smoothingPasses", "20"},
-        {"texturePath", R"(Assets\Terrain\Textures\sand.png)"}
-    };
-    // getTerrainMenu(chosenType, chosenParams);
-
-    float playerHeight = 2.0f;
-
     IWindow* window = new GLFWWindow(1920, 1080, "Lab 4", true);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
     window->SetInputMode(CURSOR, CURSOR_NORMAL);
 
-    // Select the OpenGL API renderer
-    const RendererType type = RendererType::OpenGL;
     IRenderer* renderer = RendererFactory::CreateRenderer(type);
 
     ImGuiUI Gui;
@@ -72,8 +52,8 @@ int main(int argc, char** argv)
     // --- END OF Buko setting up Lua/Sol -------------------------
 
     
-    DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
-        glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);
+    // DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
+    //     glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);
     
     scene.setDirectionalLight(dirLight);
     // scene.loadModelToRegistry(backPackPath);
@@ -94,7 +74,6 @@ int main(int argc, char** argv)
 
     static float lastFrame = 0.0f;
 
-    std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
     scene.loadPlayerModelToRegistry(playerTankPath);
     auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
     // entt::entity playerTankEntity = entt::null;
@@ -107,7 +86,6 @@ int main(int argc, char** argv)
     }
 
 
-    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f};
     // for (auto entity : playerView) {
     //     auto& transform = playerView.get<TransformComponent>(entity);
     //     // transform.position = scene.getRegistry().get<TransformComponent>(cameraEntity).position + cameraOffset;
@@ -134,11 +112,6 @@ int main(int argc, char** argv)
             playerTankTransform.position.y = terrainHeight + playerHeight;
             cameraTransform->position = playerTankTransform.position - cameraOffset;
         }
-
-
-
-        //player tank update
-
         
         Gui.BeginFrame();
         Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});
