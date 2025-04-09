@@ -79,15 +79,14 @@ int main(int argc, char** argv)
     static float lastFrame = 0.0f;
 
     scene.loadPlayerModelEntity(playerTankPath);
-    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     // entt::entity playerTankEntity = entt::null;
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
         // playerTankEntity = *playerView.begin();
     // }
     //load player tank
     std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    scene.loadPlayerModelToRegistry(playerTankPath);
-    auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
+    scene.loadPlayerModelEntity(playerTankPath);
+    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
@@ -108,11 +107,11 @@ int main(int argc, char** argv)
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
     for (int i = 0; i < 3; ++i) {
-        scene.loadCollidableModelToRegistry(tree1Path);
+        scene.loadCollidableEntity(tree1Path);
         // scene.loadCollidableModelToRegistry(rock2Path);
-        scene.loadCollidableModelToRegistry(jeepTestPath2);
+        scene.loadCollidableEntity(jeepTestPath2);
     }
-    auto staticObjectsView = scene.getRegistry().view<TransformComponent,CollidableComponent>();
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,CollidableComponent>();
 
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);

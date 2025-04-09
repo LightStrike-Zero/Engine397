@@ -34,6 +34,8 @@ public:
 
     // Create a terrain entity from Terrain data.
     void addTerrainEntity(const Terrain& terrain);
+
+    void createCollidableEntitiesFromModel(const std::string& filepath);
     
 private:
     EnttFacade* m_entityFacade;

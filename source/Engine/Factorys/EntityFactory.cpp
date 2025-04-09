@@ -4,6 +4,7 @@
 
 #include "EntityFactory.h"
 
+#include "Components/CollisionComponents/CollidableComponent.h"
 #include "OpenGL/OpenGLMeshBuffer.h"
 
 EntityFactory::EntityFactory(EnttFacade* enttFacade)
@@ -40,6 +41,35 @@ void EntityFactory::createEntitiesFromModel(const std::string& filepath) {
     }
 }
 
+void EntityFactory::createCollidableEntitiesFromModel(const std::string& filepath) {
+    ModelLoader& loader = ModelLoader::getInstance();
+
+    // Load the raw model data
+    LoadedModel modelData = loader.loadModel(filepath);
+
+    // Process raw meshes into MeshComponents
+    AssimpImporter importer;
+    for (const auto& rawMesh : modelData.meshes)
+    {
+        entt::entity entity = m_entityFacade->createEntity();
+
+        RenderableComponent meshComponent(rawMesh);
+        importer.setupMesh(meshComponent);
+        m_entityFacade->addComponent<RenderableComponent>(entity, meshComponent);
+
+        TransformComponent transformComponent;
+        transformComponent.setFromModelMatrix(rawMesh.transform);
+        m_entityFacade->addComponent<TransformComponent>(entity, transformComponent);
+
+        // for now im hard-coding the lighting shader into this, but it needs a way of being dynamically set
+        MaterialComponent materialComponent(rawMesh.material, "lightingShader");
+        m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
+
+        CollidableComponent collidableComponent{1};
+        m_entityFacade->addComponent<CollidableComponent>(entity, collidableComponent);
+    }
+}
+
 void EntityFactory::createPlayerEntitiesFromModel(const std::string& filepath) {
     ModelLoader& loader = ModelLoader::getInstance();
     LoadedModel modelData = loader.loadModel(filepath);
@@ -66,7 +96,6 @@ void EntityFactory::createPlayerEntitiesFromModel(const std::string& filepath) {
 }
 
 
-//todo not sure about this one
 void EntityFactory::addTerrainEntity(const Terrain& terrain) {
     // Create a renderable component from the terrain's mesh data.
     RenderableComponent terrainComponent(terrain.getMeshData());

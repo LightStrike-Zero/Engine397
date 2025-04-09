@@ -34,3 +34,8 @@ void Scene::addTerrainEntity(const Terrain& terrain) {
     if (m_entityFactory)
         m_entityFactory->addTerrainEntity(terrain);
 }
+
+void Scene::loadCollidableEntity(const std::string& filepath) {
+    if (m_entityFactory)
+        m_entityFactory->createCollidableEntitiesFromModel(filepath);
+    }

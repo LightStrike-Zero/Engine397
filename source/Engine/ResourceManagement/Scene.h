@@ -25,6 +25,7 @@ public:
     void loadModelEntity(const std::string& modelFilePath);
     void loadPlayerModelEntity(const std::string& modelFilePath);
     void addTerrainEntity(const Terrain& terrain);
+    void loadCollidableEntity(const std::string& filepath);
 
     EnttFacade& getEntityManager() { return m_entityFacade; }
 
