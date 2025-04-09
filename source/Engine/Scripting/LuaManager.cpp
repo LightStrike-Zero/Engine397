@@ -5,7 +5,6 @@
 // LuaManager Class: Manages the Lua interface
 
 #include "LuaManager.h"
-#include "Scene.h"
 #include <iostream>
 #include <fstream>
 
@@ -32,7 +31,8 @@ void LuaManager::registerScene(Scene& scene)
     m_lua.new_usertype<Scene>(
             "Scene",
             sol::constructors<Scene()>(),
-            "loadModelToRegistry", &Scene::loadModelToRegistry
+            // "loadModelToRegistry", &Scene::loadModelToRegistry this has been replaced by the below
+            "loadModelToRegistry", &Scene::loadModelEntity
     );
 
     // Pass the Scene instance to Lua using Sol2

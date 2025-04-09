@@ -11,7 +11,7 @@
 #include "ShaderManager.h"
 #include "Interfaces/IDataBuffer.h"
 #include "Interfaces/IRenderer.h"
-#include "ResourceManagement/NewScene.h"
+#include "ResourceManagement/Scene.h"
 
 class Texture;
 
@@ -19,7 +19,7 @@ class OpenGLRenderer : public IRenderer
 {
 public:
     OpenGLRenderer();
-    [[nodiscard]] unsigned int Render(NewScene& scene, 
+    [[nodiscard]] unsigned int Render(Scene& scene, 
                                       const glm::mat4& viewMatrix,
                                       const glm::mat4& projectionMatrix,
                                       const glm::vec3& viewPos) override;
@@ -38,8 +38,8 @@ private:
     Texture* defaultTexture;
     
 
-    void LightingPass(NewScene& scene, ShaderManager& shaderManager);
-    void ShadowPass(NewScene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
+    void LightingPass(Scene& scene, ShaderManager& shaderManager);
+    void ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
 };
 
 #endif //OPENGLRENDERER_H

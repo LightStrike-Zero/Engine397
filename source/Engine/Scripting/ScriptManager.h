@@ -11,8 +11,8 @@
 
 #ifndef SCRIPTMANAGER_H
 #define SCRIPTMANAGER_H
+#include "ResourceManagement/Scene.h"
 
-class Scene;
 
 // virtual methods as the implementation will happen in child classes
 class ScriptManager

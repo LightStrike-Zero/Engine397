@@ -29,11 +29,11 @@
 #include "Lights/DirectionalLight.h"
 #include "Terrain/Terrain.h"
 
-class NewScene {
+class Scene {
 public:
-    // Constructor: NewScene will internally create the ECS facade and the factory.
-    NewScene();
-    ~NewScene();
+    // Constructor: Scene will internally create the ECS facade and the factory.
+    Scene();
+    ~Scene();
 
     // Initialize the scene (load static resources, create initial entities, etc.)
     void initialize();

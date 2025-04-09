@@ -3,7 +3,7 @@
 #include <Scripting/ScriptManager.h>
 
 #include "GUI/ImGui_UI.h"
-#include "Scene.h"
+#include "ResourceManagement/Scene.h"
 #include "Factorys/RendererFactory.h"
 #include "Interfaces/IWindow.h"
 #include "Terrain/TerrainFactory.h"
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
-    NewScene scene;
+    Scene scene;
     
     // --- Buko setting up Lua/Sol -------------------------
     /*
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 
         // terrian collision
         // comment this out to disable terrain collision
-        auto cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+        auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
         for (auto entity : playerView) {
             auto& playerTankTransform = playerView.get<TransformComponent>(entity);
             playerTankTransform.position = cameraTransform.position + cameraOffset;
@@ -114,6 +114,7 @@ int main(int argc, char** argv)
             float terrainHeight = collision.getHeightAt(playerTankPos);
             playerTankTransform.position.y = terrainHeight + playerHeight;
             cameraTransform.position = playerTankTransform.position - cameraOffset;
+            std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
         
         Gui.BeginFrame();

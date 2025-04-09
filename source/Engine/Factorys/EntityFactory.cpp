@@ -66,6 +66,8 @@ void EntityFactory::createPlayerEntitiesFromModel(const std::string& filepath) {
     }
 }
 
+
+//todo not sure about this one
 void EntityFactory::addTerrainEntity(const Terrain& terrain) {
     // Create a renderable component from the terrain's mesh data.
     RenderableComponent terrainComponent(terrain.getMeshData());

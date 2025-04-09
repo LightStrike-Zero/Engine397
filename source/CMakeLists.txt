@@ -13,8 +13,6 @@ set(SOURCE_FILES
         Engine/Texture/TextureLoader.cpp
         Engine/Texture/TextureLoader.h
         Engine/Actors/Lights/Light.h
-        Engine/Actors/Scene.cpp
-        Engine/Actors/Scene.h
         Engine/Components/TransformComponent.h
         Engine/Components/MaterialComponent.h
         Engine/GUI/ImGui_UI.cpp
@@ -76,8 +74,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/ResourceManagement/IEntityComponentSystem.h
         Engine/ResourceManagement/EnttECS.cpp
         Engine/ResourceManagement/EnttECS.h
-        Engine/ResourceManagement/NewScene.cpp
-        Engine/ResourceManagement/NewScene.h
+        Engine/ResourceManagement/Scene.cpp
+        Engine/ResourceManagement/Scene.h
         Engine/Factorys/EntityFactory.cpp
         Engine/Factorys/EntityFactory.h
         Engine/ResourceManagement/EnttFacade.cpp

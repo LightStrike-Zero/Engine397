@@ -12,7 +12,7 @@
 
 #include "OpenGLShadowMapBuffer.h"
 // #include "Scene.h"
-#include "ResourceManagement/NewScene.h"
+#include "ResourceManagement/Scene.h"
 #include "texture/TextureLoader.h"
 #include "Components/MaterialComponent.h"
 #include "Components/TransformComponent.h"
@@ -43,7 +43,7 @@ void OpenGLRenderer::Clear()
 /*
  * Renders the scene data to an image buffer, and returns the buffer
  */
-unsigned int OpenGLRenderer::Render(NewScene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
+unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
@@ -96,7 +96,7 @@ unsigned int OpenGLRenderer::Render(NewScene& scene, const glm::mat4& viewMatrix
     
 }
  
-void OpenGLRenderer::LightingPass(NewScene& scene, ShaderManager& shaderManager)
+void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
 {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -151,7 +151,7 @@ void OpenGLRenderer::LightingPass(NewScene& scene, ShaderManager& shaderManager)
 }
 
 
-void OpenGLRenderer::ShadowPass(NewScene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
+void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
 {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);

@@ -2,38 +2,38 @@
 // Created by Shaun on 8/04/2025.
 //
 
-#include "NewScene.h"
+#include "Scene.h"
 
-NewScene::NewScene()
+Scene::Scene()
     : m_entityFactory(std::make_unique<EntityFactory>(&m_entityFacade))
 {
     // Optionally, initialize default scene data here.
 }
 
-NewScene::~NewScene() {
+Scene::~Scene() {
     // Unique pointers will automatically clean up.
 }
 
-void NewScene::initialize() {
+void Scene::initialize() {
     // Set initial scene state and create static entities as needed.
     // For example, pre-load some models, set up lighting, etc.
 }
 
-void NewScene::update(float deltaTime) {
+void Scene::update(float deltaTime) {
     // Update scene-wide logic, process input, and delegate ECS updates if needed.
 }
 
-void NewScene::loadModelEntity(const std::string& modelFilePath) {
+void Scene::loadModelEntity(const std::string& modelFilePath) {
     if (m_entityFactory)
         m_entityFactory->createEntitiesFromModel(modelFilePath);
 }
 
-void NewScene::loadPlayerModelEntity(const std::string& modelFilePath) {
+void Scene::loadPlayerModelEntity(const std::string& modelFilePath) {
     if (m_entityFactory)
         m_entityFactory->createPlayerEntitiesFromModel(modelFilePath);
 }
 
-void NewScene::addTerrainEntity(const Terrain& terrain) {
+void Scene::addTerrainEntity(const Terrain& terrain) {
     if (m_entityFactory)
         m_entityFactory->addTerrainEntity(terrain);
 }

@@ -10,8 +10,7 @@
 #include <sol/sol.hpp>
 #include <iostream>
 #include "ScriptManager.h"
-
-class Scene;
+#include "ResourceManagement/Scene.h"
 
 class LuaManager : public ScriptManager
 {
