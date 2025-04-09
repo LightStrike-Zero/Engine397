@@ -1,9 +1,10 @@
 
+#include <iostream>
 #include "CameraSystem.h"
 
 #include "EventSystem.h"
 
-void CameraSystem::update(entt::registry& registry, float deltaTime)
+void CameraSystem::update(entt::registry& registry, float deltaTime, bool& showExitScreen)
 {
     auto view = registry.view<CameraComponent, TransformComponent>();
         
@@ -12,7 +13,7 @@ void CameraSystem::update(entt::registry& registry, float deltaTime)
         auto& transform = view.get<TransformComponent>(entity);
             
         if (isActiveCamera(entity, registry)) {
-            handleCameraInput(transform, camera, deltaTime);
+            handleCameraInput(transform, camera, deltaTime, showExitScreen);
         }
     }
 }
@@ -39,11 +40,38 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 }
 
 
-void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+//void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen)
 {
-    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(m_window, true);
+    // ESC TO EXIT ONLY
+//    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+//        glfwSetWindowShouldClose(m_window, true);
+//    }
+
+    // X TO EXIT ONLY
+//    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+//    {
+//        glfwSetWindowShouldClose(m_window, true);
+//    }
+
+    //BUKO X TO EXIT AND SHOW EXIT IMAGE
+    static bool xWasDown = false;
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+    {
+        if (!xWasDown) {
+            showExitScreen = !showExitScreen; // Toggle the flag
+            xWasDown = true;
+        }
+    } else {
+        xWasDown = false;
     }
+
+//    if (showExitScreen)
+//        std::cout << "[DEBUG] Exit screen is visible\n";
+//    else
+//        std::cout << "[DEBUG] Exit screen is NOT visible\n";
+    //BUKO
+
 
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
