@@ -13,6 +13,7 @@ public:
     virtual void SetInputMode(int mode, int value) = 0;
     virtual float GetTime() const = 0;
     virtual void* GetNativeWindow() const = 0;
+    virtual void pollInputEvents() = 0; //custom function to poll input events, can be untied from window loop in the future
 };
 
 #endif // IWINDOW_H

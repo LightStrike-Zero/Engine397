@@ -31,7 +31,7 @@ private:
     
     void updateCameraVectors(CameraComponent& camera);
     
-    EnttFacade::Entity getActiveCameraEntity(EnttFacade::Registry& registry);
+    EnttFacade::Entity getActiveCameraEntity(EnttFacade::Registry& registry); //Hugo: from what i understand, this only returns the first camera entity in the registry, even if there are many
     
     bool isActiveCamera(EnttFacade::Entity entity, EnttFacade::Registry& registry);
 };

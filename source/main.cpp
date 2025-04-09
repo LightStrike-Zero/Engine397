@@ -155,6 +155,8 @@ int main(int argc, char** argv)
 
         window->SwapBuffers();
         window->PollEvents();
+        window->pollInputEvents();//custom, not part of glfw
+
     }
 
     Gui.Shutdown();

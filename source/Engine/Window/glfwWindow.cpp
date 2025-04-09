@@ -1,5 +1,6 @@
 #include "GLFWWindow.h"
 #include <iostream>
+#include "Systems/EventSystem.h"
 
 GLFWWindow::GLFWWindow(int width, int height, const std::string& title, bool fullscreen) {
     if (!glfwInit()) {
@@ -55,4 +56,19 @@ void GLFWWindow::SetInputMode(int mode, int value) {
 
 void* GLFWWindow::GetNativeWindow() const {
     return static_cast<void*>(m_window);
+}
+
+void GLFWWindow::pollInputEvents() {
+    //exit window
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS) {
+        EventSystem::getInstance().dispatchEvent(KeyPressedEvent(GLFW_KEY_X));
+    }
+    //toggle line mode
+    if (glfwGetKey(m_window, GLFW_KEY_K) == GLFW_PRESS) {
+        EventSystem::getInstance().dispatchEvent(KeyPressedEvent(GLFW_KEY_K));
+    }
+    //get manual
+    if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS) {
+        EventSystem::getInstance().dispatchEvent(KeyPressedEvent(GLFW_KEY_M));
+    }
 }

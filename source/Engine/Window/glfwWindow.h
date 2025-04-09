@@ -20,6 +20,9 @@ public:
     virtual void SetInputMode(int mode, int value) override;
     virtual float GetTime() const override { return static_cast<float>(glfwGetTime()); }
     virtual void* GetNativeWindow() const override;
+    void pollInputEvents(); //custom function to poll input events, can be untied from window loop in the future
+
+
 
 private:
     GLFWwindow* m_window;

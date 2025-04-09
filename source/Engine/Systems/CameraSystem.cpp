@@ -42,9 +42,18 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 
 void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
 {
-    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(m_window, true);
-    }
+
+    // if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    //     glfwSetWindowShouldClose(m_window, true);
+    // }
+
+    //testing new event system for exiting window
+    EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
+        const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
+        if (keyEvent.keyCode == GLFW_KEY_X) {
+            glfwSetWindowShouldClose(m_window, true);
+        }
+    });
 
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
