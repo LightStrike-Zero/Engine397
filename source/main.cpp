@@ -19,6 +19,7 @@
 
 #include "Components/PlayerControllerComponent.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
+#include "Components/CollisionComponents/CollidableComponent.h"
 //----------------------
 
 int main(int argc, char** argv)
@@ -83,16 +84,45 @@ int main(int argc, char** argv)
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
         // playerTankEntity = *playerView.begin();
     // }
+    //load player tank
+    std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
+    scene.loadPlayerModelToRegistry(playerTankPath);
+    auto playerView = scene.getRegistry().view<TransformComponent, PlayerControllerComponent>();
+    //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
+        std::cout << "player pos:" << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", "
+        << playerTankTransform.position.z << std::endl;
+    }
+    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
+
+    std::string tankPath = R"(Assets\game_tank\tank.gltf)";
+    std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
+    std::string jeepTestPath = R"(Assets\game_jeep_gltf\jeep2.gltf)";
+    std::string jeepTestPath2 = R"(Assets\game_jeep_glb\jeep2.glb)";
+    std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
+    std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
+    std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
+    std::string tree2Path = R"(Assets\game_tree2_dead_big\trees_dead_big.gltf)";
+    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
+    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
+    for (int i = 0; i < 3; ++i) {
+        scene.loadCollidableModelToRegistry(tree1Path);
+        // scene.loadCollidableModelToRegistry(rock2Path);
+        scene.loadCollidableModelToRegistry(jeepTestPath2);
+    }
+    auto staticObjectsView = scene.getRegistry().view<TransformComponent,CollidableComponent>();
+
+    for (auto entity : staticObjectsView) {
+        auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
+        float a = staticObjectTransform.position.x = rand()%100-50;
+        float b = staticObjectTransform.position.z = rand()%100-50;
+        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
 
-    // for (auto entity : playerView) {
-    //     auto& transform = playerView.get<TransformComponent>(entity);
-    //     // transform.position = scene.getRegistry().get<TransformComponent>(cameraEntity).position + cameraOffset;
-    // }
+
 
     while (!window->ShouldClose())
     {
@@ -116,6 +146,9 @@ int main(int argc, char** argv)
             cameraTransform.position = playerTankTransform.position - cameraOffset;
             std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
+
+
+
         
         Gui.BeginFrame();
         Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});
