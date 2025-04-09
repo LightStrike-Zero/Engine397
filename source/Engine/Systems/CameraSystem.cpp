@@ -119,7 +119,7 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
     camera.up = glm::normalize(glm::cross(camera.right, camera.front));
 
     static bool keyWasPressed = false;
-    if (glfwGetKey(m_window, GLFW_KEY_C) == GLFW_PRESS) {
+    if (glfwGetKey(m_window, GLFW_KEY_K) == GLFW_PRESS) {
         if (!keyWasPressed) {
             static bool lineMode = false;
             lineMode = !lineMode;
