@@ -75,7 +75,6 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/ResourceManagement/Scene.h
         Engine/Factorys/EntityFactory.cpp
         Engine/Factorys/EntityFactory.h
-        Engine/ResourceManagement/EnttFacade.cpp
         Engine/ResourceManagement/EnttFacade.h
 )
 
