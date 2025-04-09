@@ -160,9 +160,7 @@ int main(int argc, char** argv)
 
                     ImGui::Begin("Help Manual", &showHelpScreen,
                                  ImGuiWindowFlags_NoCollapse |
-                                 ImGuiWindowFlags_NoResize |
-                                 ImGuiWindowFlags_NoScrollbar |
-                                 ImGuiWindowFlags_AlwaysVerticalScrollbar);
+                                 ImGuiWindowFlags_NoResize);
 
                     ImGui::TextWrapped("%s", helpText.c_str());
 
