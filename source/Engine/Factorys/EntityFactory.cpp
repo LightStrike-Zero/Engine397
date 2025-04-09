@@ -5,7 +5,6 @@
 #include "EntityFactory.h"
 
 #include "OpenGL/OpenGLMeshBuffer.h"
-#include "ResourceManagement/EnttECS.h"
 
 EntityFactory::EntityFactory(EnttFacade* enttFacade)
     : m_entityFacade(enttFacade)

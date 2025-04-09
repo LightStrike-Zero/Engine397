@@ -71,9 +71,6 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Actors/Player.cpp
         Engine/Actors/Player.h
         StuffThatNeedsToBeLoadedInLua.h
-        Engine/ResourceManagement/IEntityComponentSystem.h
-        Engine/ResourceManagement/EnttECS.cpp
-        Engine/ResourceManagement/EnttECS.h
         Engine/ResourceManagement/Scene.cpp
         Engine/ResourceManagement/Scene.h
         Engine/Factorys/EntityFactory.cpp
