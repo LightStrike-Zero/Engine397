@@ -4,7 +4,7 @@
 
 #include "EventSystem.h"
 
-void CameraSystem::update(entt::registry& registry, float deltaTime, bool& showExitScreen)
+void CameraSystem::update(entt::registry& registry, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
 {
     auto view = registry.view<CameraComponent, TransformComponent>();
         
@@ -13,7 +13,7 @@ void CameraSystem::update(entt::registry& registry, float deltaTime, bool& showE
         auto& transform = view.get<TransformComponent>(entity);
             
         if (isActiveCamera(entity, registry)) {
-            handleCameraInput(transform, camera, deltaTime, showExitScreen);
+            handleCameraInput(transform, camera, deltaTime, showExitScreen, showHelpScreen);
         }
     }
 }
@@ -41,7 +41,7 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 
 
 //void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
-void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen)
+void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
 {
     // ESC TO EXIT ONLY
 //    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -72,6 +72,15 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
 //        std::cout << "[DEBUG] Exit screen is NOT visible\n";
     //BUKO
 
+
+    // buko help manual screen
+    static bool wasMPressedLastFrame = false;
+    if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS && !wasMPressedLastFrame)
+    {
+        showHelpScreen = !showHelpScreen;
+    }
+    wasMPressedLastFrame = glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS;
+    // end of buko help manual screen
 
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);

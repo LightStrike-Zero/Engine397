@@ -16,6 +16,7 @@
 #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+#include <fstream>
 // need for exit pic
 #include "Texture/TextureManager.h"
 #include "imgui.h"
@@ -26,6 +27,7 @@ int main(int argc, char** argv)
 {
     float playerHeight = 1.0f;
     bool showExitScreen = false; // buko
+    bool showHelpScreen = false; // buko
 
     IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
     int windowWidth, windowHeight;
@@ -75,6 +77,23 @@ int main(int argc, char** argv)
     GLuint exitTextureID = TextureManager::getInstance().loadTexture("Assets/images/exit_pic.png");
     // end ofbuko
 
+    // buko -------------- read manual text file
+    std::string helpText;
+    {
+        std::ifstream file("Assets/text_files/text_manual.txt");
+        if (file)
+        {
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            helpText = buffer.str();
+        }
+        else
+        {
+            helpText = "Could not load help file!";
+        }
+    }
+    // end of buko -------------- read manual text file
+
     static float lastFrame = 0.0f;
 
     while (!window->ShouldClose())
@@ -84,7 +103,7 @@ int main(int argc, char** argv)
         lastFrame = currentFrame;
 
         // camera system 
-        cameraSystem.update(scene.getRegistry(), deltaTime, showExitScreen);
+        cameraSystem.update(scene.getRegistry(), deltaTime, showExitScreen, showHelpScreen);
         auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getRegistry());
 
         // terrian collision
@@ -97,7 +116,7 @@ int main(int argc, char** argv)
         Gui.BeginFrame();
         Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});
 
-            // buko texture
+            // buko splash screen
             if (showExitScreen)
             {
                 const ImVec2 imageSize = ImVec2(880, 510); // ⬅️ Set your PNG size (adjust as needed)
@@ -128,7 +147,28 @@ int main(int argc, char** argv)
 
                 ImGui::End();
             }
-            // END OF buko texture
+            // END OF buko splash screen
+
+            // manual-------------------
+                if (showHelpScreen)
+                {
+                    const ImVec2 helpSize = ImVec2(600, 400);  // Set a good size
+                    const ImVec2 helpPos  = ImVec2(100, 100);  // Position it somewhere comfy
+
+                    ImGui::SetNextWindowPos(helpPos, ImGuiCond_Once);
+                    ImGui::SetNextWindowSize(helpSize, ImGuiCond_Once);
+
+                    ImGui::Begin("Help Manual", &showHelpScreen,
+                                 ImGuiWindowFlags_NoCollapse |
+                                 ImGuiWindowFlags_NoResize |
+                                 ImGuiWindowFlags_NoScrollbar |
+                                 ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+                    ImGui::TextWrapped("%s", helpText.c_str());
+
+                    ImGui::End();
+                }
+            // manual--------------------------
         Gui.EndFrame();
 
         window->SwapBuffers();

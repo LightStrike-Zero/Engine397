@@ -15,7 +15,7 @@ public:
         : m_window(window), m_aspectRatio(aspectRatio) {}
     
     //void update(entt::registry& registry, float deltaTime);
-    void update(entt::registry& registry, float deltaTime, bool& showExitScreen);
+    void update(entt::registry& registry, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
     
     std::tuple<glm::mat4, glm::mat4, glm::vec3> getActiveCameraMatrices(entt::registry& registry);
     
@@ -24,7 +24,7 @@ private:
     float m_aspectRatio;
     
     //void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
-    void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen);
+    void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
 
     void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
     
