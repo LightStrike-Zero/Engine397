@@ -125,47 +125,54 @@ int main(int argc, char** argv)
     }
 
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
-
+    unsigned int currentRenderedFrame;
     while (!window->ShouldClose())
     {
-        float currentFrame = window->GetTime();
-        float deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        // camera system 
-        cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
-        auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-
-        // terrian collision
-        // comment this out to disable terrain collision
-        auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-        for (auto entity : playerView) {
-            auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-            playerTankTransform.position = cameraTransform.position + cameraOffset;
-            glm::vec3 playerTankPos =  playerTankTransform.position;
-            float terrainHeight = collision.getHeightAt(playerTankPos);
-            playerTankTransform.position.y = terrainHeight + playerHeight;
-            cameraTransform.position = playerTankTransform.position - cameraOffset;
-            //std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
-        }
-
         Gui.BeginFrame();
-        Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});
+        if (!showExitScreen){
+            float currentFrame = window->GetTime();
+            float deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
 
-        // buko splash screen
-        if (showExitScreen)
+            // camera system 
+            cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
+            auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+
+            // terrian collision
+            // comment this out to disable terrain collision
+            auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+            for (auto entity : playerView) {
+                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
+                playerTankTransform.position = cameraTransform.position + cameraOffset;
+                glm::vec3 playerTankPos =  playerTankTransform.position;
+                float terrainHeight = collision.getHeightAt(playerTankPos);
+                playerTankTransform.position.y = terrainHeight + playerHeight;
+                cameraTransform.position = playerTankTransform.position - cameraOffset;
+                //std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
+            }
+            currentRenderedFrame = renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+        }
+        else
         {
+            
             if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
             {
                 window->SetShouldClose(true);
             }
         }
+        Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
+
+
 
         // Buko help manual system
         if (showHelpScreen)
         {
             Gui.ShowHelpManual(showHelpScreen, helpText);
         }
+        // buko splash screen
+        // if (showExitScreen)
+        // {
+        // }
         // manual--------------------------
         Gui.EndFrame();
 
