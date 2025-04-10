@@ -17,6 +17,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 
+#include "Player.h"
 #include "Components/PlayerControllerComponent.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
 #include "Components/CollisionComponents/CollidableComponent.h"
@@ -66,6 +67,7 @@ int main(int argc, char** argv)
     scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f)); // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    Player player(&scene.getEntityManager(),static_cast<GLFWwindow*>(window->GetNativeWindow()));//added by Hugo
 
     auto terrainType = TerrainFactory::createTerrainType(chosenType, chosenParams);
     Terrain terrain(terrainGridRows, terrainGridCols, terrainScale);
@@ -87,12 +89,15 @@ int main(int argc, char** argv)
     std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
     scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+    auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
+        playerTankTransform.position = cameraTransform.position+cameraOffset;
+
     }
-    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
@@ -130,18 +135,18 @@ int main(int argc, char** argv)
         // camera system 
         cameraSystem.update(scene.getEntityManager(), deltaTime);
         auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+        player.update(deltaTime);
 
         // terrian collision
         // comment this out to disable terrain collision
-        auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+        // auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
         for (auto entity : playerView) {
             auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-            playerTankTransform.position = cameraTransform.position + cameraOffset;
             glm::vec3 playerTankPos =  playerTankTransform.position;
             float terrainHeight = collision.getHeightAt(playerTankPos);
             playerTankTransform.position.y = terrainHeight + playerHeight;
             cameraTransform.position = playerTankTransform.position - cameraOffset;
-            std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
+            // std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
 
 
