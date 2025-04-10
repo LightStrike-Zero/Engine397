@@ -64,7 +64,14 @@ void ImGuiUI::DisplayImage(const char* title, const unsigned int imagePtr, const
 bool ImGuiUI::DisplayClickableImageFlipped(const char* title, const unsigned int imagePtr, const glm::vec2& imageSize)
 {
     // Create a dockable window and display the image.
-    ImGui::Begin(title);
+    ImGui::Begin(title, nullptr,
+                 ImGuiWindowFlags_NoResize |
+                 ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoBackground |
+                 ImGuiWindowFlags_NoCollapse |
+                 ImGuiWindowFlags_NoScrollbar |
+                 ImGuiWindowFlags_NoScrollWithMouse |
+                 ImGuiWindowFlags_NoDocking );
     ImVec2 availableSize = ImGui::GetContentRegionAvail();
 
     float offsetX = (availableSize.x - imageSize.x) * 0.5f;
