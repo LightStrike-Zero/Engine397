@@ -4,10 +4,12 @@
 -- game state : win/lose
 -- other stuff I can't think of
 
-tank_assetPath = "Assets/game_tank/tank.gltf"
+
 
 -- load asset(s) ---------------------------------------------
 print("Loading:" .. tank_assetPath)
+
+tank_assetPath = "Assets/game_tank/tank.gltf"
 scene:loadModelToRegistry(tank_assetPath)
 
 
@@ -36,6 +38,16 @@ elseif terrainType == "TexturedFractal" then
 else
     error("Unknown terrain type: " .. tostring(terrainType))
 end
+
+
+-- load images ----------------------------------------------
+print("Loading images...")
+img_splashScreen_path = "Assets/images/exit_pic.png"
+
+-- load text files ----------------------------------------------
+print("Loading help manual file...")
+img_splashScreen_path = "Assets/text_files/text_manual.txt"
+
 
 --
 print("End of GameInitialisation.lua")
