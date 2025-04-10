@@ -2,6 +2,13 @@
 // Created by Shaun on 11/02/2025.
 //
 
+/**
+ * @file DierctionalLight.h
+ * @brief Defines the DierctionalLight class used to represent a directional light source.
+ * @author Shaun
+ * @date 2025-02-11
+ */
+
 #ifndef DIRECTIONALLIGHT_H
 #define DIRECTIONALLIGHT_H
 #include <glm/vec3.hpp>
@@ -102,8 +109,8 @@ public:
     }
 
 private:
-    glm::vec3 direction;               /**< Direction the light is coming from */
-    float specularPower = 0.5f;        /**< Strength of the specular reflection */
+    glm::vec3 direction;               ///< Direction the light is coming from
+    float specularPower = 0.5f;        ///< Strength of the specular reflection
 };
 
 #endif //DIRECTIONALLIGHT_H

@@ -15,3 +15,12 @@
 //
 //
 // #endif //PLAYER_H
+
+/// THIS IS NOT COMPLETE
+
+/**
+ * @file Player.h
+ * @brief Defines the Player class used to represent the player.
+ * @author Hugo
+ * @date 2025-04-08
+ */

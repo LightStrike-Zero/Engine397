@@ -5,8 +5,9 @@
 /**
  * @file Light.h
  * @brief Base class for different types of light sources.
- *
  * Provides a common interface for ambient, diffuse, and specular light components.
+ * @author Shaun
+ * @date 2024-12-08
  */
 
 #ifndef LIGHT_H
@@ -60,9 +61,9 @@ public:
     [[nodiscard]] virtual glm::vec3 getSpecular() const;
 
 protected:
-    glm::vec3 ambient{};         /**< Ambient colour component */
-    glm::vec3 diffuse{};         /**< Diffuse colour component */
-    glm::vec3 specular{};        /**< Specular colour component */
+    glm::vec3 ambient{};         ///< Ambient colour component
+    glm::vec3 diffuse{};         ///< Diffuse colour component
+    glm::vec3 specular{};        ///< Specular colour component
 };
 
 #endif //LIGHT_H
