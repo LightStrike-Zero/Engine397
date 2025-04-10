@@ -2,9 +2,18 @@
 // Created by Shaun on 8/04/2025.
 //
 
+/**
+ * @file EntityFactory.h
+ * @brief Provides methods to create various types of entities in the scene.
+ *
+ * This class acts as a utility to create entities from model files, terrain, or for special-purpose roles
+ * like the player. It uses an externally provided EnttFacade to register components and manage the entity registry.
+ * @author Shaun
+ * @date 2025-04-08
+ */
+
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
-
 
 #include <string>
 #include "Terrain/Terrain.h"
@@ -20,25 +29,44 @@
 #include "Importers/AssimpImporter.h"
 #include "ResourceManagement/EnttFacade.h"
 
+/**
+ * @class EntityFactory
+ * @brief Creates and registers entities using the EnttFacade.
+ */
 class EntityFactory {
 public:
-    // Construct the factory with a pointer to the EnttFacade.
-    // The factory does not own the facade.
+    /**
+     * @brief Construct the factory with a pointer to the EnttFacade. The factory does not own the facade.
+     * @param enttFacade A pointer to the facade managing the entity registry.
+     */
     EntityFactory(EnttFacade* enttFacade);
 
-    // Create entities from a generic model file.
+    /**
+     * @brief Create entities from a generic model file.
+     * @param filepath Path to the model file (e.g., .gltf, .obj).
+     */
     void createEntitiesFromModel(const std::string& filepath);
-    
-    // Create entities for a player model by adding an additional PlayerControllerComponent.
+
+    /**
+     * @brief Create entities for a player model by adding an additional PlayerControllerComponent.
+     * @param filepath Path to the player model file.
+     */
     void createPlayerEntitiesFromModel(const std::string& filepath);
 
-    // Create a terrain entity from Terrain data.
+    /**
+     * @brief Create a terrain entity from Terrain data.
+     * @param terrain Reference to the Terrain object.
+     */
     void addTerrainEntity(const Terrain& terrain);
 
+    /**
+     * @brief Adds collision-enabled entities based on a model file.
+     * @param filepath Path to the model file.
+     */
     void createCollidableEntitiesFromModel(const std::string& filepath);
     
 private:
-    EnttFacade* m_entityFacade;
+    EnttFacade* m_entityFacade;               ///< Pointer to the entity registry manager (not owned).
 };
 
 #endif //ENTITYFACTORY_H
