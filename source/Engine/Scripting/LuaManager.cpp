@@ -57,7 +57,7 @@ void LuaManager::runScript(const std::string& scriptPath)
 
 std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
 {
-    runScript("GameScripts/GameManager.lua");
+    runScript("GameScripts/GameInitialisation.lua");
 
     sol::table config = m_lua["terrainConfig"];
     std::string typeStr = config["type"];

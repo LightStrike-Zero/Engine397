@@ -48,7 +48,6 @@ int main(int argc, char** argv)
     //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
     ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
-
     scriptManager->registerScene(scene);                                         // Expose Scene to Lua
     std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
     scene.addTerrainToScene(*terrain);                                       // add terrain to scene
@@ -59,7 +58,7 @@ int main(int argc, char** argv)
     int terrainGridCols = scriptManager->getTerrainCols();
     float terrainScale  = scriptManager->getTerrainSpacing();
 
-    // --- END OF Buko setting up Lua/Sol -------------------------
+    // --- END OF Buko  Lua/Sol -------------------------
 
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 

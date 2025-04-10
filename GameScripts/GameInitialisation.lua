@@ -38,4 +38,4 @@ else
 end
 
 --
-print("End of GameManager.lua")
+print("End of GameInitialisation.lua")
