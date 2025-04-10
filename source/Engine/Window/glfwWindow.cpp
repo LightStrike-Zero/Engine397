@@ -71,4 +71,12 @@ void GLFWWindow::pollInputEvents() {
     if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS) {
         EventSystem::getInstance().dispatchEvent(KeyPressedEvent(GLFW_KEY_M));
     }
+    //space for shoot
+    if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        EventSystem::getInstance().dispatchEvent(KeyPressedEvent(GLFW_KEY_M));
+    }
+    //mouse for shoot/jump?
+    //if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {}
+
+
 }

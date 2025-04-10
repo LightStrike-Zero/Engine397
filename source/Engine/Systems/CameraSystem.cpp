@@ -48,14 +48,9 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
     // }
 
     //testing new event system for exiting window
-    EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
-        const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
-        if (keyEvent.keyCode == GLFW_KEY_X) {
-            glfwSetWindowShouldClose(m_window, true);
-        }
-    });
 
-    if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
+
+    if (glfwGetMouseButton(m_window,GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
             
         handleMouseInput(camera);
@@ -65,18 +60,29 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
 void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
 {
     float velocity = camera.movementSpeed * deltaTime;
-        
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        transform.position += camera.front * velocity;
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        transform.position -= camera.front * velocity;
-    
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        transform.position -= camera.right * velocity;
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        transform.position += camera.right * velocity;
-
     float rotationVelocity = camera.rotationSpeed * deltaTime;
+
+    //!!!!!!!!!!!!!!warning
+    //this event dispatch lambda function is calling camera by reference and modifying it, use with caution
+    EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
+    const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
+        if (keyEvent.keyCode == GLFW_KEY_X) {
+            glfwSetWindowShouldClose(m_window, true);
+        }
+        static bool keyWasPressed = false;
+        if (keyEvent.keyCode == GLFW_KEY_K) {
+            if (!keyWasPressed) {
+                static bool lineMode = false;
+                lineMode = !lineMode;
+                DrawModeChangedEvent drawEvent(lineMode);
+                EventSystem::getInstance().dispatchEvent(drawEvent);
+                keyWasPressed = true;
+            }
+        } else {
+            keyWasPressed = false;
+        }
+    });
+
     if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
         camera.yaw -= rotationVelocity;
     if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -85,6 +91,8 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
         camera.pitch += rotationVelocity;
     if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
         camera.pitch -= rotationVelocity;
+
+
 
     if (camera.pitch > 89.0f)
         camera.pitch = 89.0f;
@@ -99,21 +107,6 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
 
     camera.right = glm::normalize(glm::cross(camera.front, camera.worldUp));
     camera.up = glm::normalize(glm::cross(camera.right, camera.front));
-
-    static bool keyWasPressed = false;
-    if (glfwGetKey(m_window, GLFW_KEY_C) == GLFW_PRESS) {
-        if (!keyWasPressed) {
-            static bool lineMode = false;
-            lineMode = !lineMode;
-            
-            DrawModeChangedEvent event(lineMode);
-            EventSystem::getInstance().dispatchEvent(event);
-            
-            keyWasPressed = true;
-        }
-    } else {
-        keyWasPressed = false;
-    }
 }
 
 void CameraSystem::handleMouseInput(CameraComponent& camera)
