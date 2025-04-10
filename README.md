@@ -1,5 +1,11 @@
 Changelist version 0.1.4
 ========================
+### Changelist v0.1.7
+**10/04/2025** BS
+- Help manual pop up is operational
+- Reads its content from a text file
+- Utility FileHandler created
+
 ### Changelist v0.1.6
 **10/04/2025** BS
 - Splash screen appears when X is pressed

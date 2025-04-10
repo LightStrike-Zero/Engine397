@@ -23,9 +23,9 @@ public:
     * @brief Constructor for DirectionalLight.
     * 
     * @param direction The direction of the light.
-    * @param ambient The ambient color of the light.
-    * @param diffuse The diffuse color of the light.
-    * @param specular The specular color of the light.
+    * @param ambient The ambient colour of the light.
+    * @param diffuse The diffuse colour of the light.
+    * @param specular The specular colour of the light.
     * @param specular_power The specular power of the light.
     */
     DirectionalLight(const glm::vec3& direction, const glm::vec3& ambient, const glm::vec3& diffuse,
@@ -39,55 +39,71 @@ public:
         specularPower = specular_power;
     }
 
+    /// @copydoc Light::setAmbient
     void setAmbient(const glm::vec3& ambient) override
     {
         this->ambient = ambient;
     }
 
+    /// @copydoc Light::setDiffuse
     void setDiffuse(const glm::vec3& diffuse) override
     {
         this->diffuse = diffuse;
     }
 
+    /// @copydoc Light::setSpecular
     void setSpecular(const glm::vec3& specular) override
     {
         this->specular = specular;
     }
 
+    /**
+     * @brief Set the direction of the directional light.
+     * @param direction Normalised direction vector.
+     */
     void setDirection(const glm::vec3& direction)
     {
         this->direction = direction;
     }
 
+    /**
+     * @brief Get the direction of the light.
+     * @return Direction vector.
+     */
     [[nodiscard]] glm::vec3 getAmbient() const override
     {
         return ambient;
     }
 
+    /// @copydoc Light::getAmbient
     [[nodiscard]] glm::vec3 getDiffuse() const override
     {
         return diffuse;
     }
-
+    /// @copydoc Light::getDiffuse
     [[nodiscard]] glm::vec3 getSpecular() const override
     {
         return specular;
     }
 
+    /// @copydoc Light::getSpecular
     [[nodiscard]] glm::vec3 getDirection() const
     {
         return direction;
     }
 
+    /**
+     * @brief Get the specular power of the light.
+     * @return Float value representing the specular power.
+     */
     [[nodiscard]] float getSpecularPower() const
     {
         return specularPower;
     }
 
 private:
-    glm::vec3 direction;
-    float specularPower = 0.5f;
+    glm::vec3 direction;               /**< Direction the light is coming from */
+    float specularPower = 0.5f;        /**< Strength of the specular reflection */
 };
-
 
 #endif //DIRECTIONALLIGHT_H
