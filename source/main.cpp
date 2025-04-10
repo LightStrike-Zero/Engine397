@@ -180,23 +180,11 @@ int main(int argc, char** argv)
         // END OF buko splash screen
 
         // manual-------------------
-                if (showHelpScreen)
-                {
-                    const ImVec2 helpSize = ImVec2(600, 400);  // Set a good size
-                    const ImVec2 helpPos  = ImVec2(100, 100);  // Position it somewhere comfy
-
-                    ImGui::SetNextWindowPos(helpPos, ImGuiCond_Once);
-                    ImGui::SetNextWindowSize(helpSize, ImGuiCond_Once);
-
-                    ImGui::Begin("Help Manual", &showHelpScreen,
-                                 ImGuiWindowFlags_NoCollapse |
-                                 ImGuiWindowFlags_NoResize);
-
-                    ImGui::TextWrapped("%s", helpText.c_str());
-
-                    ImGui::End();
-                }
-            // manual--------------------------
+        if (showHelpScreen)
+        {
+            Gui.ShowHelpManual(showHelpScreen, helpText);
+        }
+        // manual--------------------------
         Gui.EndFrame();
 
         window->SwapBuffers();

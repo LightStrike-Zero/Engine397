@@ -25,6 +25,7 @@ public:
 
     void loadNamedImage(const std::string& name, const std::string& path); // buko
     bool showNamedClickableImage(const std::string& name, const glm::vec2& size);   // buko
+    void ShowHelpManual(bool& show, const std::string& helpText); // buko
 
 private:
     std::map<std::string, unsigned int> m_namedImages; // buko
