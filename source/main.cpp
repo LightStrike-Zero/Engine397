@@ -78,21 +78,19 @@ int main(int argc, char** argv)
 
     static float lastFrame = 0.0f;
 
-    scene.loadPlayerModelEntity(playerTankPath);
     // entt::entity playerTankEntity = entt::null;
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
         // playerTankEntity = *playerView.begin();
     // }
     //load player tank
+    scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
     std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    scene.loadPlayerModelEntity(playerTankPath);
+    scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
-        std::cout << "player pos:" << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", "
-        << playerTankTransform.position.z << std::endl;
     }
     glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
 
