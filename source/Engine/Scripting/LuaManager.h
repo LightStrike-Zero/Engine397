@@ -27,6 +27,8 @@ class LuaManager : public ScriptManager
         int getTerrainRows() const;
         int getTerrainCols() const;
         float getTerrainSpacing() const;
+        std::string getSplashImagePath() override;
+        std::string LuaManager::getHelpManualPath() override;
 
     private:
         sol::state m_lua;                              // Lua state

@@ -13,6 +13,7 @@ public:
     virtual void SetInputMode(int mode, int value) = 0;
     virtual float GetTime() const = 0;
     virtual void* GetNativeWindow() const = 0;
+    virtual void SetShouldClose(bool value) = 0; // buko
 };
 
 #endif // IWINDOW_H

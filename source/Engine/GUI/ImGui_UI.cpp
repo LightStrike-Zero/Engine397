@@ -5,6 +5,9 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "texture/TextureManager.h" //buko
+//#include "Interfaces/IWindow.h" // buko
+
 void ImGuiUI::Initialise(GLFWwindow* window)
 {
     // Setup Dear ImGui context
@@ -57,6 +60,31 @@ void ImGuiUI::DisplayImage(const char* title, const unsigned int imagePtr, const
     ImGui::End();
 }
 
+//buko - need this to flip the splash image the wright way and also make it clickable
+bool ImGuiUI::DisplayClickableImageFlipped(const char* title, const unsigned int imagePtr, const glm::vec2& imageSize)
+{
+    // Create a dockable window and display the image.
+    ImGui::Begin(title);
+    ImVec2 availableSize = ImGui::GetContentRegionAvail();
+
+    float offsetX = (availableSize.x - imageSize.x) * 0.5f;
+    float offsetY = (availableSize.y - imageSize.y) * 0.5f;
+
+    if (offsetX < 0.0f) offsetX = 0.0f;
+    if (offsetY < 0.0f) offsetY = 0.0f;
+
+    ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + offsetX, ImGui::GetCursorPosY() + offsetY));
+
+    // Note: Adjust UV coordinates if needed (here we flip vertically)
+    ImGui::Image(imagePtr, ImVec2(imageSize.x, imageSize.y), ImVec2{0, 0}, ImVec2{1, 1});
+
+    bool clicked = ImGui::IsItemClicked();
+
+    ImGui::End();
+
+    return clicked;
+}
+
 void ImGuiUI::EndFrame()
 {
     // Finalize the frame and render
@@ -80,4 +108,22 @@ void ImGuiUI::Shutdown()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+//buko loads the splash image
+void ImGuiUI::loadNamedImage(const std::string& name, const std::string& path)
+{
+    unsigned int id = TextureManager::getInstance().loadTexture(path);
+    m_namedImages[name] = id;
+}
+
+//buko in use
+bool ImGuiUI::showNamedClickableImage(const std::string& name, const glm::vec2& size)
+{
+    if (m_namedImages.count(name) > 0)
+    {
+        bool clicked = DisplayClickableImageFlipped(name.c_str(), m_namedImages[name], size);
+        return clicked;
+    }
+    return false;
 }

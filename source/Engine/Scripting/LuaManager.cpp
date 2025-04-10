@@ -133,4 +133,15 @@ float LuaManager::getTerrainSpacing() const
     return m_lua["terrainConfig"]["spacing"].get<float>();
 }
 
+std::string LuaManager::getSplashImagePath()
+{
+    runScript("GameScripts/GameInitialisation.lua");
+    return m_lua["img_splashScreen_path"];
+}
+
+std::string LuaManager::getHelpManualPath()
+{
+    runScript("GameScripts/GameInitialisation.lua");
+    return m_lua["text_helpManual_path"];
+}
 //====================== END OF LUA MANAGER CLASS =============================

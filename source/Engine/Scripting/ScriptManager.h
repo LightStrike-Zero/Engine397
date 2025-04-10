@@ -29,6 +29,8 @@ class ScriptManager
         virtual int getTerrainRows() const = 0;
         virtual int getTerrainCols() const = 0;
         virtual float getTerrainSpacing() const = 0;
+        virtual std::string getSplashImagePath() = 0;
+        virtual std::string getHelpManualPath() = 0;
 };
 
 #endif //SCRIPTMANAGER_H

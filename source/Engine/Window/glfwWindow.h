@@ -20,6 +20,8 @@ public:
     virtual void SetInputMode(int mode, int value) override;
     virtual float GetTime() const override { return static_cast<float>(glfwGetTime()); }
     virtual void* GetNativeWindow() const override;
+    virtual void SetShouldClose(bool value) override;  //buko
+
 
 private:
     GLFWwindow* m_window;

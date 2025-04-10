@@ -1,5 +1,16 @@
 Changelist version 0.1.4
 ========================
+### Changelist v0.1.6
+**10/04/2025** BS
+- Splash screen appears when X is pressed
+- It can be toggled with X
+- Clicking on the image exits the game 
+
+### Changelist v0.1.5
+**10/04/2025** BS
+- Terrain generation dictated from Lua files
+- LuaManager handles terrain parameters and calls on teh TerrainFactory to produce terrain
+
 ### Changelist v0.1.4
 **27/03/2025** BS
 - Created ScriptManager base class

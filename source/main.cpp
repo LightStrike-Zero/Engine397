@@ -77,11 +77,6 @@ int main(int argc, char** argv)
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
 
-    // buko this is for exit pic probably needs to go elsewhere!
-    GLuint exitTextureID = TextureManager::getInstance().loadTexture("Assets/images/exit_pic.png");
-    // end ofbuko
-
-
     // buko -------------- read manual text file
     std::string helpText;
     {
@@ -144,7 +139,9 @@ int main(int argc, char** argv)
     }
 
 
-
+    // buko splash screen
+    Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath());
+    // end ofbuko
 
     while (!window->ShouldClose())
     {
@@ -166,49 +163,23 @@ int main(int argc, char** argv)
             float terrainHeight = collision.getHeightAt(playerTankPos);
             playerTankTransform.position.y = terrainHeight + playerHeight;
             cameraTransform.position = playerTankTransform.position - cameraOffset;
-            std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
+            //std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
 
-
-
-        
         Gui.BeginFrame();
         Gui.DisplayImage("Viewport", renderer->Render(scene, viewMatrix, projectionMatrix, viewPos), glm::vec2{windowWidth, windowHeight});
 
-            // buko splash screen
-            if (showExitScreen)
+        // buko splash screen
+        if (showExitScreen)
+        {
+            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
             {
-                const ImVec2 imageSize = ImVec2(880, 510); // ⬅️ Set your PNG size (adjust as needed)
-
-                // Get screen center
-                ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-                ImVec2 windowPos = ImVec2((screenSize.x - imageSize.x) * 0.5f, (screenSize.y - imageSize.y) * 0.5f);
-
-                // Transparent, no decorations
-                ImGui::SetNextWindowPos(windowPos);
-                ImGui::SetNextWindowSize(imageSize);
-                ImGui::Begin("ExitOverlay", nullptr,
-                             ImGuiWindowFlags_NoTitleBar |
-                             ImGuiWindowFlags_NoResize |
-                             ImGuiWindowFlags_NoMove |
-                             ImGuiWindowFlags_NoBackground |
-                             ImGuiWindowFlags_NoCollapse |
-                             ImGuiWindowFlags_NoScrollbar |
-                             ImGuiWindowFlags_NoScrollWithMouse
-                );
-
-                ImGui::Image(ImTextureID(exitTextureID), imageSize);
-
-                if (ImGui::IsItemClicked())
-                {
-                    glfwSetWindowShouldClose(static_cast<GLFWwindow*>(window->GetNativeWindow()), true);
-                }
-
-                ImGui::End();
+                window->SetShouldClose(true);
             }
-            // END OF buko splash screen
+        }
+        // END OF buko splash screen
 
-            // manual-------------------
+        // manual-------------------
                 if (showHelpScreen)
                 {
                     const ImVec2 helpSize = ImVec2(600, 400);  // Set a good size

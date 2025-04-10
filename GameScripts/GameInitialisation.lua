@@ -46,7 +46,7 @@ img_splashScreen_path = "Assets/images/exit_pic.png"
 
 -- load text files ----------------------------------------------
 print("Loading help manual file...")
-img_splashScreen_path = "Assets/text_files/text_manual.txt"
+text_helpManual_path = "Assets/text_files/text_manual.txt"
 
 
 --

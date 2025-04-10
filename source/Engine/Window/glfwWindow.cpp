@@ -37,6 +37,12 @@ bool GLFWWindow::ShouldClose() const {
     return glfwWindowShouldClose(m_window);
 }
 
+// buko - need tis to shut down after splash image is clicked on
+void GLFWWindow::SetShouldClose(bool value)
+{
+    glfwSetWindowShouldClose(m_window, value);
+}
+
 void GLFWWindow::PollEvents() {
     glfwPollEvents();
 }

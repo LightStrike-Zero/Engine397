@@ -19,6 +19,8 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void DisplayImage(const char* title, unsigned int imagePtr, const glm::vec2& imageSize) = 0;
+
+    virtual bool DisplayClickableImageFlipped(const char* title, unsigned int imagePtr, const glm::vec2& imageSize) = 0; //buko
     
 };
 
