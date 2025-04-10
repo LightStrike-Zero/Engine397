@@ -135,12 +135,13 @@ bool ImGuiUI::showNamedClickableImage(const std::string& name, const glm::vec2& 
     return false;
 }
 
+// buko shows the help manual
 void ImGuiUI::ShowHelpManual(bool& show, const std::string& helpText)
 {
     if (!show) return;
 
-    const ImVec2 helpSize = ImVec2(600, 400);  // Set a good size
-    const ImVec2 helpPos  = ImVec2(100, 100);  // Position it somewhere comfy
+    const ImVec2 helpSize = ImVec2(800, 600);  // Set a good size
+    const ImVec2 helpPos  = ImVec2(560, 240);  // Position it somewhere comfy
 
     ImGui::SetNextWindowPos(helpPos, ImGuiCond_Once);
     ImGui::SetNextWindowSize(helpSize, ImGuiCond_Once);

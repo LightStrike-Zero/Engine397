@@ -138,10 +138,7 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
-
-    // buko splash screen
-    Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath());
-    // end ofbuko
+    Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
 
     while (!window->ShouldClose())
     {
@@ -177,9 +174,8 @@ int main(int argc, char** argv)
                 window->SetShouldClose(true);
             }
         }
-        // END OF buko splash screen
 
-        // manual-------------------
+        // Buko help manual system
         if (showHelpScreen)
         {
             Gui.ShowHelpManual(showHelpScreen, helpText);
