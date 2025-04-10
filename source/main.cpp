@@ -16,6 +16,7 @@
 #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+#include "FileHandler.h"
 
 #include "Components/PlayerControllerComponent.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
@@ -77,22 +78,7 @@ int main(int argc, char** argv)
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
 
-    // buko -------------- read manual text file
-    std::string helpText;
-    {
-        std::ifstream file("Assets/text_files/text_manual.txt");
-        if (file)
-        {
-            std::stringstream buffer;
-            buffer << file.rdbuf();
-            helpText = buffer.str();
-        }
-        else
-        {
-            helpText = "Could not load help file!";
-        }
-    }
-    // end of buko -------------- read manual text file
+    std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath()); // buko: read manual text file
 
     static float lastFrame = 0.0f;
 

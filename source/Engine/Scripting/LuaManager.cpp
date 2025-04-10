@@ -4,6 +4,7 @@
 // Assignment 1: Game Engine
 // LuaManager Class: Manages the Lua interface
 
+//-------------------------------- Libraries ----------------------------------
 #include "LuaManager.h"
 #include "ResourceManagement/Scene.h"
 #include "Terrain/TerrainFactory.h"

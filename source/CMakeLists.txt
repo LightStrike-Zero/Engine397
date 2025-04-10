@@ -79,6 +79,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Components/CollisionComponents/CollidableComponent.h
         Engine/Components/CollisionComponents/BoxColliderComponent.h
         Engine/Components/CollisionComponents/CapsuleColliderComponent.h
+        Engine/Utility/FileHandler.cpp
+        Engine/Utility/FileHandler.h
 )
 
 # Add executable based on source files
