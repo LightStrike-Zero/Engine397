@@ -22,7 +22,6 @@ class LuaManager : public ScriptManager
 
         void registerScene(Scene& scene) override;              // Expose Scene to Lua
         void runScript(const std::string& scriptPath) override; // runs the Lua script
-        sol::table getTerrainConfig() const;                    // grabs the terrain config data
         std::unique_ptr<Terrain> createTerrainFromConfig();
         int getTerrainRows() const;
         int getTerrainCols() const;
@@ -30,9 +29,6 @@ class LuaManager : public ScriptManager
 
     private:
         sol::state m_lua;                              // Lua state
-
-        //HELPERS
-        //std::map<std::string, std::string> extractTextureParams(const sol::table& config);
 };
 
 #endif //LUAMANAGER_H

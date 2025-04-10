@@ -55,21 +55,6 @@ void LuaManager::runScript(const std::string& scriptPath)
     }
 }
 
-//-----------------------------------------------------------------------------
-//grabs the table called TerrainConfig from the lua file
-sol::table LuaManager::getTerrainConfig() const
-{
-    return m_lua["terrainConfig"];
-}
-
-////-----------------------------------------------------------------------------
-//// OLD ONE USED WITH BROKEN FACTORY
-//std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig() {
-//    runScript("GameScripts/GameManager.lua");
-//    return TerrainFactory::createFromLuaConfig(m_lua["terrainConfig"]);
-//}
-
-
 std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
 {
     runScript("GameScripts/GameManager.lua");
@@ -90,7 +75,7 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
 
     std::map<std::string, std::string> combinedParams;
 
-    // Extract parameters
+        // Extract parameters
     sol::table parameters = config["parameters"];
     for (const auto& pair : parameters)
     {
@@ -112,7 +97,8 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
     }
 
     // Extract texture (if applicable)
-    if (config["texture"].valid()) {
+    if (config["texture"].valid())
+    {
         sol::table texture = config["texture"];
         combinedParams["path"] = texture["path"];
         combinedParams["repeatX"] = std::to_string(texture["repeatX"].get_or(1));
@@ -145,23 +131,5 @@ float LuaManager::getTerrainSpacing() const
 {
     return m_lua["terrainConfig"]["spacing"].get<float>();
 }
-
-
-// HELPER
-
-//std::map<std::string, std::string> LuaManager::extractTextureParams(const sol::table& config)
-//{
-//    std::map<std::string, std::string> texParams;
-//    sol::table tex = config["texture"];
-//
-//    if (tex.valid())
-//    {
-//        for (const auto& [k, v] : tex)
-//            texParams[k.as<std::string>()] = v.as<std::string>();
-//    }
-//
-//    return texParams;
-//}
-
 
 //====================== END OF LUA MANAGER CLASS =============================
