@@ -6,15 +6,15 @@
 #define TEXTURELOADER_H
 
 #include <string>
-#include <assimp/texture.h>
+#include <memory>
 
-#include "Texture.h"
+class ITexture;
 
 class TextureLoader {
 public:
-    static Texture* loadTexture(const std::string& filePath);
-    static Texture* loadFromGLTF(const std::string& gltfTexturePath);
-    static Texture* loadEmbeddedTexture(aiTexture* embeddedTexture);
+    static std::shared_ptr<ITexture> loadTexture(const std::string& filePath);
+    static std::shared_ptr<ITexture> loadFromGLTF(const std::string& gltfTexturePath);
+    static std::shared_ptr<ITexture> loadEmbeddedTexture(void* embeddedTexture);
 };
 
 #endif //TEXTURELOADER_H

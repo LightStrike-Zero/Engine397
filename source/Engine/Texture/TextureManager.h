@@ -6,6 +6,9 @@
  * @date Created: 4/09/2024
  * @date Modified: 1/12/2024
  * @date Modified: 30/03/2025
+ * @date Modified: 10/04/2025
+ * Removed reference to OpenGL types, now references abstract texture class
+ * 
  */
 
 #pragma once
@@ -14,27 +17,27 @@
 #define TEXTURE_MANAGER_H
 
 
-#include <GL/glew.h>
 #include <string>
-#include <texture/texture.h>
+#include <memory>
 #include <unordered_map>
-#include <assimp/texture.h>
+
+class ITexture;
 
 class TextureManager
 {
 public:
 	static TextureManager& getInstance();
 
-	GLuint getTexture(const std::string& filePath);
-	GLuint loadTexture(const std::string& filePath);
-	GLuint loadEmbeddedTexture(aiTexture* embeddedTexture);
-	void clear(); // Clears the cache
+	std::shared_ptr<ITexture> getTexture(const std::string& filePath);
+	std::shared_ptr<ITexture> loadTexture(const std::string& filePath);
+	std::shared_ptr<ITexture> loadEmbeddedTexture(void* embeddedTexture);
+	void clear(); 
 
 private:
 	TextureManager() = default;
 	~TextureManager();
 
-	std::unordered_map<std::string, Texture*> m_textureCache; // Map of texture ID -> Texture*
+	std::unordered_map<std::string, std::shared_ptr<ITexture>> m_textureCache; // Map of texture ID -> Texture*
 
 	TextureManager(const TextureManager&) = delete;
 	TextureManager& operator=(const TextureManager&) = delete;

@@ -83,6 +83,9 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Utility/FileHandler.h
         Engine/Importers/AssimpImporterFacade.cpp
         Engine/Importers/AssimpImporterFacade.h
+        Engine/Interfaces/ITexture.h
+        Engine/Texture/OpenGL/OGL_Texture.cpp
+        Engine/Texture/OpenGL/OGL_Texture.h
 )
 
 # Add executable based on source files
