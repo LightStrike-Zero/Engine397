@@ -62,11 +62,71 @@ sol::table LuaManager::getTerrainConfig() const
     return m_lua["terrainConfig"];
 }
 
-//-----------------------------------------------------------------------------
-std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig() {
+////-----------------------------------------------------------------------------
+//// OLD ONE USED WITH BROKEN FACTORY
+//std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig() {
+//    runScript("GameScripts/GameManager.lua");
+//    return TerrainFactory::createFromLuaConfig(m_lua["terrainConfig"]);
+//}
+
+
+std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
+{
     runScript("GameScripts/GameManager.lua");
-    return TerrainFactory::createFromLuaConfig(m_lua["terrainConfig"]);
+
+    sol::table config = m_lua["terrainConfig"];
+    std::string typeStr = config["type"];
+    int rows = config["rows"];
+    int cols = config["cols"];
+    float spacing = config["spacing"];
+
+    TerrainTypeEnum terrainEnum;
+
+    if (typeStr == "Heightmap") terrainEnum = TerrainTypeEnum::HEIGHTMAP;
+    else if (typeStr == "Fractal") terrainEnum = TerrainTypeEnum::FRACTAL;
+    else if (typeStr == "TexturedHeightmap") terrainEnum = TerrainTypeEnum::TEXTURED_HEIGHTMAP;
+    else if (typeStr == "TexturedFractal") terrainEnum = TerrainTypeEnum::TEXTURED_FRACTAL;
+    else throw std::runtime_error("Unknown terrain type: " + typeStr);
+
+    std::map<std::string, std::string> combinedParams;
+
+    // Extract parameters
+    sol::table parameters = config["parameters"];
+    for (const auto& pair : parameters)
+    {
+        std::string key = pair.first.as<std::string>();
+        std::string value;
+
+        if (pair.second.is<std::string>())
+            value = pair.second.as<std::string>();
+        else if (pair.second.is<int>())
+            value = std::to_string(pair.second.as<int>());
+        else if (pair.second.is<float>())
+            value = std::to_string(pair.second.as<float>());
+        else if (pair.second.is<double>())
+            value = std::to_string(static_cast<float>(pair.second.as<double>()));
+        else
+            continue;
+
+        combinedParams[key] = value;
+    }
+
+    // Extract texture (if applicable)
+    if (config["texture"].valid()) {
+        sol::table texture = config["texture"];
+        combinedParams["path"] = texture["path"];
+        combinedParams["repeatX"] = std::to_string(texture["repeatX"].get_or(1));
+        combinedParams["repeatY"] = std::to_string(texture["repeatY"].get_or(1));
+    }
+
+    auto terrain = std::make_unique<Terrain>(rows, cols, spacing);
+    auto terrainType = TerrainFactory::createTerrainType(terrainEnum, combinedParams);
+    terrain->setTerrainType(terrainType);
+    terrain->generateTerrain();
+
+    return terrain;
 }
+
 
 //-----------------------------------------------------------------------------
 int LuaManager::getTerrainRows() const
@@ -85,5 +145,23 @@ float LuaManager::getTerrainSpacing() const
 {
     return m_lua["terrainConfig"]["spacing"].get<float>();
 }
+
+
+// HELPER
+
+//std::map<std::string, std::string> LuaManager::extractTextureParams(const sol::table& config)
+//{
+//    std::map<std::string, std::string> texParams;
+//    sol::table tex = config["texture"];
+//
+//    if (tex.valid())
+//    {
+//        for (const auto& [k, v] : tex)
+//            texParams[k.as<std::string>()] = v.as<std::string>();
+//    }
+//
+//    return texParams;
+//}
+
 
 //====================== END OF LUA MANAGER CLASS =============================

@@ -19,14 +19,14 @@ terrainConfig =
 
     parameters =
     {
-        file = "Assets/Terrain/Textures/Terrain003_2K.png",
+        heightmapPath = "Assets/Terrain/Textures/Terrain003_2K.png",
         heightScale = 15.0
     },
 
     texture =
     {
         path = "Assets/Terrain/Textures/Color.png",
-        repeatX = 50,
-        repeatY = 50
+        repeatX = 1,
+        repeatY = 1
     }
 }

@@ -19,7 +19,7 @@ scene:loadModelToRegistry(tank_assetPath)
 --terrainType = "TexturedHeightMap"
 terrainType = "TexturedFractal"
 -- --------------------------------------
-
+-- when no texture is chosen in Lua (all commented) game will crash NEED TO FIX
 
 
 -- load terrain ----------------------------------------------

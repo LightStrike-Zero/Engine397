@@ -30,6 +30,9 @@ class LuaManager : public ScriptManager
 
     private:
         sol::state m_lua;                              // Lua state
+
+        //HELPERS
+        //std::map<std::string, std::string> extractTextureParams(const sol::table& config);
 };
 
 #endif //LUAMANAGER_H
