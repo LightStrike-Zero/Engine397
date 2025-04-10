@@ -6,6 +6,9 @@
 #include <memory>
 #include <string>
 
+#include "Terrain.h"   // Buko
+#include <sol/sol.hpp> // Buko
+
 #include <map>
 
 enum class TerrainTypeEnum {

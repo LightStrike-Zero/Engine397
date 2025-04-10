@@ -40,11 +40,47 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 }
 
 
-void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+//void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
 {
-    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(m_window, true);
+    // ESC TO EXIT ONLY
+//    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+//        glfwSetWindowShouldClose(m_window, true);
+//    }
+
+    // X TO EXIT ONLY
+//    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+//    {
+//        glfwSetWindowShouldClose(m_window, true);
+//    }
+
+    //BUKO X TO EXIT AND SHOW EXIT IMAGE
+    static bool xWasDown = false;
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+    {
+        if (!xWasDown) {
+            showExitScreen = !showExitScreen; // Toggle the flag
+            xWasDown = true;
+        }
+    } else {
+        xWasDown = false;
     }
+
+//    if (showExitScreen)
+//        std::cout << "[DEBUG] Exit screen is visible\n";
+//    else
+//        std::cout << "[DEBUG] Exit screen is NOT visible\n";
+    //BUKO
+
+
+    // buko help manual screen
+    static bool wasMPressedLastFrame = false;
+    if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS && !wasMPressedLastFrame)
+    {
+        showHelpScreen = !showHelpScreen;
+    }
+    wasMPressedLastFrame = glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS;
+    // end of buko help manual screen
 
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
@@ -92,7 +128,7 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
     camera.up = glm::normalize(glm::cross(camera.right, camera.front));
 
     static bool keyWasPressed = false;
-    if (glfwGetKey(m_window, GLFW_KEY_C) == GLFW_PRESS) {
+    if (glfwGetKey(m_window, GLFW_KEY_K) == GLFW_PRESS) {
         if (!keyWasPressed) {
             static bool lineMode = false;
             lineMode = !lineMode;

@@ -24,14 +24,15 @@ std::shared_ptr<TerrainType> TerrainFactory::createTerrainType(TerrainTypeEnum t
         }
 
         default:
-            std::cerr << "Unknown terrain type requested" << std::endl;
+            std::cerr << "[DEBUG] Unknown terrain type requested" << std::endl;
             return nullptr;
     }
 }
 
+//---------------- PRIVATE HELPERS ------------------
 std::shared_ptr<TerrainType> TerrainFactory::createHeightmapTerrain(const std::map<std::string, std::string>& params) {
-    std::string heightmapPath = "assets/heightmap.png"; 
-    float heightScale = 1.0f; 
+    std::string heightmapPath = "assets/heightmap.png";
+    float heightScale = 1.0f;
 
     if (params.count("heightmapPath"))
         heightmapPath = params.at("heightmapPath");
@@ -43,12 +44,12 @@ std::shared_ptr<TerrainType> TerrainFactory::createHeightmapTerrain(const std::m
 }
 
 std::shared_ptr<TerrainType> TerrainFactory::createFractalTerrain(const std::map<std::string, std::string>& params) {
-    int iterations = 8; 
-    float initialDisplacement = 0.5f; 
-    float displacementDecay = 0.65f; 
-    float heightScale = 1.0f; 
-    float smoothness = 1.0f; 
-    int smoothingPasses = 1; 
+    int iterations = 8;
+    float initialDisplacement = 0.5f;
+    float displacementDecay = 0.65f;
+    float heightScale = 1.0f;
+    float smoothness = 1.0f;
+    int smoothingPasses = 1;
     unsigned int seed = 123456789;
 
     if (params.count("iterations"))
@@ -76,10 +77,10 @@ std::shared_ptr<TerrainType> TerrainFactory::createFractalTerrain(const std::map
 }
 
 std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain, const std::map<std::string, std::string>& params) {
-    std::string texturePath = "assets/stone.png"; // Default value
+    std::string texturePath = params.at("path");  // now mandatory
+    int repeatX = std::stoi(params.at("repeatX"));
+    int repeatY = std::stoi(params.at("repeatY"));
 
-    if (params.count("texturePath"))
-        texturePath = params.at("texturePath");
-
-    return std::make_shared<TerrainTexture>(baseTerrain, texturePath);
+    return std::make_shared<TerrainTexture>(baseTerrain, texturePath, repeatX, repeatY);
 }
+

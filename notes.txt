@@ -1,0 +1,14 @@
+Code for testing mesh
+---------------------
+std::cout << "[DEBUG] Terrain has " << terrainMeshData.vertices.size() << " vertices.\n";
+
+    for (size_t i = 0; i < std::min<size_t>(terrainMeshData.vertices.size(), 10); ++i)
+    for (size_t i = 0; i < terrainMeshData.vertices.size(); ++i)
+    for (size_t i = 0; i < terrainMeshData.vertices.size(); i += 5000)
+    {
+        const Vertex& v = terrainMeshData.vertices[i];
+        std::cout << "Vertex " << i << ": position = ("
+                  << v.position.x << ", "
+                  << v.position.y << ", "
+                  << v.position.z << ")\n";
+    }

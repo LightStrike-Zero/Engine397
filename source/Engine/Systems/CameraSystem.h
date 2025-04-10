@@ -15,7 +15,7 @@ public:
     CameraSystem(GLFWwindow* window, float aspectRatio)
         : m_window(window), m_aspectRatio(aspectRatio) {}
     
-    void update(EnttFacade& ecs, float deltaTime);
+    void update(EnttFacade& ecs, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
     
     std::tuple<glm::mat4, glm::mat4, glm::vec3> getActiveCameraMatrices(EnttFacade& ecs);
     
@@ -23,8 +23,9 @@ private:
     GLFWwindow* m_window;
     float m_aspectRatio;
     
-    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
-    
+    //void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
+    void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
+
     void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
     
     void handleMouseInput(CameraComponent& camera);

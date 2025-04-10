@@ -11,6 +11,9 @@
 #include <iostream>
 #include "ScriptManager.h"
 #include "ResourceManagement/Scene.h"
+#include "Terrain/Terrain.h"
+
+class Scene;
 
 class LuaManager : public ScriptManager
 {
@@ -20,6 +23,10 @@ class LuaManager : public ScriptManager
 
         void registerScene(Scene& scene) override;              // Expose Scene to Lua
         void runScript(const std::string& scriptPath) override; // runs the Lua script
+        std::unique_ptr<Terrain> createTerrainFromConfig();
+        int getTerrainRows() const;
+        int getTerrainCols() const;
+        float getTerrainSpacing() const;
 
     private:
         sol::state m_lua;                              // Lua state
