@@ -5,7 +5,7 @@
 // LuaManager Class: Manages the Lua interface
 
 #include "LuaManager.h"
-#include "Scene.h"
+#include "ResourceManagement/Scene.h"
 #include "Terrain/TerrainFactory.h"
 #include <iostream>
 #include <fstream>

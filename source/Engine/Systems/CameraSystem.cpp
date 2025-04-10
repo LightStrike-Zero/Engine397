@@ -4,7 +4,7 @@
 #include "EventSystem.h"
 #include "ResourceManagement/EnttFacade.h"
 
-void CameraSystem::update(EnttFacade& ecs, float deltaTime)
+void CameraSystem::update(EnttFacade& ecs, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
 {
     auto view = ecs.view<CameraComponent, TransformComponent>();
         
@@ -13,7 +13,7 @@ void CameraSystem::update(EnttFacade& ecs, float deltaTime)
         auto& transform = view.get<TransformComponent>(entity);
             
         if (isActiveCamera(entity, ecs.getRegistry())) {
-            handleCameraInput(transform, camera, deltaTime);
+            handleCameraInput(transform, camera, deltaTime, showExitScreen, showHelpScreen);
         }
     }
 }

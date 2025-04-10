@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene);                                         // Expose Scene to Lua
     std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
-    scene.addTerrainToScene(*terrain);                                       // add terrain to scene
+    scene.addTerrainEntity(*terrain);                                       // add terrain to scene
 
     const RawMeshData& terrainMeshData = terrain->getMeshData();
 
@@ -80,11 +80,7 @@ int main(int argc, char** argv)
     // buko this is for exit pic probably needs to go elsewhere!
     GLuint exitTextureID = TextureManager::getInstance().loadTexture("Assets/images/exit_pic.png");
     // end ofbuko
-    auto terrainType = TerrainFactory::createTerrainType(chosenType, chosenParams);
-    Terrain terrain(terrainGridRows, terrainGridCols, terrainScale);
-    terrain.setTerrainType(terrainType);
-    terrain.generateTerrain();
-    scene.addTerrainEntity(terrain);
+
 
     // buko -------------- read manual text file
     std::string helpText;
