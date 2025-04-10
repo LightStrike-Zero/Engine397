@@ -8,12 +8,10 @@
 #include <string>
 
 #include "AssimpImporter.h"
+#include "AssimpImporterFacade.h"
 
 struct LoadedModel {
-    //TODO this isn't a good representation of a model - in fact we really dont even need this in this current
-    // state as we should be tracking entities and components
-    std::vector<RawMeshData> meshes; // Raw mesh data
-    // std::vector<RawMaterialData> materials; // Raw material data
+    std::vector<RawMeshData> meshes; 
 };
 
 class ModelLoader {
@@ -29,6 +27,8 @@ private:
 
     ModelLoader(const ModelLoader&) = delete;
     ModelLoader& operator=(const ModelLoader&) = delete;
+
+    AssimpImporterFacade m_importer;
 };
 
 #endif //MODELLOADER_H
