@@ -22,6 +22,9 @@ public:
     void update( float deltaTime);
     void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, float deltaTime) const;
     void shootCannon(TransformComponent cannonTransform, SphereColliderComponent sphereCollider, float deltaTime);
+    bool checkCollision(const BoxColliderComponent& a, const TransformComponent& aTransform,
+                    const BoxColliderComponent& b, const TransformComponent& bTransform) const;
+
 
 private:
     EnttFacade* m_entt;

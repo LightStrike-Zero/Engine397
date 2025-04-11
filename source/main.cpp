@@ -86,8 +86,8 @@ int main(int argc, char** argv)
     // }
     //load player tank
     scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
-    std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
+    // std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
+    // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
     glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
@@ -101,8 +101,6 @@ int main(int argc, char** argv)
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
-    std::string jeepTestPath = R"(Assets\game_jeep_gltf\jeep2.gltf)";
-    std::string jeepTestPath2 = R"(Assets\game_jeep_glb\jeep2.glb)";
     std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
     std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
     std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
@@ -110,11 +108,15 @@ int main(int argc, char** argv)
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
     for (int i = 0; i < 3; ++i) {
-        scene.loadCollidableEntity(tree1Path);
-        // scene.loadCollidableModelToRegistry(rock2Path);
-        scene.loadCollidableEntity(jeepTestPath2);
+        scene.loadCollidableBoxEntity(tree1Path);
+        // scene.loadCollidableBoxEntity(jeepPath);
+        // scene.loadCollidableBoxEntity(rock1Path);
+        // scene.loadModelEntity(tree1Path);
+        // scene.loadCollidableCapsuleEntity(tree1Path);
+        // scene.loadCollidableEntity(rock2Path);
+        // scene.loadCollidableBoxEntity(jeepPath);
     }
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,CollidableComponent>();
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
 
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);

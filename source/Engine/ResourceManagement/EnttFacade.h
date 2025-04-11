@@ -4,6 +4,11 @@
 #include <entt/entt.hpp>
 #include <utility>
 
+/// by Hugo. This is a wrapper that helps to facade entt:: when using entt::exclude.
+template<typename... Components>
+constexpr auto exclude = entt::exclude<Components...>;
+
+
 class EnttFacade {
 public:
     EnttFacade() = default;
@@ -34,6 +39,14 @@ public:
     auto view() {
         return m_registry.view<Components...>();
     }
+
+    //created by Hugo, because I need view<Component>(entt::exclude<Component>)
+    template<typename... Include, typename... Exclude>
+    auto view(entt::exclude_t<Exclude...> ex) {
+        return m_registry.view<Include...>(ex);
+    }
+
+
 
     template<typename Component>
     void removeComponent(Entity entity) {
