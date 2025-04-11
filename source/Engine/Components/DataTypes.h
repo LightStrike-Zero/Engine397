@@ -2,6 +2,13 @@
 // Created by Shaun on 6/04/2025.
 //
 
+/**
+ * @file DataTypes.h
+ * @brief Defines several DataType structs: Material Data, RawMaterialData, Vertex, RawMeshData .
+ * @author Shaun
+ * @date 2025-04-06
+ */
+
 #ifndef DATATYPES_H
 #define DATATYPES_H
 #include <vector>
@@ -10,49 +17,67 @@
 
 class Texture;
 
+/**
+ * @struct MaterialData
+ * @brief Stores classic lighting model parameters and optional texture IDs.
+ */
 struct MaterialData {
-    glm::vec3 diffuseColor;         // Ambient color
-    glm::vec3 specularColor;        // Specular color
-    glm::vec3 ambientColor;         // Ambient color
-    float shininess = 32.0f;        // Shininess value
+    glm::vec3 diffuseColor;         ///< Diffuse surface colour
+    glm::vec3 specularColor;        ///< Specular highlight colour
+    glm::vec3 ambientColor;         ///< Ambient light colour
+    float shininess = 32.0f;        ///< Shininess coefficient for specular reflection
 
-    GLuint diffuseTextureID = 0; // OpenGL ID for the diffuseColor texture
-    GLuint specularTextureID = 0; // OpenGL ID for the specularColor texture
+    GLuint diffuseTextureID = 0;    ///< OpenGL Texture ID for the diffuseColor texture
+    GLuint specularTextureID = 0;   ///< OpenGL Texture ID for the specularColor texture
 
-    bool isDecal = false; // Decal flag
-
+    bool isDecal = false;           ///< Whether this material should be rendered as a decal
 
     MaterialData() = default;
+
+    /**
+     * @brief Parameterised constructor.
+     * @param diffuse Diffuse colour
+     * @param specular Specular colour
+     * @param shininess Shininess value
+     */
     MaterialData(const glm::vec3& diffuse, const glm::vec3& specular, float shininess)
         : diffuseColor(diffuse), specularColor(specular), shininess(shininess) {}
 
 };
 
-
+/**
+ * @struct RawMaterialData
+ * @brief Contains texture IDs for PBR materials and optional decal flag.
+ */
 struct RawMaterialData {
-    GLuint baseColorTextureID = 0;  // Albedo texture
-    GLuint metalnessTextureID = 0; // Metalness texture
-    GLuint roughnessTextureID = 0; // Roughness texture
-    GLuint normalTextureID = 0;    // Normal map
-    bool isDecal = false;          // Decal flag
+    GLuint baseColorTextureID = 0;      ///< Albedo (base colour) texture
+    GLuint metalnessTextureID = 0;      ///< Metalness texture
+    GLuint roughnessTextureID = 0;      ///< Roughness texture
+    GLuint normalTextureID = 0;         ///< Normal map texture
+    bool isDecal = false;               ///< Decal flag
 };
 
-
+/**
+ * @struct Vertex
+ * @brief Stores a single point/vertex.
+ */
 struct Vertex {
-    glm::vec3 position;
-    glm::vec2 texCoords;
-    glm::vec3 normal;
-    glm::vec3 tangent;
-    glm::vec3 bitangent;
+    glm::vec3 position;             ///< Position in world space
+    glm::vec2 texCoords;            ///< Texture coordinates
+    glm::vec3 normal;               ///< Normal vector
+    glm::vec3 tangent;              ///< Tangent vector for normal mapping
+    glm::vec3 bitangent;            ///< Bitangent vector for normal mapping
 };
 
+/**
+ * @struct RawMeshData
+ * @brief A raw mesh data containing geometry (vertices and indices), material, and transform.
+ */
 struct RawMeshData {
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    RawMaterialData material;
-    glm::mat4 transform = glm::mat4(1.0f); // Store the node's global transform
-
+    std::vector<Vertex> vertices;                ///< List of mesh vertices
+    std::vector<unsigned int> indices;           ///< List of indices for indexed rendering
+    RawMaterialData material;                    ///< Material applied to the mesh
+    glm::mat4 transform = glm::mat4(1.0f);    ///< Global transformation matrix of the mesh
 };
-
 
 #endif //DATATYPES_H
