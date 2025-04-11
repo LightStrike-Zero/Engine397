@@ -25,6 +25,10 @@
 
 class Scene;
 
+/**
+ * @class LuaManager
+ * @brief A class to manage Lua integration
+ */
 class LuaManager : public ScriptManager
 {
     public:
