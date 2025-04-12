@@ -12,7 +12,6 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 #include <vector>
-#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 class Texture;
@@ -27,8 +26,8 @@ struct MaterialData {
     glm::vec3 ambientColor;         ///< Ambient light colour
     float shininess = 32.0f;        ///< Shininess coefficient for specular reflection
 
-    GLuint diffuseTextureID = 0;    ///< OpenGL Texture ID for the diffuseColor texture
-    GLuint specularTextureID = 0;   ///< OpenGL Texture ID for the specularColor texture
+    uint8_t diffuseTextureID = 0;    ///< OpenGL Texture ID for the diffuseColor texture
+    uint8_t specularTextureID = 0;   ///< OpenGL Texture ID for the specularColor texture
 
     bool isDecal = false;           ///< Whether this material should be rendered as a decal
 
@@ -50,10 +49,10 @@ struct MaterialData {
  * @brief Contains texture IDs for PBR materials and optional decal flag.
  */
 struct RawMaterialData {
-    GLuint baseColorTextureID = 0;      ///< Albedo (base colour) texture
-    GLuint metalnessTextureID = 0;      ///< Metalness texture
-    GLuint roughnessTextureID = 0;      ///< Roughness texture
-    GLuint normalTextureID = 0;         ///< Normal map texture
+    uint_fast32_t baseColorTextureID = 0;      ///< Albedo (base colour) texture
+    uint_fast32_t metalnessTextureID = 0;      ///< Metalness texture
+    uint_fast32_t roughnessTextureID = 0;      ///< Roughness texture
+    uint_fast32_t normalTextureID = 0;         ///< Normal map texture
     bool isDecal = false;               ///< Decal flag
 };
 
