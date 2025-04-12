@@ -128,6 +128,7 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
+    //TODO this needs to be LUA
     std::array<std::string, 6> faces = { "Assets/skybox/right.jpg", "Assets/skybox/left.jpg", "Assets/skybox/top.jpg", "Assets/skybox/bottom.jpg", "Assets/skybox/front.jpg", "Assets/skybox/back.jpg" };
     scene.createSkyBox(faces);
 
