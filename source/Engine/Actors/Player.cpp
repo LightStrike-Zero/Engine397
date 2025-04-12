@@ -1,6 +1,8 @@
 #include "Player.h"
 
 #include <iostream>
+#include "Physics_DEPRECIATED//TankCollision.h"
+
 
 void Player::update(float deltaTime) {
     auto playerView = m_entt->view<PlayerControllerComponent, TransformComponent, BoxColliderComponent>();
@@ -22,7 +24,8 @@ void Player::update(float deltaTime) {
             auto& otherTransform = collidableView.get<TransformComponent>(other);
             auto& otherCollider = collidableView.get<BoxColliderComponent>(other);
 
-            if (checkCollision(playerCollider, playerTransform, otherCollider, otherTransform)) {
+            if (checkBoxtoBoxCollision(playerCollider, playerTransform, otherCollider, otherTransform)) {
+            // if (checkCollision(playerCollider, playerTransform, otherCollider, otherTransform)) {
                 playerTransform = originalTransform; // cancel movement
                 break;
             }

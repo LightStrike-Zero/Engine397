@@ -6,6 +6,9 @@
 #define CAPSULECOLLIDERCOMPONENT_H
 
 #include <glm/glm.hpp>
+#include <array>
+#include <vector>
+#include <algorithm>  // for std::min / std::max
 
 struct CapsuleColliderComponent {
     float radius = 0.5f;

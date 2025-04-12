@@ -6,6 +6,9 @@
 #define SPHERECOLLIDERCOMPONENT_H
 
 #include <glm/glm.hpp>
+#include <array>
+#include <vector>
+#include <algorithm>  // for std::min / std::max
 
 struct SphereColliderComponent {
     float radius = 1.f;

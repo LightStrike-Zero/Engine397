@@ -6,6 +6,9 @@
 #define BOXCOLLIDERCOMPONENT_H
 
 #include <glm/glm.hpp>
+#include <array>
+#include <vector>
+#include <algorithm>  // for std::min / std::max
 
 struct BoxColliderComponent {
     glm::vec3 halfExtents = glm::vec3(0.5f); // half-size (e.g., 1x1x1 cube)
