@@ -44,7 +44,7 @@ void Player::handleMovementInput(TransformComponent& transform, BoxColliderCompo
     forward.x = -sin(glm::radians(transform.rotation.y));
     forward.y = 0.0f;
     forward.z = -cos(glm::radians(transform.rotation.y));
-    glm::vec3 velocity = forward * deltaTime * movementSpeed;
+    const glm::vec3 velocity = forward * deltaTime * movementSpeed;
 
 
 

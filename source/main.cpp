@@ -73,11 +73,12 @@ int main(int argc, char** argv)
      * this wont stay like this
      */
     auto cameraEntity = scene.getEntityManager().createEntity();
-    scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 0.0f, 0.0f)); // this set the player/camera start pos
+    scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f)); // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
     Player player(&scene.getEntityManager(),static_cast<GLFWwindow*>(window->GetNativeWindow()));//added by Hugo
 
+    //TODO should make all lua loading into one function
     std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath()); // buko: read manual text file
 
     static float lastFrame = 0.0f;
@@ -105,18 +106,18 @@ int main(int argc, char** argv)
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
     std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
     std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
-    std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
-    std::string tree2Path = R"(Assets\game_tree2_dead_big\trees_dead_big.gltf)";
-    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
-    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
+    std::string tree1Path = R"(Assets\game_tree1_dead_small\tree1.gltf)";
+    std::string tree2Path = R"(Assets\game_tree2_dead_big\tree2.gltf)";
+    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\tree3.gltf)";
+    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\tree4.gltf)";
     for (int i = 0; i < 3; ++i) {
         scene.loadCollidableBoxEntity(tree1Path);
-        // scene.loadCollidableBoxEntity(jeepPath);
-        // scene.loadCollidableBoxEntity(rock1Path);
-        // scene.loadModelEntity(tree1Path);
-        // scene.loadCollidableCapsuleEntity(tree1Path);
-        // scene.loadCollidableEntity(rock2Path);
-        // scene.loadCollidableBoxEntity(jeepPath);
+        scene.loadCollidableBoxEntity(jeepPath);
+        scene.loadCollidableBoxEntity(rock1Path);
+        scene.loadModelEntity(tree1Path);
+        scene.loadCollidableCapsuleEntity(tree1Path);
+        scene.loadCollidableBoxEntity(rock2Path);
+        scene.loadCollidableBoxEntity(jeepPath);
     }
     auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
 
