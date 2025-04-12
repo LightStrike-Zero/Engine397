@@ -35,7 +35,8 @@ void LuaManager::registerScene(Scene& scene)
             "Scene",
             sol::constructors<Scene()>(),
             // "loadModelToRegistry", &Scene::loadModelToRegistry this has been replaced by the below
-            "loadModelToRegistry", &Scene::loadModelEntity
+            "loadModelToRegistry", &Scene::loadModelEntity,
+            "loadBoxModelToRegistry", &Scene::loadCollidableBoxEntity
     );
 
     // Pass the Scene instance to Lua using Sol2

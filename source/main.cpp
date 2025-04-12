@@ -13,7 +13,7 @@
 #include "Window/glfwWindow.h"
 // Buko -------------------------
 // Libraries for scripting
-#include <lua.hpp>
+// #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 #include "FileHandler.h"
@@ -51,7 +51,8 @@ int main(int argc, char** argv)
     //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
     ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
-    scriptManager->registerScene(scene);                                         // Expose Scene to Lua
+    scriptManager->registerScene(scene);// Expose Scene to Lua
+    scriptManager->runScript("GameScripts/HugoTest.lua");
     std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
     scene.addTerrainEntity(*terrain);                                       // add terrain to scene
 
@@ -105,10 +106,10 @@ int main(int argc, char** argv)
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
     std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
     std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
-    std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
-    std::string tree2Path = R"(Assets\game_tree2_dead_big\trees_dead_big.gltf)";
-    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
-    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
+    std::string tree1Path = R"(Assets\game_tree1_dead_small\tree1.gltf)";
+    std::string tree2Path = R"(Assets\game_tree2_dead_big\trees.gltf)";
+    std::string tree3Path = R"(Assets\game_tree3_pine_narrow\tree3.gltf)";
+    std::string tree4Path = R"(Assets\game_tree4_pine2_wide\tree4.gltf)";
     for (int i = 0; i < 3; ++i) {
         scene.loadCollidableBoxEntity(tree1Path);
         // scene.loadCollidableBoxEntity(jeepPath);

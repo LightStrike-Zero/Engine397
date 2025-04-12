@@ -4,6 +4,8 @@
 
 #include "EntityFactory.h"
 
+#include <iostream>
+
 #include "Components/CollisionComponents/CollidableComponent.h"
 #include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "Components/CollisionComponents/SphereColliderComponent.h"
@@ -19,6 +21,7 @@ void EntityFactory::createEntitiesFromModel(const std::string& filepath) {
     // Get the model loader (singleton or instance as needed)
     ModelLoader& loader = ModelLoader::getInstance();
 
+    std::cout << "Loading model " << filepath << std::endl;
     // Load model data from file.
     LoadedModel modelData = loader.loadModel(filepath);
     AssimpImporter importer;
