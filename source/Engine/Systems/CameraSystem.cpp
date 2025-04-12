@@ -43,36 +43,19 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 //void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
 void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
 {
-    // ESC TO EXIT ONLY
-//    if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-//        glfwSetWindowShouldClose(m_window, true);
-//    }
 
-    // X TO EXIT ONLY
-//    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
-//    {
-//        glfwSetWindowShouldClose(m_window, true);
-//    }
 
-    //BUKO X TO EXIT AND SHOW EXIT IMAGE
-    static bool xWasDown = false;
-    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS)
+    static bool exit = false;
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS || glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        if (!xWasDown) {
+        if (!exit) {
             showExitScreen = !showExitScreen; // Toggle the flag
-            xWasDown = true;
+            exit = true;
         }
     } else {
-        xWasDown = false;
+        exit = false;
     }
-
-//    if (showExitScreen)
-//        std::cout << "[DEBUG] Exit screen is visible\n";
-//    else
-//        std::cout << "[DEBUG] Exit screen is NOT visible\n";
-    //BUKO
-
-
+    
     // buko help manual screen
     static bool wasMPressedLastFrame = false;
     if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS && !wasMPressedLastFrame)

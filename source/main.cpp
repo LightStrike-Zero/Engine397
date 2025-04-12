@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
     // entt::entity playerTankEntity = entt::null;
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
-        // playerTankEntity = *playerView.begin();
+    // playerTankEntity = *playerView.begin();
     // }
     //load player tank
     scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
@@ -134,18 +134,16 @@ int main(int argc, char** argv)
     while (!window->ShouldClose())
     {
         Gui.BeginFrame();
-        if (!showExitScreen){
+        if (!showExitScreen)
+        {
             float currentFrame = window->GetTime();
             float deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
-            // camera system 
+            // camera system
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-        // camera system 
-        cameraSystem.update(scene.getEntityManager(), deltaTime);
-        auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-        player.update(deltaTime);
+            player.update(deltaTime);
 
             // terrian collision
             // comment this out to disable terrain collision
@@ -157,51 +155,46 @@ int main(int argc, char** argv)
                 float terrainHeight = collision.getHeightAt(playerTankPos);
                 playerTankTransform.position.y = terrainHeight + playerHeight;
                 cameraTransform.position = playerTankTransform.position - cameraOffset;
-                //std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
+            }
+            // terrian collision
+            // comment this out to disable terrain collision
+            for (auto entity : playerView) {
+                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
+                glm::vec3 playerTankPos =  playerTankTransform.position;
+                float terrainHeight = collision.getHeightAt(playerTankPos);
+                playerTankTransform.position.y = terrainHeight + playerHeight;
+                cameraTransform.position = playerTankTransform.position - cameraOffset;
+                // std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
             }
             currentRenderedFrame = renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
-        // terrian collision
-        // comment this out to disable terrain collision
-        // auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-        for (auto entity : playerView) {
-            auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-            glm::vec3 playerTankPos =  playerTankTransform.position;
-            float terrainHeight = collision.getHeightAt(playerTankPos);
-            playerTankTransform.position.y = terrainHeight + playerHeight;
-            cameraTransform.position = playerTankTransform.position - cameraOffset;
-            // std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
-        else
-        {
-            
-            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
+            else
             {
-                window->SetShouldClose(true);
+            
+                if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
+                {
+                    window->SetShouldClose(true);
+                }
             }
+            Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
+
+
+
+            if (showHelpScreen)
+            {
+                Gui.ShowHelpManual(showHelpScreen, helpText);
+            }
+            
+            Gui.EndFrame();
+
+            window->SwapBuffers();
+            window->PollEvents();
+            // window->pollInputEvents();
+
         }
-        Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
 
-
-
-        // Buko help manual system
-        if (showHelpScreen)
-        {
-            Gui.ShowHelpManual(showHelpScreen, helpText);
-        }
-        // buko splash screen
-        // if (showExitScreen)
-        // {
-        // }
-        // manual--------------------------
-        Gui.EndFrame();
-
-        window->SwapBuffers();
-        window->PollEvents();
-        window->pollInputEvents();//custom, not part of glfw
-
+        Gui.Shutdown();
+        delete window;
+        return 0;
     }
 
-    Gui.Shutdown();
-    delete window;
-    return 0;
-}

@@ -49,13 +49,25 @@ void Player::handleMovementInput(TransformComponent& transform, BoxColliderCompo
 
 
     if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
         transform.position -= velocity;
+        std::cout << "key W pressed" << std::endl;
+    }
     if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
         transform.position += velocity;
+        std::cout << "key s pressed" << std::endl;
+    }
     if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
         transform.rotation.y += rotationVelocity;
+        std::cout << "key a pressed" << std::endl;
+    }
     if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
         transform.rotation.y -= rotationVelocity;
+        std::cout << "key d pressed" << std::endl;
+    }
 }
 void Player::shootCannon(TransformComponent cannonTransform, SphereColliderComponent sphereCollider, float deltaTime) {
 

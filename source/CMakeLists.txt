@@ -2,7 +2,6 @@
 
 # Source files go here
 set(SOURCE_FILES
-        Engine/Texture/Texture.cpp
         Engine/Texture/TextureManager.cpp
         Engine/Shaders/Shader.cpp
         main.cpp
