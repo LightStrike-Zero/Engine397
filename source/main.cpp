@@ -128,6 +128,9 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
+    std::array<std::string, 6> faces = { "Assets/skybox/right.jpg", "Assets/skybox/left.jpg", "Assets/skybox/top.jpg", "Assets/skybox/bottom.jpg", "Assets/skybox/front.jpg", "Assets/skybox/back.jpg" };
+    scene.createSkyBox(faces);
+
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
     unsigned int currentRenderedFrame;
     while (!window->ShouldClose())

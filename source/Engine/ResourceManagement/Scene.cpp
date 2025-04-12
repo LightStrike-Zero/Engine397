@@ -50,8 +50,11 @@ void Scene::loadCollidableCapsuleEntity(const std::string& filepath) {
         m_entityFactory->createCollidableCapsuleEntitiesFromModel(filepath);
 }
 
-void Scene::loadCollidableSphereEntity(const std::string& filepath) {
-    if (m_entityFactory)
-        m_entityFactory->createCollidableSphereEntitiesFromModel(filepath);
-
+void Scene::loadCollidableSphereEntity(const std::string &filepath) {
+  if (m_entityFactory)
+    m_entityFactory->createCollidableSphereEntitiesFromModel(filepath);
 }
+void Scene::createSkyBox(const std::array<std::string, 6> &faces) {
+        m_entityFactory->createSkyBox(faces);
+}
+

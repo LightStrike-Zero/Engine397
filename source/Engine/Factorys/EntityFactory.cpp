@@ -4,11 +4,15 @@
 
 #include "EntityFactory.h"
 
-#include "Components/CollisionComponents/CollidableComponent.h"
 #include "Components/CollisionComponents/BoxColliderComponent.h"
-#include "Components/CollisionComponents/SphereColliderComponent.h"
 #include "Components/CollisionComponents/CapsuleColliderComponent.h"
+#include "Components/CollisionComponents/CollidableComponent.h"
+#include "Components/CollisionComponents/SphereColliderComponent.h"
+#include "Components/SkyboxComponent.h"
 #include "OpenGL/OpenGLMeshBuffer.h"
+
+#include <Texture/TextureManager.h>
+#include <iostream>
 
 EntityFactory::EntityFactory(EnttFacade* enttFacade)
     : m_entityFacade(enttFacade)
@@ -102,34 +106,140 @@ void EntityFactory::createCollidableCapsuleEntitiesFromModel(const std::string& 
     }
 }
 
-void EntityFactory::createCollidableSphereEntitiesFromModel(const std::string& filepath) {
-    ModelLoader& loader = ModelLoader::getInstance();
+void EntityFactory::createCollidableSphereEntitiesFromModel(
+    const std::string &filepath) {
+  ModelLoader &loader = ModelLoader::getInstance();
 
-    // Load the raw model data
-    LoadedModel modelData = loader.loadModel(filepath);
+  // Load the raw model data
+  LoadedModel modelData = loader.loadModel(filepath);
 
-    // Process raw meshes into MeshComponents
-    AssimpImporter importer;
-    for (const auto& rawMesh : modelData.meshes)
-    {
-        entt::entity entity = m_entityFacade->createEntity();
+  // Process raw meshes into MeshComponents
+  AssimpImporter importer;
+  for (const auto &rawMesh : modelData.meshes) {
+    entt::entity entity = m_entityFacade->createEntity();
 
-        RenderableComponent meshComponent(rawMesh);
-        importer.setupMesh(meshComponent);
-        m_entityFacade->addComponent<RenderableComponent>(entity, meshComponent);
+    RenderableComponent meshComponent(rawMesh);
+    importer.setupMesh(meshComponent);
+    m_entityFacade->addComponent<RenderableComponent>(entity, meshComponent);
 
-        TransformComponent transformComponent;
-        transformComponent.setFromModelMatrix(rawMesh.transform);
-        m_entityFacade->addComponent<TransformComponent>(entity, transformComponent);
+    TransformComponent transformComponent;
+    transformComponent.setFromModelMatrix(rawMesh.transform);
+    m_entityFacade->addComponent<TransformComponent>(entity,
+                                                     transformComponent);
 
-        // for now im hard-coding the lighting shader into this, but it needs a way of being dynamically set
-        MaterialComponent materialComponent(rawMesh.material, "lightingShader");
-        m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
+    // for now im hard-coding the lighting shader into this, but it needs a way
+    // of being dynamically set
+    MaterialComponent materialComponent(rawMesh.material, "lightingShader");
+    m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
 
-        SphereColliderComponent collider = generateSphereCollider(extractPositions(meshComponent.vertices));
-        m_entityFacade->addComponent<SphereColliderComponent>(entity, collider);
-    }
+    SphereColliderComponent collider =
+        generateSphereCollider(extractPositions(meshComponent.vertices));
+    m_entityFacade->addComponent<SphereColliderComponent>(entity, collider);
+  }
 }
+
+
+
+void EntityFactory::createSkyBox(const std::array<std::string, 6>& faces) {
+    // 1. Load the cubemap texture from the provided faces
+    uint32_t cubeMapID = TextureManager::getInstance().loadCubeMapFromFiles(faces, "skybox");
+    std::cout << "Cubemap ID: " << cubeMapID << std::endl;
+
+    // 2. Prepare RawMeshData for a cube.
+    // We'll use 36 vertices (two triangles per face, 6 faces) with positions only.
+    RawMeshData skyboxMesh;
+    std::vector<Vertex> vertices = {
+        // Back face (z = -1)
+        { glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        // Front face (z = 1)
+        { glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        // Left face (x = -1)
+        { glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        // Right face (x = 1)
+        { glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        // Bottom face (y = -1)
+        { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        // Top face (y = 1)
+        { glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+
+        { glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) },
+        { glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec2(0.f,0.f), glm::vec3(0.f), glm::vec3(0.f), glm::vec3(0.f) }
+    };
+
+    // Generate sequential indices.
+    std::vector<unsigned int> indices(vertices.size());
+    for (unsigned int i = 0; i < vertices.size(); ++i)
+        indices[i] = i;
+
+    // Set up our mesh data.
+    skyboxMesh.vertices = vertices;
+    skyboxMesh.indices = indices;
+    // Scale the cube to a very large size so it encompasses the scene.
+    skyboxMesh.transform = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
+    auto entity = m_entityFacade->createEntity();
+
+    AssimpImporter importer;
+
+
+    RenderableComponent renderable(skyboxMesh);
+    importer.setupMesh(renderable);
+    m_entityFacade->addComponent<RenderableComponent>(entity, renderable);
+    std::cout << "Skybox Renderable component " << std::endl;
+
+    SkyboxComponent skyboxComponent;
+    skyboxComponent.cubemapID = cubeMapID;
+    skyboxComponent.shaderID = "skyboxShader";
+    m_entityFacade->addComponent<SkyboxComponent>(entity, skyboxComponent);
+    std::cout << "Skybox skybox component " << std::endl;
+
+    // Transform component.
+    TransformComponent transform;
+    transform.setFromModelMatrix(skyboxMesh.transform);
+    m_entityFacade->addComponent<TransformComponent>(entity, transform);
+    std::cout << "Skybox transform component " << std::endl;
+
+}
+
+
+
 
 // Helper function to extract vertices from meshData
 std::vector<glm::vec3> EntityFactory::extractPositions(const std::vector<Vertex>& meshVertices) {

@@ -11,10 +11,11 @@
 
 #include "OpenGLShadowMapBuffer.h"
 
+#include "Components/MaterialComponent.h"
+#include "Components/SkyboxComponent.h"
+#include "Components/TransformComponent.h"
 #include "ResourceManagement/Scene.h"
 #include "texture/TextureLoader.h"
-#include "Components/MaterialComponent.h"
-#include "Components/TransformComponent.h"
 
 OpenGLRenderer::OpenGLRenderer()
     :  m_shaderManager(ShaderManager()),
@@ -22,6 +23,7 @@ OpenGLRenderer::OpenGLRenderer()
 {
 
     m_shaderManager.loadShader("lightingShader", "Vert.glsl", "Frag.glsl");
+    m_shaderManager.loadShader("skyboxShader", "skybox_vert.glsl", "skybox_frag.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
 
@@ -41,13 +43,15 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
-    
+
     ShadowPass(scene, m_shaderManager, m_shadowMapBuffer); // 4
     m_frameBuffer.bind();
     
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
     glEnable(GL_DEPTH_TEST);
+
+    SkyboxPass(viewMatrix, projectionMatrix, scene, m_shaderManager);
 
     glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection());
     lightingShader->bind(); //1
@@ -146,6 +150,51 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
 }
 
 
+void OpenGLRenderer::SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, Scene& scene, ShaderManager& shaderManager)
+{
+    glDepthMask(GL_FALSE);
+
+    // Retrieve and bind the skybox shader.
+    auto skyboxShader = shaderManager.getShader("skyboxShader");
+    skyboxShader->bind();
+    m_currentShaderID = skyboxShader->getID();
+
+    // Remove translation from the view matrix.
+    glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(viewMatrix));
+    skyboxShader->SetUniformMat4("view", viewNoTranslation);
+    skyboxShader->SetUniformMat4("projection", projectionMatrix);
+
+    // Iterate over all entities that have the SkyboxComponent, RenderableComponent, and TransformComponent.
+    std::cout << "Skybox Pass" << std::endl;
+    auto skyboxView = scene.getEntityManager().view<SkyboxComponent, RenderableComponent, TransformComponent>();
+    for (auto entity : skyboxView) {
+        auto& skyboxComp = skyboxView.get<SkyboxComponent>(entity);
+        std::cout << "SkyboxComponent" << std::endl;
+        auto& renderable = skyboxView.get<RenderableComponent>(entity);
+        std::cout << "RenderableComponent" << std::endl;
+        auto& transform = skyboxView.get<TransformComponent>(entity);
+        std::cout << "TransformComponent" << std::endl;
+
+        // Bind the cubemap texture to texture unit 0.
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxComp.cubemapID);
+        skyboxShader->SetUniform1i("skybox", 0);
+
+        // In many skybox shaders, the model transform is not used (or assumed to be identity).
+        // If your implementation uses a transform, you can pass it here.
+        skyboxShader->SetUniformMat4("model", transform.getModelMatrix());
+
+        // Draw the skybox geometry.
+        renderable.meshBuffer->bind();
+        renderable.meshBuffer->draw();
+        glBindVertexArray(0);
+        glDepthMask(GL_TRUE);
+    }
+
+    // Restore default depth function.
+    glDepthFunc(GL_LESS);
+}
+
 void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap)
 {
     glEnable(GL_DEPTH_TEST);
@@ -158,11 +207,11 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
 
    
     // Iterate over entities with Mesh and Transform components
-    auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent>();
+    auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent>(exclude<SkyboxComponent>);
     for (auto entity : view) {
         auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
         auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
-        auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
+        // auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
 
         auto shadowShader = shaderManager.getShader("shadowShader"); // for now we'll hard code this, remove it from main.
         if (shadowShader->getID() != m_currentShaderID)
@@ -174,15 +223,15 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
         shadowShader->SetUniformMat4("lightSpaceMatrix", OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection()));
 
         // check for decals and enable transparency CURRENTLY JUST NOT RENDERING DECAL MESHES
-        if (!material.isDecal)
-        {
+        // if (!material.isDecal)
+        // {
             glm::mat4 modelMatrix = transform.getModelMatrix();
             shadowShader->SetUniformMat4("model", modelMatrix);
 
             mesh.meshBuffer->bind();
             mesh.meshBuffer->draw();
             glBindVertexArray(0);
-        }
+        // }
     }
     shadowMap.unbind();
     glCullFace(GL_BACK); // Reset to default cull face

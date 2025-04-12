@@ -70,7 +70,7 @@ public:
     void createCollidableCapsuleEntitiesFromModel(const std::string& filepath);
     void createCollidableSphereEntitiesFromModel(const std::string& filepath);
 
-    
+    void createSkyBox(const std::array<std::string, 6>& faces);
 private:
     EnttFacade* m_entityFacade;///< Pointer to the entity registry manager (not owned).
     static std::vector<glm::vec3> extractPositions(const std::vector<Vertex>& meshVertices) ;

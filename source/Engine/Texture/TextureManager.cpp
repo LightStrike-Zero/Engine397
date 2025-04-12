@@ -36,19 +36,39 @@ uint32_t TextureManager::loadTextureFromData(const RawImageData& imageData) {
     return texture ? texture->getID() : 0;
 }
 
-uint32_t TextureManager::loadTextureFromMemory(unsigned char* data, size_t size) {
-    std::ostringstream keyStream;
-    keyStream << "mem_" << size << "_";
-    std::string key = keyStream.str();
-    
-    auto it = m_textureCache.find(key);
-    if (it != m_textureCache.end())
-        return it->second->getID();
-    
-    std::shared_ptr<ITexture> texture = TextureFactory::createTexture(data, size);
-    if (texture)
-        m_textureCache[key] = texture;
-    return texture ? texture->getID() : 0;
+uint32_t TextureManager::loadTextureFromMemory(unsigned char *data,
+                                               size_t size) {
+  std::ostringstream keyStream;
+  keyStream << "mem_" << size << "_";
+  std::string key = keyStream.str();
+
+  auto it = m_textureCache.find(key);
+  if (it != m_textureCache.end())
+    return it->second->getID();
+
+  std::shared_ptr<ITexture> texture = TextureFactory::createTexture(data, size);
+  if (texture)
+    m_textureCache[key] = texture;
+  return texture ? texture->getID() : 0;
+}
+uint32_t TextureManager::loadCubeMapFromFiles(const std::array<std::string, 6>& faces, const std::string& key) {
+    auto cached = getCubeMap(key);
+    if (cached)
+        return cached->getID();
+
+    std::shared_ptr<ICubeMap> cubeMap = TextureFactory::createTexture(faces);
+    if (cubeMap) {
+        m_cubeMapCache[key] = cubeMap;
+        return cubeMap->getID();
+    }
+    return 0;
+}
+
+std::shared_ptr<ICubeMap> TextureManager::getCubeMap(const std::string& key) {
+    auto it = m_cubeMapCache.find(key);
+    if (it != m_cubeMapCache.end())
+        return it->second;
+    return nullptr;
 }
 
 void TextureManager::clear() {

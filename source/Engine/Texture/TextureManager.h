@@ -33,6 +33,7 @@
 #include <unordered_map>
 
 #include "ImageData.h"
+#include "Interfaces/ICubeMap.h"
 
 class ITexture;
 
@@ -84,6 +85,24 @@ public:
 	std::shared_ptr<ITexture> getTexture(const std::string& key);
 
 	/**
+	 * @brief Load a cubemap texture from an array of six file paths.
+	 *
+	 * The order of the file paths should match the convention for cubemap faces (e.g. +X, -X, +Y, -Y, +Z, -Z).
+	 *
+	 * @param faces An array of six file paths.
+	 * @param key A unique key to store and retrieve the cubemap.
+	 * @return The GPU ID of the loaded cubemap as uint32_t.
+	 */
+	uint32_t loadCubeMapFromFiles(const std::array<std::string, 6>& faces, const std::string& key);
+
+	/**
+	 * @brief Retrieve a cubemap from the cache.
+	 * @param key The key used to identify the cubemap.
+	 * @return A shared pointer to the cached cubemap, or nullptr if not found.
+	 */
+	std::shared_ptr<ICubeMap> getCubeMap(const std::string& key);
+
+	/**
 	* @brief Clear the texture cache.
 	*
 	* Removes all cached textures from memory.
@@ -107,6 +126,7 @@ private:
 	~TextureManager();
 
 	std::unordered_map<std::string, std::shared_ptr<ITexture>> m_textureCache;	///< Cache for storing textures.
+	std::unordered_map<std::string, std::shared_ptr<ICubeMap>> m_cubeMapCache;	///< Cache for storing cubemaps.
 
 };
 

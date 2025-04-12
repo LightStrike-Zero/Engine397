@@ -1,7 +1,7 @@
 /**
  * @file EnttFacade.h
  * @brief A wrapper around EnTT registry to simplify entity/component operations.
- * @author Probably Shaun
+ * @author Shaun
  * @date March 2025
  */
 

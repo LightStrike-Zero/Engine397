@@ -17,6 +17,8 @@
 
 #ifndef TEXTUREFACTORY_H
 #define TEXTUREFACTORY_H
+#include "Interfaces/ICubeMap.h"
+
 #include <memory>
 #include <string>
 
@@ -60,5 +62,16 @@ public:
      * @return A shared pointer to the created texture.
      */
     static std::shared_ptr<ITexture> createTexture(const RawImageData& imageData);
+
+     /**
+     * @brief Create a cubemap texture from an array of six file paths.
+     *
+     * The order of the file paths must match the following order
+     * +X, -X, +Y, -Y, +Z, -Z.
+     *
+     * @param faces An array of six texture file paths.
+     * @return A shared pointer to the created cubemap texture.
+     */
+     static std::shared_ptr<ICubeMap> createTexture(const std::array<std::string, 6>& faces);
 };
 #endif //TEXTUREFACTORY_H

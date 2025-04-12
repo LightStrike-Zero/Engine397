@@ -65,6 +65,7 @@ private:
 
     void LightingPass(Scene& scene, ShaderManager& shaderManager);
     void ShadowPass(Scene& scene, ShaderManager& shaderManager, IDataBuffer& shadowMap);
+    void SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, Scene& scene, ShaderManager& shaderManager);
 };
 
 #endif //OPENGLRENDERER_H

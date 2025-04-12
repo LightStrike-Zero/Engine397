@@ -66,8 +66,7 @@ public:
     void addTerrainEntity(const Terrain& terrain);
 
     /**
-     * @brief Loads an entity with collision components.
-     * @param filepath Path to the model file.
+     * @deprecated USE box, capsule, or sphere instead.
      */
     void loadCollidableEntity(const std::string& filepath);
     // void loadCollidableEntity(const std::string& filepath);
@@ -93,6 +92,7 @@ public:
      */
     const DirectionalLight& getDirectionalLight() const { return m_directionalLight; }
 
+  void createSkyBox(const std::array<std::string, 6>& faces);
 
 private:
 
