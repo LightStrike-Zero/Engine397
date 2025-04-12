@@ -65,8 +65,6 @@ int main(int argc, char** argv)
 
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
-    DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
-        glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);
     
     scene.setDirectionalLight(dirLight);
     // scene.loadModelToRegistry(backPackPath);
@@ -141,23 +139,14 @@ int main(int argc, char** argv)
             lastFrame = currentFrame;
 
             // camera system
+            //TODO remove flags showExitScreen, showHelpScreen
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
             player.update(deltaTime);
 
             // terrian collision
             // comment this out to disable terrain collision
-            auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-            for (auto entity : playerView) {
-                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-                playerTankTransform.position = cameraTransform.position + cameraOffset;
-                glm::vec3 playerTankPos =  playerTankTransform.position;
-                float terrainHeight = collision.getHeightAt(playerTankPos);
-                playerTankTransform.position.y = terrainHeight + playerHeight;
-                cameraTransform.position = playerTankTransform.position - cameraOffset;
-            }
-            // terrian collision
-            // comment this out to disable terrain collision
+            // auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
             for (auto entity : playerView) {
                 auto& playerTankTransform = playerView.get<TransformComponent>(entity);
                 glm::vec3 playerTankPos =  playerTankTransform.position;
