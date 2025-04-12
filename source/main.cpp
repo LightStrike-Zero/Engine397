@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-    glm::vec3 cameraOffset = {-0.f, -20.f, -20.f}; //so camera isn't sitting inside tank
+    glm::vec3 cameraOffset = {-0.0f, -30.0f, -50.0f}; //so camera isn't sitting inside tank
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);

@@ -15,12 +15,12 @@ terrainConfig =
 
     rows = 1000,
     cols = 1000,
-    spacing = 0.1,
+    spacing = 1.0,
 
     parameters =
     {
         heightmapPath = "Assets/Terrain/Textures/Terrain003_2K.png",
-        heightScale = 15.0
+        heightScale = 30.0
     },
 
     texture =
