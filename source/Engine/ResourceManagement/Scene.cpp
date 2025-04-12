@@ -20,9 +20,9 @@ void Scene::update(float deltaTime) {
     // Update
 }
 
-void Scene::loadModelEntity(const std::string& modelFilePath) {
+void Scene::loadModelEntity(const std::string& modelFilePath, const std::string& name) {
     if (m_entityFactory)
-        m_entityFactory->createEntitiesFromModel(modelFilePath);
+        m_entityFactory->createEntitiesFromModel(modelFilePath, name);
 }
 
 void Scene::loadPlayerModelEntity(const std::string& modelFilePath) {
@@ -40,18 +40,18 @@ void Scene::addTerrainEntity(const Terrain& terrain) {
 //         m_entityFactory->createCollidableEntitiesFromModel(filepath);
 //     }
 
-void Scene::loadCollidableBoxEntity(const std::string& filepath) {
+void Scene::loadCollidableBoxEntity(const std::string& filepath, const std::string& name) {
     if (m_entityFactory)
-        m_entityFactory->createCollidableBoxEntitiesFromModel(filepath);
+        m_entityFactory->createCollidableBoxEntitiesFromModel(filepath, name);
 }
 
-void Scene::loadCollidableCapsuleEntity(const std::string& filepath) {
+void Scene::loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name) {
     if (m_entityFactory)
-        m_entityFactory->createCollidableCapsuleEntitiesFromModel(filepath);
+        m_entityFactory->createCollidableCapsuleEntitiesFromModel(filepath, name);
 }
 
-void Scene::loadCollidableSphereEntity(const std::string& filepath) {
+void Scene::loadCollidableSphereEntity(const std::string& filepath, const std::string& name) {
     if (m_entityFactory)
-        m_entityFactory->createCollidableSphereEntitiesFromModel(filepath);
+        m_entityFactory->createCollidableSphereEntitiesFromModel(filepath, name);
 
 }

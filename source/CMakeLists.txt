@@ -91,6 +91,7 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Texture/ImageData.h
         Engine/Factorys/TextureFactory.cpp
         Engine/Factorys/TextureFactory.h
+        Engine/Components/NameComponent.h
 )
 
 # Add executable based on source files

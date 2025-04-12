@@ -5,7 +5,10 @@
 ---
 
 print("Hugo's test initiated")
-scene:loadBoxModelToRegistry("Assets/game_jeep/jeep.gltf")
-scene:loadBoxModelToRegistry("Assets/game_jeep/jeep.gltf")
-scene:loadBoxModelToRegistry("Assets/game_jeep/jeep.gltf")
+
+for i = 0, 2 do
+    local name = "tree" .. i
+    scene:loadCollidableBoxEntity("Assets/Models/tree1.gltf", name)
+end
+
 print("i tried to load 3 jeeps")

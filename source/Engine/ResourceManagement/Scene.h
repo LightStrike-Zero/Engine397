@@ -51,7 +51,7 @@ public:
      * @brief Loads a general model entity into the scene.
      * @param modelFilePath Path to the model file.
      */
-    void loadModelEntity(const std::string& modelFilePath);
+    void loadModelEntity(const std::string& modelFilePath, const std::string& name);
 
     /**
      * @brief Loads the player model into the scene.
@@ -69,11 +69,10 @@ public:
      * @brief Loads an entity with collision components.
      * @param filepath Path to the model file.
      */
-    void loadCollidableEntity(const std::string& filepath);
     // void loadCollidableEntity(const std::string& filepath);
-    void loadCollidableBoxEntity(const std::string& filepath);
-    void loadCollidableCapsuleEntity(const std::string& filepath);
-    void loadCollidableSphereEntity(const std::string& filepath);
+    void loadCollidableBoxEntity(const std::string& filepath, const std::string& name);
+    void loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name);
+    void loadCollidableSphereEntity(const std::string& filepath, const std::string& name);
 
     /**
      * @brief Returns access to the entity manager (EnTT facade).
