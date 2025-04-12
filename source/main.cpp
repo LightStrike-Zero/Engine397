@@ -111,16 +111,16 @@ int main(int argc, char** argv)
     std::string tree2Path = R"(Assets\game_tree2_dead_big\trees.gltf)";
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\tree3.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\tree4.gltf)";
-    // for (int i = 0; i < 3; ++i) {
-    //     std::string name = "tree" + std::to_string(i);
-    //     scene.loadCollidableBoxEntity(tree1Path, name);
+    for (int i = 0; i < 3; ++i) {
+    std::string name = "tree" + std::to_string(i);
+    // scene.loadCollidableBoxEntity(tree1Path, name);
         // scene.loadCollidableBoxEntity(jeepPath);
         // scene.loadCollidableBoxEntity(rock1Path);
         // scene.loadModelEntity(tree1Path);
         // scene.loadCollidableCapsuleEntity(tree1Path);
         // scene.loadCollidableEntity(rock2Path);
         // scene.loadCollidableBoxEntity(jeepPath);
-    // }
+    }
     auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent,NameComponent>(exclude<PlayerControllerComponent>);
 
     for (auto entity : staticObjectsView) {

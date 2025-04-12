@@ -8,7 +8,7 @@ print("Hugo's test initiated")
 
 for i = 0, 2 do
     local name = "tree" .. i
-    scene:loadCollidableBoxEntity("Assets/Models/tree1.gltf", name)
+    scene:loadBoxModelToRegistry("Assets/game_tree1_dead_small/tree1.gltf", name)
 end
 
 print("i tried to load 3 jeeps")

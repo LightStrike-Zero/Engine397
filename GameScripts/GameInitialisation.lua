@@ -10,7 +10,7 @@
 -- print("Loading:" .. tank_assetPath)
 
 tank_assetPath = "Assets/game_tank/tank.gltf"
-scene:loadModelToRegistry(tank_assetPath)
+-- scene:loadModelToRegistry(tank_assetPath)
 --scene:loadModelToRegistry(jeep_assetPath)
 --scene:loadModelToRegistry(jeep_assetPath)
 --scene:loadModelToRegistry(jeep_assetPath)
