@@ -3,7 +3,9 @@
 
 #include <iostream>
 
+#include "Interfaces/ITexture.h"
 #include "texture/TextureLoader.h"
+#include "Texture/OpenGL/OGL_Texture.h"
 
 HeightmapTerrain::HeightmapTerrain(const std::string& heightMapPath, float heightScale)
     : m_heightmapPath(heightMapPath), m_heightScale(heightScale),
@@ -33,18 +35,18 @@ void HeightmapTerrain::apply(RawMeshData& meshData, const int numRows, const int
 
 void HeightmapTerrain::loadHeightMap(const std::string& heightMapPath)
 {
-    Texture texture;
-    texture.loadImageData(heightMapPath);
-    m_heightMapData = texture.getData();
-    m_heightMapWidth = texture.getWidth();
-    m_heightMapHeight = texture.getHeight();
-    m_heightMapChannels = texture.getChannels();
-    int length = texture.getWidth() * texture.getHeight() * texture.getChannels();
+    OpenGLTexture image;
+    image.loadImageData(heightMapPath);
+    m_heightMapData = image.getData();
+    m_heightMapWidth = image.getWidth();
+    m_heightMapHeight = image.getHeight();
+    m_heightMapChannels = image.getChannels();
+    int length = image.getWidth() * image.getHeight() * image.getChannels();
 
     std::cout << "Length of the image data buffer is: " << length << std::endl;
-    std::cout << "The width is: " << texture.getWidth() << std::endl;
-    std::cout << "The height is: " << texture.getHeight() << std::endl;
-    std::cout << "The number of channels is: " << texture.getChannels() << std::endl;
+    std::cout << "The width is: " << image.getWidth() << std::endl;
+    std::cout << "The height is: " << image.getHeight() << std::endl;
+    std::cout << "The number of channels is: " << image.getChannels() << std::endl;
 
 }
 

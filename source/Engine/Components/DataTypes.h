@@ -30,10 +30,10 @@ struct MaterialData {
 
 
 struct RawMaterialData {
-    GLuint baseColorTextureID = 0;  // Albedo texture
-    GLuint metalnessTextureID = 0; // Metalness texture
-    GLuint roughnessTextureID = 0; // Roughness texture
-    GLuint normalTextureID = 0;    // Normal map
+    GLenum baseColorTextureID = 0;  // Albedo texture
+    GLenum metalnessTextureID = 0; // Metalness texture
+    GLenum roughnessTextureID = 0; // Roughness texture
+    GLenum normalTextureID = 0;    // Normal map
     bool isDecal = false;          // Decal flag
 };
 

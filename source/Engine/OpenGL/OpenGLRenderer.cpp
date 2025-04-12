@@ -1,17 +1,16 @@
 //
 // Created by Shaun on 15/03/2025.
-//
+
 
 
 #include "OpenGLRenderer.h"
 
 #include <iostream>
 #include <Components/RenderableComponent.h>
-// #include <entt/entt.hpp>
 #include <GL/glew.h>
 
 #include "OpenGLShadowMapBuffer.h"
-// #include "Scene.h"
+
 #include "ResourceManagement/Scene.h"
 #include "texture/TextureLoader.h"
 #include "Components/MaterialComponent.h"
@@ -22,8 +21,6 @@ OpenGLRenderer::OpenGLRenderer()
         m_shadowMapBuffer(OpenGLShadowMapBuffer(4096, 4096)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer())
 {
 
-//TODO this needs to be loaded from a LUA config
-    assert((defaultTexture = new Texture("Assets/default/default.jpg")));
     m_shaderManager.loadShader("lightingShader", "Vert.glsl", "Frag.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
@@ -32,7 +29,6 @@ OpenGLRenderer::OpenGLRenderer()
 
 OpenGLRenderer::~OpenGLRenderer()
 {
-    delete defaultTexture;
 }
 
 void OpenGLRenderer::Clear() 
@@ -40,9 +36,7 @@ void OpenGLRenderer::Clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-/*
- * Renders the scene data to an image buffer, and returns the buffer
- */
+
 unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
@@ -127,9 +121,10 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material.baseColorTextureID);
                 shader->SetUniform1i("albedoMap", 0);
+                shader->SetUniform1i("hasAlbedoMap", 1);
             } else {
-                defaultTexture->bind(0);
-                shader->SetUniform1i("albedoMap", 0);
+                shader->SetUniform1i("hasAlbedoMap", 0);
+                shader->SetUniform3f("fallbackColor", {1.0f, 0.0f, 0.5f});
             }
             if (material.normalTextureID != 0)
             {

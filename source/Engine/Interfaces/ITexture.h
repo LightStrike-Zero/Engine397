@@ -6,6 +6,8 @@
 #define ITEXTURE_H
 #include <cstdint>
 
+#include <string>
+
 class ITexture {
 public:
     virtual ~ITexture() = default;
@@ -19,6 +21,11 @@ public:
     [[nodiscard]] virtual uint32_t getWidth() const = 0;
     [[nodiscard]] virtual uint32_t getHeight() const = 0;
     [[nodiscard]] virtual uint8_t getChannels() const = 0;
+    [[nodiscard]] virtual uint32_t getID() const = 0;
+    
+    virtual void loadImageData(const std::string& filePath) = 0;
+    [[nodiscard]] virtual const unsigned char* getData() const = 0;
+    
 };
 
 #endif //ITEXTURE_H

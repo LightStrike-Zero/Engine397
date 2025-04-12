@@ -2,25 +2,21 @@
 // Created by Shaun on 1/12/2024.
 //
 
+// TextureLoader.cpp
 #include "TextureLoader.h"
 
 #include <iostream>
 
+#include "Factorys/TextureFactory.h"
+
 std::shared_ptr<ITexture> TextureLoader::loadTexture(const std::string& filePath) {
-    return new Texture(filePath);
+    return TextureFactory::createTexture(filePath);
 }
-
+    
 std::shared_ptr<ITexture> TextureLoader::loadFromGLTF(const std::string& gltfTexturePath) {
-   
-    return new Texture(gltfTexturePath);
+    return TextureFactory::createTexture(gltfTexturePath);
 }
 
-std::shared_ptr<ITexture> TextureLoader::loadEmbeddedTexture(void* embeddedTexture) {
-    if (embeddedTexture->mHeight == 0) {
-        return new Texture(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth);
-    } else {
-       
-        std::cerr << "Uncompressed embedded textures are not supported yet." << std::endl;
-        return nullptr;
-    }
+std::shared_ptr<ITexture> TextureLoader::loadFromMemory(const RawImageData& imageData) {
+    return TextureFactory::createTexture(imageData);
 }

@@ -120,7 +120,7 @@ void ImGuiUI::Shutdown()
 //buko loads the splash image
 void ImGuiUI::loadNamedImage(const std::string& name, const std::string& path)
 {
-    unsigned int id = TextureManager::getInstance().loadTexture(path);
+    unsigned int id = TextureManager::getInstance().loadTextureFromFile(path);
     m_namedImages[name] = id;
 }
 
