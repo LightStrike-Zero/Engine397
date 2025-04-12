@@ -70,6 +70,10 @@ public:
      * @param filepath Path to the model file.
      */
     void loadCollidableEntity(const std::string& filepath);
+    // void loadCollidableEntity(const std::string& filepath);
+    void loadCollidableBoxEntity(const std::string& filepath);
+    void loadCollidableCapsuleEntity(const std::string& filepath);
+    void loadCollidableSphereEntity(const std::string& filepath);
 
     /**
      * @brief Returns access to the entity manager (EnTT facade).

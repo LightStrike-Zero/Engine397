@@ -11,6 +11,11 @@
 #include <entt/entt.hpp>
 #include <utility>
 
+/// by Hugo. This is a wrapper that helps to facade entt:: when using entt::exclude.
+template<typename... Components>
+constexpr auto exclude = entt::exclude<Components...>;
+
+
 /**
  * @class EnttFacade
  * @brief A wrapper around EnTT registry to simplify entity/component operations.
@@ -79,6 +84,14 @@ public:
      * @tparam Component The component type.
      * @param entity The entity to remove the component from.
      */
+    //created by Hugo, because I need view<Component>(entt::exclude<Component>)
+    template<typename... Include, typename... Exclude>
+    auto view(entt::exclude_t<Exclude...> ex) {
+        return m_registry.view<Include...>(ex);
+    }
+
+
+
     template<typename Component>
     void removeComponent(Entity entity) {
         m_registry.remove<Component>(entity);

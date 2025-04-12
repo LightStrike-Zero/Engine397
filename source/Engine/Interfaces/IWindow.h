@@ -59,6 +59,7 @@ public:
      * @param value True to request window close.
      */
     virtual void SetShouldClose(bool value) = 0; // buko
+    virtual void pollInputEvents() = 0; //custom function to poll input events, can be untied from window loop in the future
 };
 
 #endif // IWINDOW_H

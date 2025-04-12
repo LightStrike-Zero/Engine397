@@ -15,6 +15,7 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
+
 #include <string>
 #include "Terrain/Terrain.h"
 
@@ -63,10 +64,16 @@ public:
      * @brief Adds collision-enabled entities based on a model file.
      * @param filepath Path to the model file.
      */
-    void createCollidableEntitiesFromModel(const std::string& filepath);
+
+
+    void createCollidableBoxEntitiesFromModel(const std::string& filepath);
+    void createCollidableCapsuleEntitiesFromModel(const std::string& filepath);
+    void createCollidableSphereEntitiesFromModel(const std::string& filepath);
+
     
 private:
-    EnttFacade* m_entityFacade;               ///< Pointer to the entity registry manager (not owned).
+    EnttFacade* m_entityFacade;///< Pointer to the entity registry manager (not owned).
+    static std::vector<glm::vec3> extractPositions(const std::vector<Vertex>& meshVertices) ;
 };
 
 #endif //ENTITYFACTORY_H

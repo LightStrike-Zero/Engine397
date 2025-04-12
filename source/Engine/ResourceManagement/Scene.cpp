@@ -35,7 +35,23 @@ void Scene::addTerrainEntity(const Terrain& terrain) {
         m_entityFactory->addTerrainEntity(terrain);
 }
 
-void Scene::loadCollidableEntity(const std::string& filepath) {
+// void Scene::loadCollidableEntity(const std::string& filepath) {
+//     if (m_entityFactory)
+//         m_entityFactory->createCollidableEntitiesFromModel(filepath);
+//     }
+
+void Scene::loadCollidableBoxEntity(const std::string& filepath) {
     if (m_entityFactory)
-        m_entityFactory->createCollidableEntitiesFromModel(filepath);
-    }
+        m_entityFactory->createCollidableBoxEntitiesFromModel(filepath);
+}
+
+void Scene::loadCollidableCapsuleEntity(const std::string& filepath) {
+    if (m_entityFactory)
+        m_entityFactory->createCollidableCapsuleEntitiesFromModel(filepath);
+}
+
+void Scene::loadCollidableSphereEntity(const std::string& filepath) {
+    if (m_entityFactory)
+        m_entityFactory->createCollidableSphereEntitiesFromModel(filepath);
+
+}

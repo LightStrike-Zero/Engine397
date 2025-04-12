@@ -2,6 +2,7 @@
 
 # Source files go here
 set(SOURCE_FILES
+        Engine/Texture/Texture.cpp
         Engine/Texture/TextureManager.cpp
         Engine/Shaders/Shader.cpp
         main.cpp
@@ -78,6 +79,9 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Components/CollisionComponents/CollidableComponent.h
         Engine/Components/CollisionComponents/BoxColliderComponent.h
         Engine/Components/CollisionComponents/CapsuleColliderComponent.h
+        Engine/Components/CollisionComponents/SphereColliderComponent.h
+#        Engine/Physics_DEPRECIATED/TankCollision.h
+        Engine/Physics_DEPRECIATED/TankCollision.cpp
         Engine/Utility/FileHandler.cpp
         Engine/Utility/FileHandler.h
         Engine/Importers/AssimpImporterFacade.cpp

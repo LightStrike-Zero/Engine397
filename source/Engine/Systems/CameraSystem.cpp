@@ -92,18 +92,29 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
 void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
 {
     float velocity = camera.movementSpeed * deltaTime;
-        
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
-        transform.position += camera.front * velocity;
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-        transform.position -= camera.front * velocity;
-    
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-        transform.position -= camera.right * velocity;
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-        transform.position += camera.right * velocity;
-
     float rotationVelocity = camera.rotationSpeed * deltaTime;
+
+    //!!!!!!!!!!!!!!warning
+    //this event dispatch lambda function is calling camera by reference and modifying it, use with caution
+    EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
+    const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
+        if (keyEvent.keyCode == GLFW_KEY_X) {
+            glfwSetWindowShouldClose(m_window, true);
+        }
+        static bool keyWasPressed = false;
+        if (keyEvent.keyCode == GLFW_KEY_K) {
+            if (!keyWasPressed) {
+                static bool lineMode = false;
+                lineMode = !lineMode;
+                DrawModeChangedEvent drawEvent(lineMode);
+                EventSystem::getInstance().dispatchEvent(drawEvent);
+                keyWasPressed = true;
+            }
+        } else {
+            keyWasPressed = false;
+        }
+    });
+
     if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
         camera.yaw -= rotationVelocity;
     if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -112,6 +123,8 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
         camera.pitch += rotationVelocity;
     if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
         camera.pitch -= rotationVelocity;
+
+
 
     if (camera.pitch > 89.0f)
         camera.pitch = 89.0f;

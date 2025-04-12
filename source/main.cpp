@@ -18,6 +18,7 @@
 #include <sol/sol.hpp>
 #include "FileHandler.h"
 
+#include "Player.h"
 #include "Components/PlayerControllerComponent.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
 #include "Components/CollisionComponents/CollidableComponent.h"
@@ -77,33 +78,33 @@ int main(int argc, char** argv)
     scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f)); // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    Player player(&scene.getEntityManager(),static_cast<GLFWwindow*>(window->GetNativeWindow()));//added by Hugo
 
     std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath()); // buko: read manual text file
 
     static float lastFrame = 0.0f;
 
-    scene.loadPlayerModelEntity(playerTankPath);
     // entt::entity playerTankEntity = entt::null;
     // if (playerView.begin() != playerView.end()) {//checking if playerView is empty
         // playerTankEntity = *playerView.begin();
     // }
     //load player tank
-    std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    scene.loadPlayerModelEntity(playerTankPath);
+    scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
+    // std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
+    // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+    auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
-        std::cout << "player pos:" << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", "
-        << playerTankTransform.position.z << std::endl;
+        playerTankTransform.position = cameraTransform.position+cameraOffset;
+
     }
-    glm::vec3 cameraOffset = {-0.f, -5.f, -10.f}; //so camera isn't sitting inside tank
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
     std::string jeepPath = R"(Assets\game_jeep\jeep.gltf)";
-    std::string jeepTestPath = R"(Assets\game_jeep_gltf\jeep2.gltf)";
-    std::string jeepTestPath2 = R"(Assets\game_jeep_glb\jeep2.glb)";
     std::string rock1Path = R"(Assets\game_rock1\rock1.gltf)";
     std::string rock2Path = R"(Assets\game_rock2\rock2.gltf)";
     std::string tree1Path = R"(Assets\game_tree1_dead_small\trees_dead_small.gltf)";
@@ -111,11 +112,15 @@ int main(int argc, char** argv)
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\trees_narrow.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\trees_wide.gltf)";
     for (int i = 0; i < 3; ++i) {
-        scene.loadCollidableEntity(tree1Path);
-        // scene.loadCollidableModelToRegistry(rock2Path);
-        scene.loadCollidableEntity(jeepTestPath2);
+        scene.loadCollidableBoxEntity(tree1Path);
+        // scene.loadCollidableBoxEntity(jeepPath);
+        // scene.loadCollidableBoxEntity(rock1Path);
+        // scene.loadModelEntity(tree1Path);
+        // scene.loadCollidableCapsuleEntity(tree1Path);
+        // scene.loadCollidableEntity(rock2Path);
+        // scene.loadCollidableBoxEntity(jeepPath);
     }
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,CollidableComponent>();
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
 
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
@@ -137,6 +142,10 @@ int main(int argc, char** argv)
             // camera system 
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+        // camera system 
+        cameraSystem.update(scene.getEntityManager(), deltaTime);
+        auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+        player.update(deltaTime);
 
             // terrian collision
             // comment this out to disable terrain collision
@@ -151,6 +160,16 @@ int main(int argc, char** argv)
                 //std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
             }
             currentRenderedFrame = renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+        // terrian collision
+        // comment this out to disable terrain collision
+        // auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+        for (auto entity : playerView) {
+            auto& playerTankTransform = playerView.get<TransformComponent>(entity);
+            glm::vec3 playerTankPos =  playerTankTransform.position;
+            float terrainHeight = collision.getHeightAt(playerTankPos);
+            playerTankTransform.position.y = terrainHeight + playerHeight;
+            cameraTransform.position = playerTankTransform.position - cameraOffset;
+            // std::cout << "Player Tank Position: " << playerTankTransform.position.x << ", " << playerTankTransform.position.y << ", " << playerTankTransform.position.z << std::endl;
         }
         else
         {
@@ -178,6 +197,8 @@ int main(int argc, char** argv)
 
         window->SwapBuffers();
         window->PollEvents();
+        window->pollInputEvents();//custom, not part of glfw
+
     }
 
     Gui.Shutdown();
