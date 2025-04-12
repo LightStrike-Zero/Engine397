@@ -18,6 +18,7 @@ void Terrain::generateTerrain()
     if (m_terrainType)
     {
         m_terrainType->apply(m_meshData, m_numRows, m_numCols);
+        std::cout << "Applying terrain " << m_numRows << ", " << m_numCols << std::endl;
     }
 }
 

@@ -2,29 +2,21 @@
 // Created by Shaun on 1/12/2024.
 //
 
+// TextureLoader.cpp
 #include "TextureLoader.h"
 
 #include <iostream>
 
-Texture* TextureLoader::loadTexture(const std::string& filePath) {
-    // Create and return a new Texture object
-    return new Texture(filePath);
+#include "Factorys/TextureFactory.h"
+
+std::shared_ptr<ITexture> TextureLoader::loadTexture(const std::string& filePath) {
+    return TextureFactory::createTexture(filePath);
+}
+    
+std::shared_ptr<ITexture> TextureLoader::loadFromGLTF(const std::string& gltfTexturePath) {
+    return TextureFactory::createTexture(gltfTexturePath);
 }
 
-Texture* TextureLoader::loadFromGLTF(const std::string& gltfTexturePath) {
-    // Placeholder for GLTF-specific texture handling
-    // In a real implementation, you would process GLTF files using Assimp or another library
-    return new Texture(gltfTexturePath);
-}
-
-Texture* TextureLoader::loadEmbeddedTexture(aiTexture* embeddedTexture) {
-    if (embeddedTexture->mHeight == 0) {
-        // Compressed texture (e.g., PNG, JPEG)
-        return new Texture(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth);
-    } else {
-        // Uncompressed texture (e.g., BMP)
-        // Handle uncompressed texture data
-        std::cerr << "Uncompressed embedded textures are not supported yet." << std::endl;
-        return nullptr;
-    }
+std::shared_ptr<ITexture> TextureLoader::loadFromMemory(const RawImageData& imageData) {
+    return TextureFactory::createTexture(imageData);
 }

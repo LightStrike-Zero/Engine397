@@ -1,56 +1,61 @@
-//
-// Created by Shaun on 1/12/2024.
-//
-
 /**
- * @file TextureLoader.h
- * @brief Utility class for loading textures from various sources (file, GLTF, embedded).
+* @file TextureLoader.h
+ * @brief Provides functionality for loading textures from various sources.
  *
- * Provides static functions for texture loading used throughout the engine.
- * Delegates actual OpenGL texture object creation to the Texture class.
+ * The TextureLoader class offers static methods to load textures from file paths,
+ * GLTF files, or raw image data in memory. It is designed to simplify texture
+ * loading operations in the engine.
  *
- * @author Shaun
+ * @details
+ * - `loadTexture`: Loads a texture from a file path.
+ * - `loadFromGLTF`: Loads a texture from a GLTF file.
+ * - `loadFromMemory`: Loads a texture from raw image data in memory.
+ *
  * @date Created: 1/12/2024
+ * @date Modified: 12/04/2025
  */
 
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
 
 #include <string>
-#include <assimp/texture.h>
+#include <memory>
+#include "ImageData.h"
 
-#include "Texture.h"
-
+class ITexture;
 
 /**
  * @class TextureLoader
- * @brief Utility class for loading textures from various sources (file, GLTF, embedded).
- * Provides static functions for texture loading used throughout the engine.
- * Delegates actual OpenGL texture object creation to the Texture class.
+ * @brief A utility class for loading textures from various sources.
+ *
+ * The TextureLoader class provides static methods to load textures
+ * from file paths, GLTF files, or raw image data in memory.
  */
 class TextureLoader {
-
 public:
     /**
-     * @brief Loads a standard texture from a file path.
-     * @param filePath Path to the image file.
-     * @return Pointer to the created Texture object.
+     * @brief Load a texture from a file.
+     *
+     * @param filePath The path to the texture file.
+     * @return A shared pointer to the loaded texture.
      */
-    static Texture* loadTexture(const std::string& filePath);
+    static std::shared_ptr<ITexture> loadTexture(const std::string& filePath);
 
     /**
-     * @brief Loads a texture from a GLTF source path.
-     * @param gltfTexturePath Path from GLTF material.
-     * @return Pointer to the created Texture object.
+     * @brief Load a texture from a GLTF file.
+     *
+     * @param gltfTexturePath The path to the GLTF texture file.
+     * @return A shared pointer to the loaded texture.
      */
-    static Texture* loadFromGLTF(const std::string& gltfTexturePath);
+    static std::shared_ptr<ITexture> loadFromGLTF(const std::string& gltfTexturePath);
 
     /**
-     * @brief Loads an embedded texture from Assimp.
-     * @param embeddedTexture Pointer to the embedded aiTexture.
-     * @return Pointer to the created Texture object.
+     * @brief Load a texture from raw image data in memory.
+     *
+     * @param imageData The raw image data to load the texture from.
+     * @return A shared pointer to the loaded texture.
      */
-    static Texture* loadEmbeddedTexture(aiTexture* embeddedTexture);
+    static std::shared_ptr<ITexture> loadFromMemory(const RawImageData& imageData);
 };
 
 #endif //TEXTURELOADER_H

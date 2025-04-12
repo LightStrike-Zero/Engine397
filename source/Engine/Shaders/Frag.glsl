@@ -14,6 +14,8 @@ layout(location = 0) out vec4 FragColor;
 uniform sampler2D albedoMap;
 uniform sampler2D normalMap;
 uniform sampler2D roughnessMap;
+uniform bool hasAlbedoMap;
+uniform vec3 fallbackColor;
 
 struct Material {
     sampler2D diffuse;
@@ -115,12 +117,21 @@ void main() {
      * -------------------------
      */
 
+    vec3 albedo;
+    // Choose texture or fallback based on the uniform flag.
+    if (hasAlbedoMap) {
+        albedo = texture(albedoMap, TexCoords).rgb;
+    }
+    else {
+        albedo = fallbackColor;
+    }
+    
     // ambient lighting
-    vec3 ambient = light.ambient * vec3(texture(albedoMap, TexCoords));
+    vec3 ambient = light.ambient * albedo;
 
     // diffuse lighting
     float diff = max(dot(transformedNormal, tangentLightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * vec3(texture(albedoMap, TexCoords));
+    vec3 diffuse = light.diffuse * diff * albedo;
 
 
     vec3 viewDir = normalize(viewPos - FragPos);

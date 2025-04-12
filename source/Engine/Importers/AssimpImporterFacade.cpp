@@ -2,7 +2,10 @@
 // Created by Shaun on 11/04/2025.
 //
 #include "AssimpImporterFacade.h"
-#include "AssimpImporter.h"  
+
+#include <stdexcept>
+
+#include "AssimpImporter.h"
 #include <string>
 #include <vector>
 
@@ -18,7 +21,6 @@ AssimpImporterFacade::~AssimpImporterFacade()
 
 bool AssimpImporterFacade::loadModel(const std::string& filepath, std::vector<RawMeshData>& meshes)
 {
-
     return m_importer->loadModel(filepath, meshes);
 }
 

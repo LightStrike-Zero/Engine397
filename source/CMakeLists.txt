@@ -2,7 +2,6 @@
 
 # Source files go here
 set(SOURCE_FILES
-        Engine/Texture/Texture.cpp
         Engine/Texture/TextureManager.cpp
         Engine/Shaders/Shader.cpp
         main.cpp
@@ -83,6 +82,12 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Utility/FileHandler.h
         Engine/Importers/AssimpImporterFacade.cpp
         Engine/Importers/AssimpImporterFacade.h
+        Engine/Interfaces/ITexture.h
+        Engine/Texture/OpenGL/OGL_Texture.cpp
+        Engine/Texture/OpenGL/OGL_Texture.h
+        Engine/Texture/ImageData.h
+        Engine/Factorys/TextureFactory.cpp
+        Engine/Factorys/TextureFactory.h
 )
 
 # Add executable based on source files
