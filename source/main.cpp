@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
                 glm::vec3 playerTankPos = playerTankTransform.position;
 
                 float terrainHeight = collision.getHeightAt(playerTankPos);
-                float targetHeight = terrainHeight + playerHeight;
+                float targetHeight = terrainHeight + scriptManager->getFloatFromLua("playerHeightOffset");
                 float t = deltaTime * lerpSpeed; // Small factor for smooth interpolation.
                 playerTankTransform.position.y = glm::mix(playerTankTransform.position.y, targetHeight, t);
                 // cameraTransform.position = playerTankTransform.position - cameraOffset;//old offset logic

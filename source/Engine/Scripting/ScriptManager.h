@@ -92,6 +92,13 @@ class ScriptManager
          * @return a vec3 defined in lua
          */
         virtual glm::vec3 getVec3FromLua(const std::string& tableName) = 0;
+        /**
+         * grabs a float from lua
+         * @param name
+         * @return a float defined in lua
+         */
+        virtual float getFloatFromLua(const std::string& name) = 0;
+
 
 };
 

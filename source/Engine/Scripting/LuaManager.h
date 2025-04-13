@@ -74,14 +74,22 @@ class LuaManager : public ScriptManager
        /**
         * @copydoc ScriptManager::getHelpManualPath
         */
-        std::string LuaManager::getHelpManualPath() override;
+        std::string getHelpManualPath() override;
 
        /**
         * @brief Get a glm::vec3 from Lua table
         * @param tableName The name of the Lua table
         * @return The glm::vec3 value from the Lua table
         */
-        glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName);
+        glm::vec3 getVec3FromLua(const std::string& tableName) override;
+
+       /**
+        * @brief Get a float from Lua variable
+        * @param name The name of the Lua variable
+        * @return The float value from the Lua variable
+        */
+       float getFloatFromLua(const std::string& name) override;
+
 
 
     private:

@@ -1,7 +1,10 @@
 
 #include "CameraSystem.h"
 
+#include <iostream>
+
 #include "EventSystem.h"
+#include "Components/PlayerControllerComponent.h"
 #include "ResourceManagement/EnttFacade.h"
 
 void CameraSystem::update(EnttFacade& ecs, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
@@ -16,6 +19,16 @@ void CameraSystem::update(EnttFacade& ecs, float deltaTime, bool& showExitScreen
             handleCameraInput(transform, camera, deltaTime, showExitScreen, showHelpScreen);
         }
     }
+
+    auto viewPlayer = ecs.view<PlayerControllerComponent, TransformComponent>();
+    for (auto entity : viewPlayer) {
+        auto& playerTransform = viewPlayer.get<TransformComponent>(entity);
+        handlePlayerInput(playerTransform, deltaTime);
+
+    }
+    // std::cout << "tank pos is: " << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.x << ", "
+    //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.y << ", "
+    //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.z << std::endl;
 }
 
 std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrices(EnttFacade& ecs) {
@@ -64,6 +77,8 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
     }
     wasMPressedLastFrame = glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS;
     // end of buko help manual screen
+
+
     //
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
@@ -193,4 +208,17 @@ entt::entity CameraSystem::getActiveCameraEntity(entt::registry& registry) {
 }
 bool CameraSystem::isActiveCamera(entt::entity entity, entt::registry& registry) {
     return entity == getActiveCameraEntity(registry);
+}
+
+void CameraSystem::handlePlayerInput(TransformComponent& playerTransform, float deltaTime) {
+    //hugo playertank reset
+    static bool reset = false;
+    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (!reset) {
+            playerTransform.position = glm::vec3(0.0f, 0.0f, 0.0f);
+            reset = true;
+        }
+    } else {
+        reset = false;
+    }
 }

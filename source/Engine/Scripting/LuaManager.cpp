@@ -157,4 +157,15 @@ glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName) {
     };
 }
 
+float LuaManager::getFloatFromLua(const std::string& name) {
+    sol::object value = m_lua[name];
+    if (value.valid() && value.is<float>()) {
+        return value.as<float>();
+    } else {
+        std::cerr << "[LuaManager] Warning: '" << name << "' not found or not a float. Returning 0.\n";
+        return 0.0f;
+    }
+}
+
+
 //====================== END OF LUA MANAGER CLASS =============================

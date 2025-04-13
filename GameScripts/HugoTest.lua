@@ -48,6 +48,7 @@ end
 
 baseOffset = { x = 0, y = 10, z = -30 }
 playerStartPos = { x = 100, y = 10, z = 0 }
+playerHeightOffset = 1.0
 
 
 -- scene:setEntityPosByName("tree0",50,10,50)
