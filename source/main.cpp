@@ -13,10 +13,11 @@
 #include "Window/glfwWindow.h"
 // Buko -------------------------
 // Libraries for scripting
-#include <lua.hpp>
+// #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include "FileHandler.h"
 #include <sol/sol.hpp>
+#include "FileHandler.h"
 
 #include "Components/CollisionComponents/CollidableComponent.h"
 #include "Components/PlayerControllerComponent.h"
@@ -28,6 +29,7 @@
 
 #include "Texture/TextureManager.h"
 #include "imgui.h"
+#include "Components/NameComponent.h"
 //----------------------
 
 int main(int argc, char **argv) {
@@ -38,28 +40,24 @@ int main(int argc, char **argv) {
     IWindow *window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
-    float aspectRatio =
-            static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+    float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
     window->SetInputMode(CURSOR, CURSOR_NORMAL);
 
-    IRenderer *renderer = RendererFactory::CreateRenderer(type);
+    IRenderer* renderer = RendererFactory::CreateRenderer(type);
 
     ImGuiUI Gui;
-    Gui.Initialise(static_cast<GLFWwindow *>(window->GetNativeWindow()));
+    Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     Scene scene;
-
+    
     // --- Buko setting up Lua/Sol -------------------------
-    // ScriptManager dynamic allocation using a pointer: flexibility, type of
-    // object can be changed at runtime
+    //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
-    ScriptManager *scriptManager =
-            new LuaManager(); // Lua Manager instance is instantiated derived from
-    // base class
-    scriptManager->registerScene(scene); // Expose Scene to Lua
-    std::unique_ptr<Terrain> terrain =
-            scriptManager->createTerrainFromConfig(); // create terrain
-    scene.addTerrainEntity(*terrain); // add terrain to scene
+    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
+    scriptManager->registerScene(scene);// Expose Scene to Lua
+    scriptManager->runScript("GameScripts/HugoTest.lua");
+    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
+    scene.addTerrainEntity(*terrain);                                       // add terrain to scene
 
     const RawMeshData &terrainMeshData = terrain->getMeshData();
 
@@ -69,9 +67,9 @@ int main(int argc, char **argv) {
 
     // --- END OF Buko  Lua/Sol -------------------------
 
-    GridCollision collision(terrainGridRows, terrainGridCols, terrainScale,
-                            terrainMeshData.vertices);
+    GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
+    
     scene.setDirectionalLight(dirLight);
     // scene.loadModelToRegistry(backPackPath);
 
@@ -99,25 +97,20 @@ int main(int argc, char **argv) {
     // if (playerView.begin() != playerView.end()) {//checking if playerView is
     // empty playerTankEntity = *playerView.begin();
     // }
-    // load player tank
-    scene.loadPlayerModelEntity(
-        playerTankPath); // this gets playerTankPath from Lua, the right way
+    //load player tank
+    scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
     // std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising
-    // for now
-    auto playerView = scene.getEntityManager()
-            .view<TransformComponent, PlayerControllerComponent>();
-    auto &cameraTransform =
-            scene.getEntityManager().get<TransformComponent>(cameraEntity);
-    glm::vec3 cameraOffset = {
-        -0.0f, -30.0f,
-        -50.0f
-    }; // so camera isn't sitting inside tank
-    // align tank with camera orientation
-    for (auto entity: playerView) {
-        auto &playerTankTransform = playerView.get<TransformComponent>(entity);
+    // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
+    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+    auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+    glm::vec3 cameraOffset = {-0.0f, -30.0f,
+        -50.0f}; //so camera isn't sitting inside tank
+    //align tank with camera orientation
+    for (auto entity : playerView) {
+        auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
-        playerTankTransform.position = cameraTransform.position + cameraOffset;
+        playerTankTransform.position = cameraTransform.position+cameraOffset;
+
     }
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
@@ -129,24 +122,31 @@ int main(int argc, char **argv) {
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\tree3.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\tree4.gltf)";
     for (int i = 0; i < 3; ++i) {
-        scene.loadCollidableBoxEntity(tree1Path);
-        scene.loadCollidableBoxEntity(jeepPath);
-        scene.loadCollidableBoxEntity(rock1Path);
-        scene.loadModelEntity(tree1Path);
-        scene.loadCollidableCapsuleEntity(tree1Path);
-        scene.loadCollidableBoxEntity(rock2Path);
-        scene.loadCollidableBoxEntity(jeepPath);
+    std::string name = "tree" + std::to_string(i);
+    // scene.loadCollidableBoxEntity(tree1Path, name);
+        // scene.loadCollidableBoxEntity(jeepPath);
+        // scene.loadCollidableBoxEntity(rock1Path);
+        // scene.loadModelEntity(tree1Path);
+        // scene.loadCollidableCapsuleEntity(tree1Path);
+        // scene.loadCollidableEntity(rock2Path);
+        // scene.loadCollidableBoxEntity(jeepPath);
     }
-    auto staticObjectsView =
-            scene.getEntityManager().view<TransformComponent, BoxColliderComponent>(
-                exclude<PlayerControllerComponent>);
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent,NameComponent>(exclude<PlayerControllerComponent>);
 
-    for (auto entity: staticObjectsView) {
-        auto &staticObjectTransform =
-                staticObjectsView.get<TransformComponent>(entity);
-        float a = staticObjectTransform.position.x = rand() % 100 - 50;
-        float b = staticObjectTransform.position.z = rand() % 100 - 50;
-        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f, b});
+    // -------------- very temporary for testing--------------
+    terrainGridRows = 100;
+    terrainGridCols = 100;
+    //--------------- ---------------
+    for (auto entity : staticObjectsView) {
+        auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
+        auto& entityName = staticObjectsView.get<NameComponent>(entity);
+        // float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
+        // float b = staticObjectTransform.position.z = rand()%terrainGridCols-terrainGridCols/2;
+        // staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
+        std::cout << entityName.name << std::endl;
+        std::cout << staticObjectTransform.position.x << std::endl;
+        std::cout << staticObjectTransform.position.y << std::endl;
+        std::cout << staticObjectTransform.position.z << std::endl;
     }
 
     // TODO this needs to be LUA
@@ -243,3 +243,4 @@ int main(int argc, char **argv) {
     delete window;
     return 0;
 }
+

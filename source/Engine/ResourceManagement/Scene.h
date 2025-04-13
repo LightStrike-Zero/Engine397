@@ -51,7 +51,7 @@ public:
      * @brief Loads a general model entity into the scene.
      * @param modelFilePath Path to the model file.
      */
-    void loadModelEntity(const std::string& modelFilePath);
+    void loadModelEntity(const std::string& modelFilePath, const std::string& name);
 
     /**
      * @brief Loads the player model into the scene.
@@ -68,11 +68,10 @@ public:
     /**
      * @deprecated USE box, capsule, or sphere instead.
      */
-    void loadCollidableEntity(const std::string& filepath);
     // void loadCollidableEntity(const std::string& filepath);
-    void loadCollidableBoxEntity(const std::string& filepath);
-    void loadCollidableCapsuleEntity(const std::string& filepath);
-    void loadCollidableSphereEntity(const std::string& filepath);
+    void loadCollidableBoxEntity(const std::string& filepath, const std::string& name);
+    void loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name);
+    void loadCollidableSphereEntity(const std::string& filepath, const std::string& name);
 
     /**
      * @brief Returns access to the entity manager (EnTT facade).
@@ -92,6 +91,7 @@ public:
      */
     const DirectionalLight& getDirectionalLight() const { return m_directionalLight; }
 
+    bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z); //not using glm::vec3 because lua cannot bind user type
   void createSkyBox(const std::array<std::string, 6>& faces);
 
 private:
@@ -104,5 +104,6 @@ private:
     DirectionalLight m_directionalLight = DirectionalLight(glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.09f, 0.09f, 0.1f),
         glm::vec3(0.79f, 0.79f, 0.85f), glm::vec3(0.39f, 0.39f, 0.45f), 0.5f);
 };
+
 
 #endif //SCENE_H

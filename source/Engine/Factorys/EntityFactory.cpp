@@ -6,7 +6,11 @@
 
 #include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "Components/CollisionComponents/CapsuleColliderComponent.h"
+#include <iostream>
+
+#include "Components/NameComponent.h"
 #include "Components/CollisionComponents/CollidableComponent.h"
+#include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "Components/CollisionComponents/SphereColliderComponent.h"
 #include "Components/SkyboxComponent.h"
 #include "OpenGL/OpenGLMeshBuffer.h"
@@ -19,7 +23,7 @@ EntityFactory::EntityFactory(EnttFacade* enttFacade)
 {
 }
 
-void EntityFactory::createEntitiesFromModel(const std::string& filepath) {
+void EntityFactory::createEntitiesFromModel(const std::string& filepath, const std::string& name) {
     // Get the model loader (singleton or instance as needed)
     ModelLoader& loader = ModelLoader::getInstance();
 
@@ -31,6 +35,10 @@ void EntityFactory::createEntitiesFromModel(const std::string& filepath) {
     for (const auto& rawMesh : modelData.meshes) {
         // Create an entity.
         auto entity = m_entityFacade->createEntity();
+
+        //Create and set up the name component.
+        NameComponent name_component = { name };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);
 
         // Create and set up the renderable component.
         RenderableComponent meshComponent(rawMesh);
@@ -48,7 +56,7 @@ void EntityFactory::createEntitiesFromModel(const std::string& filepath) {
     }
 }
 
-void EntityFactory::createCollidableBoxEntitiesFromModel(const std::string& filepath) {
+void EntityFactory::createCollidableBoxEntitiesFromModel(const std::string& filepath, const std::string& name) {
     ModelLoader& loader = ModelLoader::getInstance();
 
     // Load the raw model data
@@ -59,6 +67,9 @@ void EntityFactory::createCollidableBoxEntitiesFromModel(const std::string& file
     for (const auto& rawMesh : modelData.meshes)
     {
         entt::entity entity = m_entityFacade->createEntity();
+
+        NameComponent name_component = { name };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);
 
         RenderableComponent meshComponent(rawMesh);
         importer.setupMesh(meshComponent);
@@ -77,7 +88,7 @@ void EntityFactory::createCollidableBoxEntitiesFromModel(const std::string& file
     }
 }
 
-void EntityFactory::createCollidableCapsuleEntitiesFromModel(const std::string& filepath) {
+void EntityFactory::createCollidableCapsuleEntitiesFromModel(const std::string& filepath, const std::string& name) {
     ModelLoader& loader = ModelLoader::getInstance();
 
     // Load the raw model data
@@ -88,6 +99,9 @@ void EntityFactory::createCollidableCapsuleEntitiesFromModel(const std::string& 
     for (const auto& rawMesh : modelData.meshes)
     {
         entt::entity entity = m_entityFacade->createEntity();
+
+        NameComponent name_component = { name };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);
 
         RenderableComponent meshComponent(rawMesh);
         importer.setupMesh(meshComponent);
@@ -106,9 +120,8 @@ void EntityFactory::createCollidableCapsuleEntitiesFromModel(const std::string& 
     }
 }
 
-void EntityFactory::createCollidableSphereEntitiesFromModel(
-    const std::string &filepath) {
-  ModelLoader &loader = ModelLoader::getInstance();
+void EntityFactory::createCollidableSphereEntitiesFromModel(const std::string& filepath, const std::string& name) {
+    ModelLoader& loader = ModelLoader::getInstance();
 
   // Load the raw model data
   LoadedModel modelData = loader.loadModel(filepath);
@@ -118,7 +131,8 @@ void EntityFactory::createCollidableSphereEntitiesFromModel(
   for (const auto &rawMesh : modelData.meshes) {
     entt::entity entity = m_entityFacade->createEntity();
 
-    RenderableComponent meshComponent(rawMesh);
+    NameComponent name_component = { name };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);RenderableComponent meshComponent(rawMesh);
     importer.setupMesh(meshComponent);
     m_entityFacade->addComponent<RenderableComponent>(entity, meshComponent);
 
@@ -258,6 +272,9 @@ void EntityFactory::createPlayerEntitiesFromModel(const std::string& filepath) {
 
     for (const auto& rawMesh : modelData.meshes) {
         auto entity = m_entityFacade->createEntity();
+
+        NameComponent name_component = { "player" };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);
 
         RenderableComponent meshComponent(rawMesh);
         importer.setupMesh(meshComponent);

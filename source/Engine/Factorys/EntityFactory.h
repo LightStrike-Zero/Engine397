@@ -45,12 +45,15 @@ public:
     /**
      * @brief Create entities from a generic model file.
      * @param filepath Path to the model file (e.g., .gltf, .obj).
+     * @param name manually set the Name Component of the entity
      */
-    void createEntitiesFromModel(const std::string& filepath);
+    void createEntitiesFromModel(const std::string& filepath, const std::string& name);
 
     /**
      * @brief Create entities for a player model by adding an additional PlayerControllerComponent.
      * @param filepath Path to the player model file.
+     * @param name manually set the Name Component of the entity
+
      */
     void createPlayerEntitiesFromModel(const std::string& filepath);
 
@@ -66,9 +69,9 @@ public:
      */
 
 
-    void createCollidableBoxEntitiesFromModel(const std::string& filepath);
-    void createCollidableCapsuleEntitiesFromModel(const std::string& filepath);
-    void createCollidableSphereEntitiesFromModel(const std::string& filepath);
+    void createCollidableBoxEntitiesFromModel(const std::string& filepath, const std::string& name);
+    void createCollidableCapsuleEntitiesFromModel(const std::string& filepath, const std::string& name);
+    void createCollidableSphereEntitiesFromModel(const std::string& filepath, const std::string& name);
 
     void createSkyBox(const std::array<std::string, 6>& faces);
 private:

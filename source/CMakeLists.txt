@@ -95,6 +95,7 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Texture/OpenGL/OGL_CubeMap.h
         Engine/Texture/OpenGL/OGL_CubeMap.cpp
         Engine/Components/SkyboxComponent.h
+        Engine/Components/NameComponent.h
 )
 
 # Add executable based on source files

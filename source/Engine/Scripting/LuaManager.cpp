@@ -27,7 +27,7 @@ LuaManager::~LuaManager()
 
 //------------------------ Register Scene Method ------------------------------
 // Registers the class scene with lua so it can be exposed to the script
-// Currently only loadModelToRegistry method is exposed to Lua
+// Mainly methods that loads assets are exposed to lua
 // INPUT the scene object to be exposed
 void LuaManager::registerScene(Scene& scene)
 {
@@ -35,8 +35,13 @@ void LuaManager::registerScene(Scene& scene)
             "Scene",
             sol::constructors<Scene()>(),
             // "loadModelToRegistry", &Scene::loadModelToRegistry this has been replaced by the below
-            "loadModelToRegistry", &Scene::loadModelEntity
+            "loadModelToRegistry", &Scene::loadModelEntity,
+            "loadBoxModelToRegistry", &Scene::loadCollidableBoxEntity,
+            "setEntityPosByName", &Scene::setEntityPosByName
     );
+
+
+
 
     // Pass the Scene instance to Lua using Sol2
     m_lua["scene"] = &scene;

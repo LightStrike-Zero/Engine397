@@ -64,10 +64,10 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
     }
     wasMPressedLastFrame = glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS;
     // end of buko help manual screen
-
+    //
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
         handleKeyboardInput(transform, camera, deltaTime);
-            
+
         handleMouseInput(camera);
     }
 }
@@ -81,9 +81,6 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
     //this event dispatch lambda function is calling camera by reference and modifying it, use with caution
     EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
     const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
-        if (keyEvent.keyCode == GLFW_KEY_X) {
-            glfwSetWindowShouldClose(m_window, true);
-        }
         static bool keyWasPressed = false;
         if (keyEvent.keyCode == GLFW_KEY_K) {
             if (!keyWasPressed) {

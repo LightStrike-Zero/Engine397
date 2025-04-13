@@ -37,6 +37,7 @@ class LuaManager : public ScriptManager
 
        /**
         * @copydoc ScriptManager::registerScene
+        * @brief additionally define glm::vec type in lua
         */
         void registerScene(Scene& scene) override;              // Expose Scene to Lua
 

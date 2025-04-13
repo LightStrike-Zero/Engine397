@@ -10,6 +10,7 @@
 
 #include <entt/entt.hpp>
 #include <utility>
+#include "Components/NameComponent.h"
 
 /// by Hugo. This is a wrapper that helps to facade entt:: when using entt::exclude.
 template<typename... Components>
@@ -80,22 +81,29 @@ public:
     }
 
     /**
-     * @brief Removes a component from an entity.
-     * @tparam Component The component type.
-     * @param entity The entity to remove the component from.
+     * @brief Returns a view of all entities with the specified components, but excluding specified components.
+     * @param Include The desired component types
+     * @param Exclude The excluded component types
+     * @return A view over entities with those components.
      */
-    //created by Hugo, because I need view<Component>(entt::exclude<Component>)
     template<typename... Include, typename... Exclude>
     auto view(entt::exclude_t<Exclude...> ex) {
         return m_registry.view<Include...>(ex);
     }
 
 
+    /**
+     * @brief Removes a component from an entity.
+     * @tparam Component The component type.
+     * @param entity The entity to remove the component from.
+     */
 
     template<typename Component>
     void removeComponent(Entity entity) {
         m_registry.remove<Component>(entity);
     }
+
+
 
     /**
      * @brief Checks if an entity has a specific component.
@@ -108,6 +116,29 @@ public:
     {
         return m_registry.all_of<Component>(entity);
     }
+
+
+
+    template<typename Component>
+    bool setComponentByName(const std::string& name, const Component& component) {
+        bool flag = true;
+        auto view = m_registry.view<NameComponent>();
+
+        for (auto entity : view) {
+            const auto& nameComp = view.get<NameComponent>(entity);
+            if (nameComp.name == name) {
+                if (m_registry.all_of<Component>(entity)) { //if the component exists, replace
+                    m_registry.replace<Component>(entity, component);
+                } else { //if the component do not exist, create one
+                    m_registry.emplace<Component>(entity, component);
+                }
+                return flag; // setting done
+            }
+        }
+        flag = false;
+        return flag; //no matching entity found
+    }
+
 
     /**
      * @brief Provides access to the underlying registry.
