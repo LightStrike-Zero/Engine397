@@ -11,4 +11,8 @@ for i = 0, 2 do
     scene:loadBoxModelToRegistry("Assets/game_tree1_dead_small/tree1.gltf", name)
 end
 
---print("i tried to load 3 jeeps")
+scene:setEntityPosByName("tree0",50,10,50)
+scene:setEntityPosByName("tree1",-50,10,50)
+scene:setEntityPosByName("tree1",-50,10,-50)
+
+print("Hugo's test finished")

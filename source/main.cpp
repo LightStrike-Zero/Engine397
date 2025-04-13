@@ -123,13 +123,20 @@ int main(int argc, char** argv)
     }
     auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent,NameComponent>(exclude<PlayerControllerComponent>);
 
+    // -------------- very temporary for testing--------------
+    terrainGridRows = 100;
+    terrainGridCols = 100;
+    //--------------- ---------------
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
         auto& entityName = staticObjectsView.get<NameComponent>(entity);
+        // float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
+        // float b = staticObjectTransform.position.z = rand()%terrainGridCols-terrainGridCols/2;
+        // staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
         std::cout << entityName.name << std::endl;
-        float a = staticObjectTransform.position.x = rand()%100-50;
-        float b = staticObjectTransform.position.z = rand()%100-50;
-        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
+        std::cout << staticObjectTransform.position.x << std::endl;
+        std::cout << staticObjectTransform.position.y << std::endl;
+        std::cout << staticObjectTransform.position.z << std::endl;
     }
 
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko

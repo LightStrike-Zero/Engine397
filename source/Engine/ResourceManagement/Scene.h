@@ -92,6 +92,7 @@ public:
      */
     const DirectionalLight& getDirectionalLight() const { return m_directionalLight; }
 
+    bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z); //not using glm::vec3 because lua cannot bind user type
 
 private:
 
@@ -103,5 +104,6 @@ private:
     DirectionalLight m_directionalLight = DirectionalLight(glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.09f, 0.09f, 0.1f),
         glm::vec3(0.79f, 0.79f, 0.85f), glm::vec3(0.39f, 0.39f, 0.45f), 0.5f);
 };
+
 
 #endif //SCENE_H
