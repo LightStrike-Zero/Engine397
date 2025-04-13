@@ -25,7 +25,8 @@ enum class TerrainTypeEnum {
   HEIGHTMAP,                         ///< Load terrain from a heightmap image.
   FRACTAL,                           ///< Generate terrain using a fractal faulting algorithm.
   TEXTURED_HEIGHTMAP,                ///< Heightmap with texture.
-  TEXTURED_FRACTAL                   ///< Procedural terrain with texture.
+  TEXTURED_FRACTAL,                   ///< Procedural terrain with texture.
+    MULTITEXTURED_HEIGHTMAP,         ///< Heightmap with multiple textures.
 };
 
 /**
@@ -46,6 +47,7 @@ private:
   static std::shared_ptr<TerrainType> createHeightmapTerrain(const std::map<std::string, std::string>& params);
   static std::shared_ptr<TerrainType> createFractalTerrain(const std::map<std::string, std::string>& params);
   static std::shared_ptr<TerrainType> createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain, const std::map<std::string, std::string>& params);
+    static std::shared_ptr<TerrainType> createMultiTexturedTerrain(/*const std::map<std::string, std::string>& params*/);
 };
 
 #endif //TERRAINFACTORY_H
