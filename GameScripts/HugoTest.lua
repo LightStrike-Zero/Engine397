@@ -6,13 +6,48 @@
 
 print("Hugo's test initiated")
 
-for i = 0, 2 do
-    local name = "tree" .. i
-    scene:loadBoxModelToRegistry("Assets/game_tree1_dead_small/tree1.gltf", name)
+tankPath = "Assets/game_tank/tank.gltf";
+jeepPath = "Assets/game_jeep/jeep.gltf";
+rock1Path = "Assets/game_rock1/rock1.gltf";
+rock2Path = "Assets/game_rock2/rock2.gltf";
+tree1Path = "Assets/game_tree1_dead_small/tree1.gltf";
+tree2Path = "Assets/game_tree2_dead_big/tree2.gltf";
+tree3Path = "Assets/game_tree3_pine_narrow/tree3.gltf";
+tree4Path = "Assets/game_tree4_pine2_wide/tree4.gltf";
+
+
+for i = 0, 5 do
+    local name = "tree1." .. i
+    scene:loadBoxModelToRegistry(tree1Path, name)
 end
 
-scene:setEntityPosByName("tree0",50,10,50)
-scene:setEntityPosByName("tree1",-50,10,50)
-scene:setEntityPosByName("tree1",-50,10,-50)
+for i = 0, 5 do
+    local name = "tree2." .. i
+    scene:loadBoxModelToRegistry(tree2Path, name)
+end
+
+for i = 0, 5 do
+    local name = "rock1." .. i
+    scene:loadBoxModelToRegistry(rock1Path, name)
+end
+
+for i = 0, 5 do
+    local name = "rock2." .. i
+    scene:loadBoxModelToRegistry(rock2Path, name)
+end
+
+for i = 0, 9 do
+    local name = "jeep." .. i
+    scene:loadBoxModelToRegistry(jeepPath, name)
+end
+
+for i = 0, 9 do
+    local name = "tank." .. i
+    scene:loadBoxModelToRegistry(tankPath, name)
+end
+
+-- scene:setEntityPosByName("tree0",50,10,50)
+-- scene:setEntityPosByName("tree1",-50,10,50)
+-- scene:setEntityPosByName("tree1",-50,10,-50)
 
 print("Hugo's test finished")

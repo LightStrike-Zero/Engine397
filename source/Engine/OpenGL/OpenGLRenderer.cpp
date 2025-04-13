@@ -165,15 +165,15 @@ void OpenGLRenderer::SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& pr
     skyboxShader->SetUniformMat4("projection", projectionMatrix);
 
     // Iterate over all entities that have the SkyboxComponent, RenderableComponent, and TransformComponent.
-    std::cout << "Skybox Pass" << std::endl;
+    // std::cout << "Skybox Pass" << std::endl;
     auto skyboxView = scene.getEntityManager().view<SkyboxComponent, RenderableComponent, TransformComponent>();
     for (auto entity : skyboxView) {
         auto& skyboxComp = skyboxView.get<SkyboxComponent>(entity);
-        std::cout << "SkyboxComponent" << std::endl;
+        // std::cout << "SkyboxComponent" << std::endl;
         auto& renderable = skyboxView.get<RenderableComponent>(entity);
-        std::cout << "RenderableComponent" << std::endl;
+        // std::cout << "RenderableComponent" << std::endl;
         auto& transform = skyboxView.get<TransformComponent>(entity);
-        std::cout << "TransformComponent" << std::endl;
+        // std::cout << "TransformComponent" << std::endl;
 
         // Bind the cubemap texture to texture unit 0.
         glActiveTexture(GL_TEXTURE0);

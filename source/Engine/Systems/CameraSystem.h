@@ -54,7 +54,7 @@ private:
     float m_aspectRatio;
     
     //void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
-    void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
+    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
 
     void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
     
