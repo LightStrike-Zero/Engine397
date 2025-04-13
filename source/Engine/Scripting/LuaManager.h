@@ -76,6 +76,14 @@ class LuaManager : public ScriptManager
         */
         std::string LuaManager::getHelpManualPath() override;
 
+       /**
+        * @brief Get a glm::vec3 from Lua table
+        * @param tableName The name of the Lua table
+        * @return The glm::vec3 value from the Lua table
+        */
+        glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName);
+
+
     private:
         sol::state m_lua;              // Lua state
 };

@@ -46,6 +46,10 @@ for i = 0, 9 do
     scene:loadBoxModelToRegistry(tankPath, name)
 end
 
+baseOffset = { x = 0, y = 10, z = -30 }
+playerStartPos = { x = 100, y = 10, z = 0 }
+
+
 -- scene:setEntityPosByName("tree0",50,10,50)
 -- scene:setEntityPosByName("tree1",-50,10,50)
 -- scene:setEntityPosByName("tree1",-50,10,-50)

@@ -69,9 +69,7 @@ int main(int argc, char **argv) {
 
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
-    
     scene.setDirectionalLight(dirLight);
-    // scene.loadModelToRegistry(backPackPath);
 
     /*TODO
      * this wont stay like this
@@ -93,37 +91,23 @@ int main(int argc, char **argv) {
 
     static float lastFrame = 0.0f;
 
-    // entt::entity playerTankEntity = entt::null;
-    // if (playerView.begin() != playerView.end()) {//checking if playerView is
-    // empty playerTankEntity = *playerView.begin();
-    // }
     //load player tank
-    scene.loadPlayerModelEntity(playerTankPath); //this gets playerTankPath from Lua, the right way
-    // std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
-    // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
+    scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
-    auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-    glm::vec3 cameraOffset = {-0.0f, -30.0f,
-        -50.0f}; //so camera isn't sitting inside tank
     //align tank with camera orientation
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
-        playerTankTransform.position = cameraTransform.position+cameraOffset;
-
+        playerTankTransform.position = scriptManager->getVec3FromLua("playerStartPos");
     }
 
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent,NameComponent>(exclude<PlayerControllerComponent>);
+    //randomising all the static objects' positions
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
-        auto& entityName = staticObjectsView.get<NameComponent>(entity);
         float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
         float b = staticObjectTransform.position.z = rand()%terrainGridCols-terrainGridCols/2;
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
-        // std::cout << entityName.name << std::endl;
-        // std::cout << staticObjectTransform.position.x << std::endl;
-        // std::cout << staticObjectTransform.position.y << std::endl;
-        // std::cout << staticObjectTransform.position.z << std::endl;
     }
 
     // TODO this needs to be LUA
@@ -165,42 +149,20 @@ int main(int argc, char **argv) {
                 // cameraTransform.position = playerTankTransform.position - cameraOffset;//old offset logic
 
                 //----------------- new camera rotation logic -----------------
-                // // Match camera's rotation with tank
-                // cameraTransform.rotation.y = playerTankTransform.rotation.y;
-                //
-                // // Recalculate offset using tank rotation
-                // glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(cameraTransform.rotation.y), glm::vec3(0, 1, 0));
-                // glm::vec3 rotatedOffset = glm::vec3(rotationMatrix * glm::vec4(cameraOffset, 0.0f));
-                //
-                // // Apply rotated offset to camera's position
-                // cameraTransform.position = playerTankTransform.position - rotatedOffset;
-                //
-                // // 1. Get direction from camera to tank
-                // glm::vec3 direction = glm::normalize(playerTankTransform.position - cameraTransform.position);
-                //
-                // // 2. Convert that direction into yaw & pitch for the camera
-                // auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
-                //
-                // cameraComponent.yaw = glm::degrees(atan2(direction.z, direction.x)) - 90.0f;
-                // cameraComponent.pitch = glm::degrees(asin(direction.y));
-                //
-                // // 3. Update camera.front using yaw & pitch
-                // cameraComponent.front = glm::normalize(glm::vec3{
-                //     cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
-                // });
 
-                //----------------- 2nd trial on camera rotation logic -----------------
 
-                glm::vec3 baseOffset = glm::vec3(0.0f, 10.0f, -30.0f); // higher and behind
+                // glm::vec3 baseOffset = glm::vec3(0.0f, 10.0f, -30.0f); // higher and behind
+                glm::vec3 baseOffset = scriptManager->getVec3FromLua("baseOffset");
+
                 float tankYaw = playerTankTransform.rotation.y;
+
 
                 // Rotate offset around Y axis to follow behind tank
                 glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(tankYaw), glm::vec3(0, 1, 0));
                 glm::vec3 rotatedOffset = glm::vec3(rotationMatrix * glm::vec4(baseOffset, 0.0f));
 
                 // New camera position
+                auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
                 cameraTransform.position = playerTankTransform.position + rotatedOffset;
 
                 // Let camera face the tank
@@ -210,11 +172,11 @@ int main(int argc, char **argv) {
                 cameraComponent.pitch = glm::degrees(asin(lookDir.y));
                 //
                 // // Update front vector
-                // cameraComponent.front = glm::normalize(glm::vec3{
-                //     cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
-                // });
+                cameraComponent.front = glm::normalize(glm::vec3{
+                    cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
+                    sin(glm::radians(cameraComponent.pitch)),
+                    sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
+                });
 
 
                 //----------------- THE END ------------------

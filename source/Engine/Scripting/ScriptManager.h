@@ -85,6 +85,14 @@ class ScriptManager
         * @return Help manual file path string.
         */
         virtual std::string getHelpManualPath() = 0;
+
+        /**
+         * grabs a vec3 from lua
+         * @param tableName
+         * @return a vec3 defined in lua
+         */
+        virtual glm::vec3 getVec3FromLua(const std::string& tableName) = 0;
+
 };
 
 #endif //SCRIPTMANAGER_H

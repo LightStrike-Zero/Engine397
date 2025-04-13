@@ -40,9 +40,6 @@ void LuaManager::registerScene(Scene& scene)
             "setEntityPosByName", &Scene::setEntityPosByName
     );
 
-
-
-
     // Pass the Scene instance to Lua using Sol2
     m_lua["scene"] = &scene;
 }
@@ -150,4 +147,14 @@ std::string LuaManager::getHelpManualPath()
     runScript("GameScripts/GameInitialisation.lua");
     return m_lua["text_helpManual_path"];
 }
+
+glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName) {
+    sol::table t = m_lua[tableName];
+    return {
+        t["x"].get_or(0.0f),
+        t["y"].get_or(0.0f),
+        t["z"].get_or(0.0f)
+    };
+}
+
 //====================== END OF LUA MANAGER CLASS =============================
