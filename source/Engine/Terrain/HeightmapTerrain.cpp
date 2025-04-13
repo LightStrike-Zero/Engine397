@@ -31,6 +31,9 @@ void HeightmapTerrain::apply(RawMeshData& meshData, const int numRows, const int
 
         vertex.position.y = sampledHeight * m_heightScale;
     }
+
+    generateNormals(meshData);
+
 }
 
 void HeightmapTerrain::loadHeightMap(const std::string& heightMapPath)
@@ -84,4 +87,42 @@ float HeightmapTerrain::bilinearSample(float xf, float yf)
     const float px2 = lerp(p12, p22, xp);
 
     return lerp(px1, px2, yp);
+}
+
+void HeightmapTerrain::generateNormals(RawMeshData& meshData)
+{
+    // 1. Zero out all vertex normals.
+    for (auto& vertex : meshData.vertices) {
+        vertex.normal = glm::vec3(0.0f);
+    }
+
+    // 2. Loop through each triangle using the indices.
+    //    Assuming indices are in groups of three.
+    for (size_t i = 0; i < meshData.indices.size(); i += 3) {
+        unsigned int index0 = meshData.indices[i];
+        unsigned int index1 = meshData.indices[i + 1];
+        unsigned int index2 = meshData.indices[i + 2];
+
+        // Retrieve the vertices for the triangle.
+        Vertex& v0 = meshData.vertices[index0];
+        Vertex& v1 = meshData.vertices[index1];
+        Vertex& v2 = meshData.vertices[index2];
+
+        // 3. Compute the edges of the triangle.
+        glm::vec3 edge1 = v1.position - v0.position;
+        glm::vec3 edge2 = v2.position - v0.position;
+
+        // 4. Compute the face normal.
+        glm::vec3 faceNormal = glm::normalize(glm::cross(edge1, edge2));
+
+        // 5. Accumulate the face normal to each vertex normal.
+        v0.normal += faceNormal;
+        v1.normal += faceNormal;
+        v2.normal += faceNormal;
+    }
+
+    // 6. Normalize each vertex normal to get the final, unit-length normals.
+    for (auto& vertex : meshData.vertices) {
+        vertex.normal = glm::normalize(vertex.normal);
+    }
 }

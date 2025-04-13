@@ -53,6 +53,8 @@ protected:
      * @brief Samples heightmap using bilinear filtering.
      */
     float bilinearSample(float xf, float yf);
+
+    void generateNormals(RawMeshData& meshData);
 };
 
 #endif //UNTEXTUREDTERRAIN_H

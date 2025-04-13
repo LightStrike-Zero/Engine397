@@ -54,6 +54,8 @@ private:
 
     void generateFractalHeightmap(int numRows, int numCols, int iterations, float initialDisplacement, float displacementDecay, unsigned int seed, float smoothness, int smoothingPasses);
     void applyFIRFilter(int numRows, int numCols, float filterStrength, int passes = 1);
+    void generateNormals(RawMeshData& meshData);
+
 };
 
 #endif //FRACTALTERRAIN_H

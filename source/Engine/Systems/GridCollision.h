@@ -35,6 +35,8 @@ public:
      */
     float getHeightAt(const glm::vec3& worldPos) const;
 
+    glm::vec3 getNormalAt(const glm::vec3& worldPos) const;
+
 private:
     int m_numRows;                                  ///< Number of grid rows
     int m_numCols;                                  ///< Number of grid columns
