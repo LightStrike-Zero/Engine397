@@ -58,6 +58,11 @@ void Scene::loadCollidableSphereEntity(const std::string& filepath, const std::s
 
 }
 
+
+void Scene::createSkyBox(const std::array<std::string, 6> &faces) {
+    m_entityFactory->createSkyBox(faces);
+}
+
 bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z) { //not using glm::vec3 because lua cannot bind user type
     auto view = m_entityFacade.getRegistry().view<NameComponent,TransformComponent>();
     //essentially grabbing everything else in a transform, because we only want to change position, not others
