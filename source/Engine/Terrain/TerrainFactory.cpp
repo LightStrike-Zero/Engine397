@@ -83,7 +83,7 @@ std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_p
 
     return std::make_shared<TerrainTexture>(baseTerrain, texturePath, repeatX, repeatY);
 }
-
-std::shared_ptr<TerrainType> TerrainFactory::createMultiTexturedTerrain() {
-}
+//
+// std::shared_ptr<TerrainType> TerrainFactory::createMultiTexturedTerrain() {
+// }
 
