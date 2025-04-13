@@ -11,4 +11,4 @@ for i = 0, 2 do
     scene:loadBoxModelToRegistry("Assets/game_tree1_dead_small/tree1.gltf", name)
 end
 
-print("i tried to load 3 jeeps")
+--print("i tried to load 3 jeeps")
