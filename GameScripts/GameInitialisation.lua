@@ -21,8 +21,9 @@ tank_assetPath = "Assets/game_tank/tank.gltf"
 -- --------------------------------------
 --terrainType = "Heightmap"
 --terrainType = "Fractal"
-terrainType = "TexturedHeightMap"
+--terrainType = "TexturedHeightMap"
 --  terrainType = "TexturedFractal"
+  terrainType = "MultiTexturedHeightMap"
 -- --------------------------------------
 -- when no texture is chosen in Lua (all commented) game will crash NEED TO FIX
 
@@ -36,6 +37,8 @@ elseif terrainType == "Fractal" then
     dofile("GameScripts/TerrainConfig_fractal.lua")
 elseif terrainType == "TexturedHeightMap" then
     dofile("GameScripts/TerrainConfig_tex_heightmap.lua")
+elseif terrainType == "MultiTexturedHeightMap" then
+    dofile("GameScripts/TerrainConfig_mult_tex_heightmap.lua")
 elseif terrainType == "TexturedFractal" then
     dofile("GameScripts/TerrainConfig_tex_fractal.lua")
 else

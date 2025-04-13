@@ -19,6 +19,15 @@
 #include <string>
 #include <utility>
 
+
+struct BlendParameters {
+    // Pixels with normalized height values below threshold1 use texture 0
+    // Values between threshold1 and threshold2 are linearly blended between texture 0 and 1
+    // Values above threshold2 are blended between texture 1 and 2
+    float threshold1 = 0.33f;
+    float threshold2 = 0.66f;
+};
+
 /**
  * @struct RawImageData
  * @brief Represents raw image data with associated metadata.
@@ -32,7 +41,10 @@ struct RawImageData {
     int width;           ///< Width of the image (-1 if compressed).
     int height;          ///< Height of the image (-1 if compressed).
     bool isCompressed;   ///< Flag indicating whether the image is compressed.
+    uint8_t channels;  ///< Number of channels in the image (e.g., 1 for grayscale, 3 for RGB, 4 for RGBA).
     std::string format;  ///< Format of the image (e.g., "PNG", "JPEG").
+    
+    RawImageData() = default;
 
     /**
      * @brief Constructor for compressed image data.
@@ -71,7 +83,6 @@ struct RawImageData {
      * Cleans up the RawImageData structure.
      */
     ~RawImageData() {
-        delete[] data;
     };
 };
 

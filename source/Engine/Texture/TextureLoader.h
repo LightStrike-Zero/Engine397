@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class ITexture;
 
@@ -72,6 +73,16 @@ public:
    */
   static std::shared_ptr<ICubeMap>
   loadCubeMap(const std::array<std::string, 6> &faces);
-};
+
+  /**
+   * @brief Create a composite texture based on heightmap data.
+   * @param sourceTexturePaths A vector of file paths to the source textures.
+   * @param blendingParams Parameters for how to blend the textures (e.g., thresholds).
+   * @return A RawImageData structure containing the composite texture data.
+   */
+  static RawImageData createCompositeTexture(const std::vector<std::string>& sourceTexturePaths,
+                                             const BlendParameters& blendingParams);
+};  
+
 
 #endif // TEXTURELOADER_H

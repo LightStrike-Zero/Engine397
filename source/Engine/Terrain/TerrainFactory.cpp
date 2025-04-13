@@ -5,32 +5,47 @@
 
 #include <iostream>
 
-std::shared_ptr<TerrainType> TerrainFactory::createTerrainType(TerrainTypeEnum type, const std::map<std::string, std::string>& params) {
-    switch (type) {
-        case TerrainTypeEnum::HEIGHTMAP:
-            return createHeightmapTerrain(params);
+#include "TerrainMultiTexture.h"
 
-        case TerrainTypeEnum::FRACTAL:
-            return createFractalTerrain(params);
+std::shared_ptr<TerrainType> TerrainFactory::createTerrainType(TerrainTypeEnum type,
+                                                               const std::map<std::string, std::string>& params)
+{
+    switch (type)
+    {
+    case TerrainTypeEnum::HEIGHTMAP:
+        return createHeightmapTerrain(params);
 
-        case TerrainTypeEnum::TEXTURED_HEIGHTMAP: {
+    case TerrainTypeEnum::FRACTAL:
+        return createFractalTerrain(params);
+
+    case TerrainTypeEnum::TEXTURED_HEIGHTMAP:
+        {
             auto baseTerrain = createHeightmapTerrain(params);
             return createTexturedTerrain(baseTerrain, params);
         }
 
-        case TerrainTypeEnum::TEXTURED_FRACTAL: {
+    case TerrainTypeEnum::TEXTURED_FRACTAL:
+        {
             auto baseTerrain = createFractalTerrain(params);
             return createTexturedTerrain(baseTerrain, params);
         }
 
-        default:
-            std::cerr << "[DEBUG] Unknown terrain type requested" << std::endl;
-            return nullptr;
+    case TerrainTypeEnum::MULTITEXTURED_HEIGHTMAP:
+        {
+            auto baseTerrain = createHeightmapTerrain(params);
+            std::cout << "MULTITEXTURED_HEIGHTMAP" << std::endl;
+            return createMultiTexturedTerrain(baseTerrain, params);
+        }
+
+    default:
+        std::cerr << "[DEBUG] Unknown terrain type requested" << std::endl;
+        return nullptr;
     }
 }
 
 //---------------- PRIVATE HELPERS ------------------
-std::shared_ptr<TerrainType> TerrainFactory::createHeightmapTerrain(const std::map<std::string, std::string>& params) {
+std::shared_ptr<TerrainType> TerrainFactory::createHeightmapTerrain(const std::map<std::string, std::string>& params)
+{
     std::string heightmapPath = "assets/heightmap.png";
     float heightScale = 1.0f;
 
@@ -43,7 +58,8 @@ std::shared_ptr<TerrainType> TerrainFactory::createHeightmapTerrain(const std::m
     return std::make_shared<HeightmapTerrain>(heightmapPath, heightScale);
 }
 
-std::shared_ptr<TerrainType> TerrainFactory::createFractalTerrain(const std::map<std::string, std::string>& params) {
+std::shared_ptr<TerrainType> TerrainFactory::createFractalTerrain(const std::map<std::string, std::string>& params)
+{
     int iterations = 8;
     float initialDisplacement = 0.5f;
     float displacementDecay = 0.65f;
@@ -73,17 +89,26 @@ std::shared_ptr<TerrainType> TerrainFactory::createFractalTerrain(const std::map
     if (params.count("smoothingPasses"))
         smoothingPasses = std::stoi(params.at("smoothingPasses"));
 
-    return std::make_shared<FractalTerrain>(iterations, initialDisplacement, displacementDecay, heightScale, seed, smoothness, smoothingPasses);
+    return std::make_shared<FractalTerrain>(iterations, initialDisplacement, displacementDecay, heightScale, seed,
+                                            smoothness, smoothingPasses);
 }
 
-std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain, const std::map<std::string, std::string>& params) {
-    std::string texturePath = params.at("path");  // now mandatory
+std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain,
+                                                                   const std::map<std::string, std::string>& params)
+{
+    std::string texturePath = params.at("path"); // now mandatory
     int repeatX = std::stoi(params.at("repeatX"));
     int repeatY = std::stoi(params.at("repeatY"));
 
     return std::make_shared<TerrainTexture>(baseTerrain, texturePath, repeatX, repeatY);
 }
-//
-// std::shared_ptr<TerrainType> TerrainFactory::createMultiTexturedTerrain() {
-// }
 
+std::shared_ptr<TerrainType> TerrainFactory::createMultiTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain,
+                                                                   const std::map<std::string, std::string>& params)
+{
+    std::string texturePath = params.at("path"); // now mandatory
+    int repeatX = std::stoi(params.at("repeatX"));
+    int repeatY = std::stoi(params.at("repeatY"));
+
+    return std::make_shared<TerrainMultiTexture>(baseTerrain, texturePath, repeatX, repeatY);
+}

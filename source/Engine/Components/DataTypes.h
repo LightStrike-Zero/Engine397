@@ -79,4 +79,5 @@ struct RawMeshData {
     glm::mat4 transform = glm::mat4(1.0f);    ///< Global transformation matrix of the mesh
 };
 
+
 #endif //DATATYPES_H

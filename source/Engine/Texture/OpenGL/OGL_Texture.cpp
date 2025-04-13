@@ -183,33 +183,15 @@ void OpenGLTexture::loadFromRawData(const RawImageData& imageData)
         glTexParameteri(m_textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(m_textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        int channels = imageData.dataSize / (imageData.width * imageData.height);
+        // int channels = imageData.dataSize / (imageData.width * imageData.height);
+        int channels = imageData.channels;  
         m_width = imageData.width;
         m_height = imageData.height;
         m_channels = channels;
 
-        // Determine format
-        GLenum format, internalFormat;
-        if (channels == 1)
-        {
-            internalFormat = GL_R16;
-            format = GL_RED;
-        }
-        else if (channels == 3)
-        {
-            internalFormat = GL_RGB;
-            format = GL_RGB;
-        }
-        else if (channels == 4)
-        {
-            internalFormat = GL_RGBA;
-            format = GL_RGBA;
-        }
-        else
-        {
-            internalFormat = GL_RGB;
-            format = GL_RGB;
-        }
+        GLenum format = GL_RGBA;
+        GLenum internalFormat = GL_RGBA8; 
+        
 
         glTexImage2D(m_textureType, 0, internalFormat, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, imageData.data);
         glGenerateMipmap(m_textureType);

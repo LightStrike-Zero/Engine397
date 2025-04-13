@@ -32,12 +32,13 @@
 #include "Components/NameComponent.h"
 //----------------------
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
     float playerHeight = 1.0f;
     bool showExitScreen = false; // buko
     bool showHelpScreen = false; // buko
 
-    IWindow *window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
+    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
@@ -49,17 +50,17 @@ int main(int argc, char **argv) {
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     Scene scene;
-    
+
     // --- Buko setting up Lua/Sol -------------------------
     //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
-    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
-    scriptManager->registerScene(scene);// Expose Scene to Lua
+    ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
+    scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/HugoTest.lua");
-    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
-    scene.addTerrainEntity(*terrain);                                       // add terrain to scene
+    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig(); // create terrain
+    scene.addTerrainEntity(*terrain); // add terrain to scene
 
-    const RawMeshData &terrainMeshData = terrain->getMeshData();
+    const RawMeshData& terrainMeshData = terrain->getMeshData();
 
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
@@ -69,7 +70,7 @@ int main(int argc, char **argv) {
 
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
-    
+
     scene.setDirectionalLight(dirLight);
     // scene.loadModelToRegistry(backPackPath);
 
@@ -82,10 +83,10 @@ int main(int argc, char **argv) {
     // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(
-        static_cast<GLFWwindow *>(window->GetNativeWindow()), aspectRatio);
+        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
     Player player(
         &scene.getEntityManager(),
-        static_cast<GLFWwindow *>(window->GetNativeWindow())); // added by Hugo
+        static_cast<GLFWwindow*>(window->GetNativeWindow())); // added by Hugo
 
     // TODO should make all lua loading into one function
     std::string helpText = FileHandler::readTextFile(
@@ -102,15 +103,17 @@ int main(int argc, char **argv) {
     // std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
     // scene.loadPlayerModelEntity(playerTankPath); //wrong way, but improvising for now
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
-    auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-    glm::vec3 cameraOffset = {-0.0f, -30.0f,
-        -50.0f}; //so camera isn't sitting inside tank
+    auto& cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+    glm::vec3 cameraOffset = {
+        -0.0f, -30.0f,
+        -50.0f
+    }; //so camera isn't sitting inside tank
     //align tank with camera orientation
-    for (auto entity : playerView) {
+    for (auto entity : playerView)
+    {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
-        playerTankTransform.position = cameraTransform.position+cameraOffset;
-
+        playerTankTransform.position = cameraTransform.position + cameraOffset;
     }
 
     std::string tankPath = R"(Assets\game_tank\tank.gltf)";
@@ -121,9 +124,10 @@ int main(int argc, char **argv) {
     std::string tree2Path = R"(Assets\game_tree2_dead_big\tree2.gltf)";
     std::string tree3Path = R"(Assets\game_tree3_pine_narrow\tree3.gltf)";
     std::string tree4Path = R"(Assets\game_tree4_pine2_wide\tree4.gltf)";
-    for (int i = 0; i < 3; ++i) {
-    std::string name = "tree" + std::to_string(i);
-    // scene.loadCollidableBoxEntity(tree1Path, name);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::string name = "tree" + std::to_string(i);
+        scene.loadCollidableBoxEntity(tree1Path, name);
         // scene.loadCollidableBoxEntity(jeepPath);
         // scene.loadCollidableBoxEntity(rock1Path);
         // scene.loadModelEntity(tree1Path);
@@ -131,13 +135,15 @@ int main(int argc, char **argv) {
         // scene.loadCollidableEntity(rock2Path);
         // scene.loadCollidableBoxEntity(jeepPath);
     }
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent,NameComponent>(exclude<PlayerControllerComponent>);
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent, BoxColliderComponent, NameComponent>(
+        exclude<PlayerControllerComponent>);
 
     // -------------- very temporary for testing--------------
     terrainGridRows = 100;
     terrainGridCols = 100;
     //--------------- ---------------
-    for (auto entity : staticObjectsView) {
+    for (auto entity : staticObjectsView)
+    {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
         auto& entityName = staticObjectsView.get<NameComponent>(entity);
         // float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
@@ -157,14 +163,21 @@ int main(int argc, char **argv) {
     };
     scene.createSkyBox(faces);
 
+    //TODO delete, was test for composite texture
+    // uint32_t compTexture = TextureManager::getInstance().createCompositeTexture(
+    //     { "Assets/Terrain/Textures/Terrain003_2K.png", "Assets/Terrain/Textures/Mountain_01.png", "Assets/Terrain/Textures/Mountain_02.png", "Assets/Terrain/Textures/Mountain_03.png" },
+    //     { 0.2f, 0.5f}
+    // );
+
     float lerpSpeed = 10.0f;
 
-    Gui.loadNamedImage("Click to Exit",
-                       scriptManager->getSplashImagePath()); // buko
+    Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
     unsigned int currentRenderedFrame;
-    while (!window->ShouldClose()) {
+    while (!window->ShouldClose())
+    {
         Gui.BeginFrame();
-        if (!showExitScreen) {
+        if (!showExitScreen)
+        {
             float currentFrame = window->GetTime();
             float deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
@@ -174,11 +187,12 @@ int main(int argc, char **argv) {
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
                                 showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] =
-                    cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+                cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
             player.update(deltaTime);
 
-            for (auto entity: playerView) {
-                auto &playerTankTransform = playerView.get<TransformComponent>(entity);
+            for (auto entity : playerView)
+            {
+                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
                 glm::vec3 playerTankPos = playerTankTransform.position;
 
                 float terrainHeight = collision.getHeightAt(playerTankPos);
@@ -219,16 +233,20 @@ int main(int argc, char **argv) {
                 playerTankTransform.rotation.z = 0.0f;
             }
             currentRenderedFrame =
-                    renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
-        } else {
-            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510})) {
+                renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+        }
+        else
+        {
+            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
+            {
                 window->SetShouldClose(true);
             }
         }
         Gui.DisplayImage("Viewport", currentRenderedFrame,
                          glm::vec2{windowWidth, windowHeight});
 
-        if (showHelpScreen) {
+        if (showHelpScreen)
+        {
             Gui.ShowHelpManual(showHelpScreen, helpText);
         }
 
@@ -243,4 +261,3 @@ int main(int argc, char **argv) {
     delete window;
     return 0;
 }
-

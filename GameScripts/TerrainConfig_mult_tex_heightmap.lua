@@ -11,7 +11,7 @@
 
 terrainConfig =
 {
-    type = "TexturedHeightmap",
+    type = "MultiTexturedHeightMap",
 
     rows = 1000,
     cols = 1000,
@@ -25,7 +25,7 @@ terrainConfig =
 
     texture =
     {
-        path = "Assets/Terrain/Textures/Mountain_03.png",
+        path = "Assets/Terrain/Textures/Color.png",
         repeatX = 1,
         repeatY = 1
     }
