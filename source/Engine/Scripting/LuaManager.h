@@ -92,7 +92,7 @@ public:
 
     std::string getStringFromLua(const std::string& name) override;
 
-
+    std::array<std::string, 6> getSkyboxFaces() override;
 
 private:
     sol::state m_lua; // Lua state

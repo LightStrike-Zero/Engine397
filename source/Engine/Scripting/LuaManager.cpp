@@ -37,16 +37,7 @@ void LuaManager::registerScene(Scene& scene)
             // "loadModelToRegistry", &Scene::loadModelToRegistry this has been replaced by the below
             "loadModelToRegistry", &Scene::loadModelEntity,
             "loadBoxModelToRegistry", &Scene::loadCollidableBoxEntity,
-            "setEntityPosByName", &Scene::setEntityPosByName,
-            "createSkyBoxFromFaces", [&](Scene& self, sol::table skyboxFaces) {
-            std::array<std::string, 6> faces;
-            for (int i = 1; i <= 6; ++i) {
-                if (!skyboxFaces[i].valid())
-                    throw std::runtime_error("Skybox table must have 6 valid texture paths.");
-                faces[i - 1] = skyboxFaces[i];
-            }
-            // self.createSkyBox(faces);
-        }
+            "setEntityPosByName", &Scene::setEntityPosByName
     );
     
     // Pass the Scene instance to Lua using Sol2
@@ -197,6 +188,24 @@ std::string LuaManager::getStringFromLua(const std::string& name) {
         std::cerr << "[LuaManager] Warning: '" << name << "' not found or not a string. Returning empty string.\n";
         return "";
     }
+}
+
+std::array<std::string, 6> LuaManager::getSkyboxFaces() {
+    std::array<std::string, 6> faces;
+    
+    sol::table skyboxTable = m_lua["skybox"];
+    if (!skyboxTable.valid()) {
+        throw std::runtime_error("Skybox table not found in Lua script");
+    }
+    
+    for (int i = 1; i <= 6; ++i) {
+        if (!skyboxTable[i].valid()) {
+            throw std::runtime_error("Skybox table must have 6 valid texture paths");
+        }
+        faces[i - 1] = skyboxTable[i].get<std::string>();
+    }
+    
+    return faces;
 }
 
 

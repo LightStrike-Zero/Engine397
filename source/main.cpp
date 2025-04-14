@@ -1,7 +1,5 @@
 #include <Scripting/LuaManager.h>
 #include <Scripting/ScriptManager.h>
-#include <iostream>
-
 #include "Factorys/RendererFactory.h"
 #include "GUI/ImGui_UI.h"
 #include "Interfaces/IWindow.h"
@@ -10,25 +8,15 @@
 #include "Systems/GridCollision.h"
 #include "Terrain/TerrainFactory.h"
 #include "Window/glfwWindow.h"
-// Buko -------------------------
-// Libraries for scripting
-// #include <lua.hpp>
 #define SOL_ALL_SAFETIES_ON 1
 #include "FileHandler.h"
 #include <sol/sol.hpp>
-#include "FileHandler.h"
-
-// #include "Components/CollisionComponents/CollidableComponent.h"
 #include "Components/PlayerControllerComponent.h"
 #include "Player.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
 #include <fstream>
-// need for exit pic
 #include <glm/gtc/quaternion.hpp>
 
-// #include "Texture/TextureManager.h"
-// #include "imgui.h"
-// #include "Components/NameComponent.h"
 //----------------------
 
 int main(int argc, char** argv)
@@ -49,10 +37,7 @@ int main(int argc, char** argv)
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     Scene scene;
-
-    // --- Buko setting up Lua/Sol -------------------------
-    //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
-
+    
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/GameConfig.lua");
@@ -64,9 +49,7 @@ int main(int argc, char** argv)
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
     float terrainScale = scriptManager->getTerrainSpacing();
-
-    // --- END OF Buko  Lua/Sol -------------------------
-
+    
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
 
@@ -103,14 +86,9 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
-    // SKYBOX SET UP
-    std::array<std::string, 6> faces = {
-        "Assets/skybox/right.jpg", "Assets/skybox/left.jpg",
-        "Assets/skybox/top.jpg", "Assets/skybox/bottom.jpg",
-        "Assets/skybox/front.jpg", "Assets/skybox/back.jpg"
-    };
-    scene.createSkyBox(faces);
-
+    
+    std::array<std::string, 6> skyboxFaces = scriptManager->getSkyboxFaces();
+    scene.createSkyBox(skyboxFaces);
     
     std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath());
     static float lastFrame = 0.0f;
@@ -142,14 +120,11 @@ int main(int argc, char** argv)
 
                 float terrainHeight = collision.getHeightAt(playerTankPos);
                 float targetHeight = terrainHeight + scriptManager->getFloatFromLua("playerHeightOffset");
-                float t = deltaTime * lerpSpeed; // Small factor for smooth interpolation.
+                float t = deltaTime * lerpSpeed; 
                 playerTankTransform.position.y = glm::mix(playerTankTransform.position.y, targetHeight, t);
-                // cameraTransform.position = playerTankTransform.position - cameraOffset;//old offset logic
 
                 //----------------- new camera rotation logic -----------------
-
-
-                // glm::vec3 baseOffset = glm::vec3(0.0f, 10.0f, -30.0f); // higher and behind
+                
                 glm::vec3 baseOffset = scriptManager->getVec3FromLua("baseOffset");
 
                 float tankYaw = playerTankTransform.rotation.y;
@@ -163,18 +138,18 @@ int main(int argc, char** argv)
                 auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
                 cameraTransform.position = playerTankTransform.position + rotatedOffset;
                 //
-                // Let camera face the tank
-                auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
-                glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
-                cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
-                cameraComponent.pitch = glm::degrees(asin(lookDir.y));
-                //
-                // // Update front vector
-                cameraComponent.front = glm::normalize(glm::vec3{
-                    cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
-                    sin(glm::radians(cameraComponent.pitch)),
-                    sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
-                });
+                // // Let camera face the tank
+                // auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
+                // glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
+                // cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
+                // cameraComponent.pitch = glm::degrees(asin(lookDir.y));
+                // //
+                // // // Update front vector
+                // cameraComponent.front = glm::normalize(glm::vec3{
+                //     cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
+                //     sin(glm::radians(cameraComponent.pitch)),
+                //     sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
+                // });
 
 
                 //----------------- THE END ------------------
@@ -217,18 +192,14 @@ int main(int argc, char** argv)
                 window->SetShouldClose(true);
             }
         }
-        Gui.DisplayImage("Viewport", currentRenderedFrame,
-                         glm::vec2{windowWidth, windowHeight});
+        Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
 
         if (showHelpScreen) {
             Gui.ShowHelpManual(showHelpScreen, helpText);
         }
-
         Gui.EndFrame();
-
         window->SwapBuffers();
         window->PollEvents();
-        // window->pollInputEvents();
     }
 
     Gui.Shutdown();
