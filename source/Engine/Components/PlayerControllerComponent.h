@@ -7,6 +7,10 @@
 #ifndef PLAYERCONTROLLERCOMPONENT_H
 #define PLAYERCONTROLLERCOMPONENT_H
 
+/**
+ * @class PlayerControllerComponent
+ * @brief Just a tag to locate entities tied to the player character.
+ */
 struct PlayerControllerComponent {
     int id;
 };

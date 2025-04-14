@@ -6,6 +6,10 @@
 #define NAMECOMPONENT_H
 #include <string>
 
+/**
+ * @class NameComponent
+ * @brief A component that stores the name of an entity. They should be unique.
+ */
 struct NameComponent {
     std::string name;
 };

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
-    scriptManager->runScript("GameScripts/HugoTest.lua");
+    scriptManager->runScript("GameScripts/GameConfig.lua");
     std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig(); // create terrain
     scene.addTerrainEntity(*terrain); // add terrain to scene
 
@@ -85,7 +85,9 @@ int main(int argc, char** argv)
         static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
     Player player(
         &scene.getEntityManager(),
-        static_cast<GLFWwindow*>(window->GetNativeWindow())); // added by Hugo
+        static_cast<GLFWwindow*>(window->GetNativeWindow()),
+        scriptManager->getFloatFromLua("playerMovementSpeed"),
+        scriptManager->getFloatFromLua("playerRotationSpeed")); // added by Hugo
 
     // TODO should make all lua loading into one function
     std::string helpText = FileHandler::readTextFile(
