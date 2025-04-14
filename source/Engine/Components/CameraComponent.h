@@ -21,7 +21,7 @@
 struct CameraComponent {
   float fov = 45.0f;        ///< Field of view in degrees.
   float nearPlane = 0.1f;   ///< Near clipping plane distance.
-  float farPlane = 1000.0f; ///< Far clipping plane distance.
+  float farPlane = 10000.0f; ///< Far clipping plane distance.
 
   glm::vec3 front{0.0f, 0.0f, -1.0f};  ///< Forward direction vector.
   glm::vec3 up{0.0f, 1.0f, 0.0f};      ///< Upward direction vector.

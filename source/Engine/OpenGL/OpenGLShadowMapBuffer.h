@@ -53,9 +53,10 @@ public:
     /**
      * @brief Calculates a light space transformation matrix for directional shadows.
      * @param lightDirection The direction vector of the light source.
+     * @param playerPosition The position of the player or camera in world space.
      * @return The orthographic projection-view matrix from the light's perspective.
      */
-    static glm::mat4 CalculateLightSpaceMatrix(const glm::vec3& lightDirection);
+    static glm::mat4 CalculateLightSpaceMatrix(const glm::vec3& lightDirection, const glm::vec3& playerPosition);
 
 private:
     GLuint m_shadowMapBuffer;

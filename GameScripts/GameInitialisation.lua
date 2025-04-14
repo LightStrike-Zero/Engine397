@@ -20,6 +20,7 @@ skybox = {
 }
 
 
+
 tank_assetPath = "Assets/game_tank/tank.gltf"
 -- scene:loadModelToRegistry(tank_assetPath)
 --scene:loadModelToRegistry(jeep_assetPath)
@@ -33,7 +34,7 @@ tank_assetPath = "Assets/game_tank/tank.gltf"
 --terrainType = "Heightmap"
 --terrainType = "Fractal"
 terrainType = "TexturedHeightMap"
---  terrainType = "TexturedFractal"
+  --terrainType = "TexturedFractal"
 -- --------------------------------------
 -- when no texture is chosen in Lua (all commented) game will crash NEED TO FIX
 

@@ -21,7 +21,6 @@
 
 int main(int argc, char** argv)
 {
-    float playerHeight = 1.0f;
     bool showExitScreen = false; // buko
     bool showHelpScreen = false; // buko
 

@@ -78,7 +78,6 @@ void FractalTerrain::generateFractalHeightmap(int numRows, int numCols, int iter
     float minVal = *std::min_element(heightMap.begin(), heightMap.end());
     float maxVal = *std::max_element(heightMap.begin(), heightMap.end());
     float range = maxVal - minVal;
-    //std::cout << "[DEBUG] Fractal height range: " << minVal << " to " << maxVal << " (range: " << range << ")\n";
 
     m_generatedHeightMap.resize(numRows * numCols);
     for (size_t i = 0; i < heightMap.size(); i++)

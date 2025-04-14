@@ -12,25 +12,37 @@
 terrainConfig =
 {
     type = "TexturedFractal",
-    rows = 1000,
-    cols = 1000,
-    spacing = 0.1,
+    rows = 3000,
+    cols = 3000,
+    spacing = 1.0,
 
     parameters =
     {
         iterations = 250,
         initialDisplacement = 1000.0,
         displacementDecay = 0.97,
-        heightScale = 15,
+        heightScale = 150,
         seed = 3,
-        smoothness = 0.8,
-        smoothingPasses = 20
+        smoothness = 0.9,
+        smoothingPasses = 40
     },
 
-    texture =
+    --texture =
+    --{
+    --    path = "Assets/Terrain/Textures/sand.png",
+    --    repeatX = 20,
+    --    repeatY = 20
+    --}
+
+    multitexture =
     {
-        path = "Assets/Terrain/Textures/sand.png",
-        repeatX = 20,
-        repeatY = 20
+        height = "Assets/Terrain/Textures/Terrain003_2K.png",
+        tex1 = "Assets/Terrain/Textures/Mountain_01.png",
+        tex2 = "Assets/Terrain/Textures/Mountain_03.png",
+        tex3 = "Assets/Terrain/Textures/Mountain_02.png",
+        blend1 = 0.01,
+        blend2 = 0.7,
+        repeatX = 1,
+        repeatY = 1
     }
 }

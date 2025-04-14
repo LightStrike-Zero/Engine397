@@ -52,8 +52,14 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
     glEnable(GL_DEPTH_TEST);
 
     SkyboxPass(viewMatrix, projectionMatrix, scene, m_shaderManager);
-
-    glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection());
+    glm::vec3 playerPos;
+    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+    for (auto entity : playerView)
+    {
+        auto& playerTransform = playerView.get<TransformComponent>(entity);
+        playerPos = playerTransform.position;
+    }
+        glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection(), playerPos);
     lightingShader->bind(); //1
     m_currentShaderID = lightingShader->getID();
     lightingShader->SetUniformMat4("view", viewMatrix);
@@ -199,35 +205,35 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
 
     shadowMap.bind();
     glClear(GL_DEPTH_BUFFER_BIT);
-
-
-   
-    // Iterate over entities with Mesh and Transform components
+    
+    // Iterate over entities with Mesh and Transform components but exclude SkyboxComponent
     auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent>(exclude<SkyboxComponent>);
     for (auto entity : view) {
         auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
         auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
-        // auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
 
-        auto shadowShader = shaderManager.getShader("shadowShader"); // for now we'll hard code this, remove it from main.
+        auto shadowShader = shaderManager.getShader("shadowShader"); // for now we'll hard code this
         if (shadowShader->getID() != m_currentShaderID)
         {
             shadowShader->bind();
             m_currentShaderID = shadowShader->getID();
 
         }
-        shadowShader->SetUniformMat4("lightSpaceMatrix", OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection()));
+        auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+        for (auto entity : playerView) {
+            auto& playerTransform = playerView.get<TransformComponent>(entity);
+            glm::vec3 playerPos = playerTransform.position;
+            shadowShader->SetUniformMat4("lightSpaceMatrix", OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection(), playerPos));
+        }
+            
+        
 
-        // check for decals and enable transparency CURRENTLY JUST NOT RENDERING DECAL MESHES
-        // if (!material.isDecal)
-        // {
             glm::mat4 modelMatrix = transform.getModelMatrix();
             shadowShader->SetUniformMat4("model", modelMatrix);
 
             mesh.meshBuffer->bind();
             mesh.meshBuffer->draw();
             glBindVertexArray(0);
-        // }
     }
     shadowMap.unbind();
     glCullFace(GL_BACK); // Reset to default cull face

@@ -105,6 +105,7 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
     if (config["texture"].valid())
     {
         sol::table texture = config["texture"];
+        combinedParams["type"] = "texture";
         combinedParams["path"] = texture["path"];
         combinedParams["repeatX"] = std::to_string(texture["repeatX"].get_or(1));
         combinedParams["repeatY"] = std::to_string(texture["repeatY"].get_or(1));
@@ -112,6 +113,7 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
     else if (config["multitexture"].valid())
     {
         sol::table multitexture = config["multitexture"];
+        combinedParams["type"] = "multitexture";
         combinedParams["height"] = multitexture["height"];
         combinedParams["tex1"] = multitexture["tex1"];
         combinedParams["tex2"] = multitexture["tex2"];
