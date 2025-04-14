@@ -100,6 +100,18 @@ class ScriptManager
         virtual float getFloatFromLua(const std::string& name) = 0;
         virtual std::string getStringFromLua(const std::string& name) = 0;
 
+ bool m_hasSkybox = false;
+ std::array<std::string, 6> m_skyboxFaces;
+
+ // Add this method to LuaManager
+ void ScriptManager::createStoredSkybox(Scene& scene)
+ {
+  if (m_hasSkybox)
+  {
+   scene.createSkyBox(m_skyboxFaces);
+  }
+ }
+
 };
 
 #endif //SCRIPTMANAGER_H

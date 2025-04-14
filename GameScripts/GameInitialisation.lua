@@ -9,6 +9,19 @@
 -- load asset(s) ---------------------------------------------
 -- print("Loading:" .. tank_assetPath)
 
+-- Load skybox textures
+skybox = {
+    "Assets/skybox/right.jpg",
+    "Assets/skybox/left.jpg",
+    "Assets/skybox/top.jpg",
+    "Assets/skybox/bottom.jpg",
+    "Assets/skybox/front.jpg",
+    "Assets/skybox/back.jpg"
+}
+
+--scene:createSkyBoxFromFaces(skybox)
+
+
 tank_assetPath = "Assets/game_tank/tank.gltf"
 -- scene:loadModelToRegistry(tank_assetPath)
 --scene:loadModelToRegistry(jeep_assetPath)

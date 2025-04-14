@@ -31,69 +31,71 @@ class Scene;
  */
 class LuaManager : public ScriptManager
 {
-    public:
-        LuaManager();
-        ~LuaManager();
+public:
+    LuaManager();
+    ~LuaManager();
 
-       /**
-        * @copydoc ScriptManager::registerScene
-        * @brief additionally define glm::vec type in lua
-        */
-        void registerScene(Scene& scene) override;              // Expose Scene to Lua
+    /**
+     * @copydoc ScriptManager::registerScene
+     * @brief additionally define glm::vec type in lua
+     */
+    void registerScene(Scene& scene) override; // Expose Scene to Lua
 
-       /**
-        * @copydoc ScriptManager::runScript
-        */
-        void runScript(const std::string& scriptPath) override; // runs the Lua script
+    /**
+     * @copydoc ScriptManager::runScript
+     */
+    void runScript(const std::string& scriptPath) override; // runs the Lua script
 
-        /**
-         * @copydoc ScriptManager::createTerrainFromConfig
-         */
-        std::unique_ptr<Terrain> createTerrainFromConfig();
+    /**
+     * @copydoc ScriptManager::createTerrainFromConfig
+     */
+    std::unique_ptr<Terrain> createTerrainFromConfig();
 
-       /**
-        * @copydoc ScriptManager::getTerrainRows
-        */
-        int getTerrainRows() const;
+    /**
+     * @copydoc ScriptManager::getTerrainRows
+     */
+    int getTerrainRows() const;
 
-       /**
-        * @copydoc ScriptManager::getTerrainCols
-        */
-        int getTerrainCols() const;
+    /**
+     * @copydoc ScriptManager::getTerrainCols
+     */
+    int getTerrainCols() const;
 
-       /**
-        * @copydoc ScriptManager::getTerrainSpacing
-        */
-        float getTerrainSpacing() const;
+    /**
+     * @copydoc ScriptManager::getTerrainSpacing
+     */
+    float getTerrainSpacing() const;
 
-       /**
-        * @copydoc ScriptManager::getSplashImagePath
-        */
-        std::string getSplashImagePath() override;
+    /**
+     * @copydoc ScriptManager::getSplashImagePath
+     */
+    std::string getSplashImagePath() override;
 
-       /**
-        * @copydoc ScriptManager::getHelpManualPath
-        */
-        std::string getHelpManualPath() override;
+    /**
+     * @copydoc ScriptManager::getHelpManualPath
+     */
+    std::string getHelpManualPath() override;
 
-       /**
-        * @brief Get a glm::vec3 from Lua table
-        * @param tableName The name of the Lua table
-        * @return The glm::vec3 value from the Lua table
-        */
-        glm::vec3 getVec3FromLua(const std::string& tableName) override;
+    /**
+     * @brief Get a glm::vec3 from Lua table
+     * @param tableName The name of the Lua table
+     * @return The glm::vec3 value from the Lua table
+     */
+    glm::vec3 getVec3FromLua(const std::string& tableName) override;
 
-       /**
-        * @brief Get a float from Lua variable
-        * @param name The name of the Lua variable
-        * @return The float value from the Lua variable
-        */
-       float getFloatFromLua(const std::string& name) override;
+    /**
+     * @brief Get a float from Lua variable
+     * @param name The name of the Lua variable
+     * @return The float value from the Lua variable
+     */
+    float getFloatFromLua(const std::string& name) override;
 
-        std::string getStringFromLua(const std::string& name) override;
+    std::string getStringFromLua(const std::string& name) override;
 
-    private:
-        sol::state m_lua;              // Lua state
+
+
+private:
+    sol::state m_lua; // Lua state
 };
 
 #endif //LUAMANAGER_H

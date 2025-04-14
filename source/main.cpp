@@ -72,43 +72,29 @@ int main(int argc, char** argv)
 
     scene.setDirectionalLight(dirLight);
 
-    /*TODO
-     * this wont stay like this
-     */
+    
+    // CAMERA SET UP
     auto cameraEntity = scene.getEntityManager().createEntity();
-    scene.getEntityManager().addComponent<TransformComponent>(
-        cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
-    // this set the player/camera start pos
+    scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
-    CameraSystem cameraSystem(
-        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
-    Player player(
-        &scene.getEntityManager(),
-        static_cast<GLFWwindow*>(window->GetNativeWindow()),
-        scriptManager->getFloatFromLua("playerMovementSpeed"),
-        scriptManager->getFloatFromLua("playerRotationSpeed")); // added by Hugo
+    CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
 
-    // TODO should make all lua loading into one function
-    std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath()); // buko: read manual text file
+    // PLAYER SET UP
+    Player player(&scene.getEntityManager(),static_cast<GLFWwindow*>(window->GetNativeWindow()),scriptManager->getFloatFromLua("playerMovementSpeed"),scriptManager->getFloatFromLua("playerRotationSpeed")); // added by Hugo
 
-    static float lastFrame = 0.0f;
-
-    // entt::entity playerTankEntity = entt::null;
-    // if (playerView.begin() != playerView.end()) {//checking if playerView is
-    // empty playerTankEntity = *playerView.begin();
-    // }
-    //load player tank
     std::string playerTankPath = scriptManager->getStringFromLua("tankPath");
     scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
-    //align tank with camera orientation
+    
+    
+    // ALIGN TANK
     for (auto entity : playerView) {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
         playerTankTransform.position = scriptManager->getVec3FromLua("playerStartPos");
     }
 
-    //randomising all the static objects' positions
+    // SPAWN STATIC OBJECTS
     auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
     for (auto entity : staticObjectsView) {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
@@ -117,7 +103,7 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
-    // TODO this needs to be LUA
+    // SKYBOX SET UP
     std::array<std::string, 6> faces = {
         "Assets/skybox/right.jpg", "Assets/skybox/left.jpg",
         "Assets/skybox/top.jpg", "Assets/skybox/bottom.jpg",
@@ -125,12 +111,9 @@ int main(int argc, char** argv)
     };
     scene.createSkyBox(faces);
 
-    //TODO delete, was test for composite texture
-    // uint32_t compTexture = TextureManager::getInstance().createCompositeTexture(
-    //     { "Assets/Terrain/Textures/Terrain003_2K.png", "Assets/Terrain/Textures/Mountain_01.png", "Assets/Terrain/Textures/Mountain_02.png", "Assets/Terrain/Textures/Mountain_03.png" },
-    //     { 0.2f, 0.5f}
-    // );
-
+    
+    std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath());
+    static float lastFrame = 0.0f;
     float lerpSpeed = 10.0f;
 
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
@@ -180,18 +163,18 @@ int main(int argc, char** argv)
                 auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
                 cameraTransform.position = playerTankTransform.position + rotatedOffset;
                 //
-                // // Let camera face the tank
-                // auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
-                // glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
-                // cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
-                // cameraComponent.pitch = glm::degrees(asin(lookDir.y));
-                // //
-                // // // Update front vector
-                // cameraComponent.front = glm::normalize(glm::vec3{
-                //     cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.pitch)),
-                //     sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
-                // });
+                // Let camera face the tank
+                auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
+                glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
+                cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
+                cameraComponent.pitch = glm::degrees(asin(lookDir.y));
+                //
+                // // Update front vector
+                cameraComponent.front = glm::normalize(glm::vec3{
+                    cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
+                    sin(glm::radians(cameraComponent.pitch)),
+                    sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
+                });
 
 
                 //----------------- THE END ------------------
