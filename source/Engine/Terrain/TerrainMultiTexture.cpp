@@ -27,7 +27,7 @@ void TerrainMultiTexture::loadTerrainMultiTexture(RawMeshData& meshData, const s
     try {
         uint32_t textureID = TextureManager::getInstance().createCompositeTexture(
             { "Assets/Terrain/Textures/Terrain003_2K.png", "Assets/Terrain/Textures/Mountain_01.png", "Assets/Terrain/Textures/Mountain_03.png", "Assets/Terrain/Textures/Mountain_02.png" },
-            { 0.1f, 0.7f}
+            { 0.02f, 0.7f}
         );
         
         std::cout << "Loaded multi texture from: " << texturePath << std::endl;
