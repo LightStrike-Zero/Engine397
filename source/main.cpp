@@ -9,7 +9,6 @@
 #include "Systems/CameraSystem.h"
 #include "Systems/GridCollision.h"
 #include "Terrain/TerrainFactory.h"
-#include "Terrain/TerrainMenuHelper.h"
 #include "Window/glfwWindow.h"
 // Buko -------------------------
 // Libraries for scripting
@@ -19,7 +18,7 @@
 #include <sol/sol.hpp>
 #include "FileHandler.h"
 
-#include "Components/CollisionComponents/CollidableComponent.h"
+// #include "Components/CollisionComponents/CollidableComponent.h"
 #include "Components/PlayerControllerComponent.h"
 #include "Player.h"
 #include "StuffThatNeedsToBeLoadedInLua.h"
@@ -27,9 +26,9 @@
 // need for exit pic
 #include <glm/gtc/quaternion.hpp>
 
-#include "Texture/TextureManager.h"
-#include "imgui.h"
-#include "Components/NameComponent.h"
+// #include "Texture/TextureManager.h"
+// #include "imgui.h"
+// #include "Components/NameComponent.h"
 //----------------------
 
 int main(int argc, char** argv)
@@ -50,7 +49,7 @@ int main(int argc, char** argv)
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     Scene scene;
-    
+
     // --- Buko setting up Lua/Sol -------------------------
     //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
@@ -77,19 +76,14 @@ int main(int argc, char** argv)
      * this wont stay like this
      */
     auto cameraEntity = scene.getEntityManager().createEntity();
-    scene.getEntityManager().addComponent<TransformComponent>(
-        cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
+    scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
     // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
-    CameraSystem cameraSystem(
-        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
-    Player player(
-        &scene.getEntityManager(),
-        static_cast<GLFWwindow*>(window->GetNativeWindow())); // added by Hugo
+    CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    Player player(&scene.getEntityManager(), static_cast<GLFWwindow*>(window->GetNativeWindow())); // added by Hugo
 
     // TODO should make all lua loading into one function
-    std::string helpText = FileHandler::readTextFile(
-        scriptManager->getHelpManualPath()); // buko: read manual text file
+    std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath()); // buko: read manual text file
 
     static float lastFrame = 0.0f;
 
@@ -101,19 +95,22 @@ int main(int argc, char** argv)
     scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     //align tank with camera orientation
-    for (auto entity : playerView) {
+    for (auto entity : playerView)
+    {
         auto& playerTankTransform = playerView.get<TransformComponent>(entity);
         playerTankTransform.rotation.y -= 180.f;
         playerTankTransform.position = scriptManager->getVec3FromLua("playerStartPos");
     }
 
     //randomising all the static objects' positions
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
-    for (auto entity : staticObjectsView) {
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent, BoxColliderComponent>(
+        exclude<PlayerControllerComponent>);
+    for (auto entity : staticObjectsView)
+    {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
-        float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
-        float b = staticObjectTransform.position.z = rand()%terrainGridCols-terrainGridCols/2;
-        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
+        float a = staticObjectTransform.position.x = rand() % terrainGridRows - terrainGridRows / 2;
+        float b = staticObjectTransform.position.z = rand() % terrainGridCols - terrainGridCols / 2;
+        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f, b});
     }
 
     // TODO this needs to be LUA
@@ -145,10 +142,9 @@ int main(int argc, char** argv)
 
             // camera system
             // TODO remove flags showExitScreen, showHelpScreen
-            cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
-                                showHelpScreen);
-            auto [viewMatrix, projectionMatrix, viewPos] =
-                cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+            cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen, showHelpScreen);
+            auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(
+                scene.getEntityManager());
             player.update(deltaTime);
 
             for (auto entity : playerView)
@@ -176,7 +172,7 @@ int main(int argc, char** argv)
                 glm::vec3 rotatedOffset = glm::vec3(rotationMatrix * glm::vec4(baseOffset, 0.0f));
 
                 // New camera position
-                auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+                auto& cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
                 cameraTransform.position = playerTankTransform.position + rotatedOffset;
                 //
                 // // Let camera face the tank
@@ -226,17 +222,19 @@ int main(int argc, char** argv)
 
                 playerTankTransform.rotation.z = 0.0f;
             }
-            currentRenderedFrame =
-                    renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
-        } else {
-            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510})) {
+            currentRenderedFrame = renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+        }
+        else
+        {
+            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
+            {
                 window->SetShouldClose(true);
             }
         }
-        Gui.DisplayImage("Viewport", currentRenderedFrame,
-                         glm::vec2{windowWidth, windowHeight});
+        Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
 
-        if (showHelpScreen) {
+        if (showHelpScreen)
+        {
             Gui.ShowHelpManual(showHelpScreen, helpText);
         }
 
@@ -251,4 +249,3 @@ int main(int argc, char** argv)
     delete window;
     return 0;
 }
-

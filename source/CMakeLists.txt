@@ -63,8 +63,6 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Interfaces/IWindow.h
         Engine/Window/glfwWindow.cpp
         Engine/Window/glfwWindow.h
-        Engine/Terrain/TerrainMenuHelper.cpp
-        Engine/Terrain/TerrainMenuHelper.h
         Engine/Scripting/LuaManager.cpp
         Engine/Components/PlayerControllerComponent.h
         Engine/Actors/Player.cpp
