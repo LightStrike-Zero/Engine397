@@ -23,9 +23,25 @@ terrainConfig =
         heightScale = 100.0
     },
 
-    texture =
+    -- This is a demonstration of using either a single solid texture
+    -- or a multi-texture where we supply exactly 3 textures, along with
+    -- the heightmap we want to blend, and blending parameters.
+    
+    --texture =
+    --{
+    --    path = "Assets/Terrain/Textures/Mountain_03.png",
+    --    repeatX = 1,
+    --    repeatY = 1
+    --}
+
+    multitexture =
     {
-        path = "Assets/Terrain/Textures/Mountain_03.png",
+        height = "Assets/Terrain/Textures/Terrain003_2K.png",
+        tex1 = "Assets/Terrain/Textures/Mountain_01.png",
+        tex2 = "Assets/Terrain/Textures/Mountain_03.png",
+        tex3 = "Assets/Terrain/Textures/Mountain_02.png",
+        blend1 = 0.01,
+        blend2 = 0.7,
         repeatX = 1,
         repeatY = 1
     }

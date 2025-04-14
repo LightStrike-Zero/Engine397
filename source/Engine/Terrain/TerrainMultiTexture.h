@@ -25,10 +25,11 @@ public:
      * @param base Base terrain to wrap.
      * @param texturePath File path to one of the texture images. 
      *        (You can extend this to a vector if you need multiple paths.)
+     * @param blendParams Parameters for blending the textures.
      * @param repeatX Number of horizontal texture repetitions.
      * @param repeatY Number of vertical texture repetitions.
      */
-    TerrainMultiTexture(std::shared_ptr<TerrainType> base, const std::string& texturePath, int repeatX, int repeatY);
+    TerrainMultiTexture(std::shared_ptr<TerrainType> base, const std::vector<std::string>& texturePath, const std::pair<float, float>& blendParams, int repeatX, int repeatY);
 
     /**
      * @copydoc TerrainType::apply
@@ -37,7 +38,8 @@ public:
 
 private:
     std::shared_ptr<TerrainType> m_wrappedTerrainType;
-    std::string m_texturePath;
+    std::vector<std::string> m_texturePaths;
+    std::pair<float, float> m_blendParams;
     int m_repeatX = 1;
     int m_repeatY = 1;
 
@@ -45,8 +47,9 @@ private:
      * @brief Loads and applies multi-texture blending to the mesh.
      * @param meshData Reference to mesh data that will receive the texture.
      * @param texturePath Path to the base texture. (Extendable to include additional textures.)
+     * @param blendParams Parameters for blending the textures.
      */
-    void loadTerrainMultiTexture(RawMeshData& meshData, const std::string& texturePath);
+    void loadTerrainMultiTexture(RawMeshData& meshData, const std::vector<std::string>& texturePath, const std::pair<float, float>& blendParams);
 };
 
 #endif //TERRAINMULTITEXTURE_H

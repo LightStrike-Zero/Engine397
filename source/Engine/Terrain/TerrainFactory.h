@@ -51,8 +51,7 @@ private:
     static std::shared_ptr<TerrainType> createFractalTerrain(const std::map<std::string, std::string>& params);
     static std::shared_ptr<TerrainType> createTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain,
                                                               const std::map<std::string, std::string>& params);
-    static std::shared_ptr<TerrainType> createMultiTexturedTerrain(std::shared_ptr<TerrainType> baseTerrain,
-                                                                   const std::map<std::string, std::string>& params);
+    
 };
 
 #endif //TERRAINFACTORY_H

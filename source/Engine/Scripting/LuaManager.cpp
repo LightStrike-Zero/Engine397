@@ -109,6 +109,18 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
         combinedParams["repeatX"] = std::to_string(texture["repeatX"].get_or(1));
         combinedParams["repeatY"] = std::to_string(texture["repeatY"].get_or(1));
     }
+    else if (config["multitexture"].valid())
+    {
+        sol::table multitexture = config["multitexture"];
+        combinedParams["height"] = multitexture["height"];
+        combinedParams["tex1"] = multitexture["tex1"];
+        combinedParams["tex2"] = multitexture["tex2"];
+        combinedParams["tex3"] = multitexture["tex3"];
+        combinedParams["blend1"] = std::to_string(multitexture["blend1"].get_or<float>(1.0));
+        combinedParams["blend2"] = std::to_string(multitexture["blend2"].get_or<float>(1.0));
+        combinedParams["repeatX"] = std::to_string(multitexture["repeatX"].get_or(1));
+        combinedParams["repeatY"] = std::to_string(multitexture["repeatY"].get_or(1));
+    }
 
     auto terrain = std::make_unique<Terrain>(rows, cols, spacing);
     auto terrainType = TerrainFactory::createTerrainType(terrainEnum, combinedParams);

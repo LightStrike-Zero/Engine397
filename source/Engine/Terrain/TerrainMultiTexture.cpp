@@ -7,14 +7,14 @@
 #include <vector>
 #include <Texture/TextureManager.h>
 
-TerrainMultiTexture::TerrainMultiTexture(std::shared_ptr<TerrainType> base, const std::string& texturePath, int repeatX, int repeatY)
-    : m_wrappedTerrainType(base), m_texturePath(texturePath), m_repeatX(repeatX), m_repeatY(repeatY)
+TerrainMultiTexture::TerrainMultiTexture(std::shared_ptr<TerrainType> base, const std::vector<std::string>& texturePath, const std::pair<float, float>& blendParams, int repeatX, int repeatY)
+    : m_wrappedTerrainType(base), m_texturePaths(texturePath), m_blendParams(blendParams), m_repeatX(repeatX), m_repeatY(repeatY)
 {
 }
 
 void TerrainMultiTexture::apply(RawMeshData& meshData, int numRows, int numCols)
 {
-    loadTerrainMultiTexture(meshData, m_texturePath);
+    loadTerrainMultiTexture(meshData, m_texturePaths, m_blendParams);
     if (m_wrappedTerrainType)
     {
         m_wrappedTerrainType->apply(meshData, numRows, numCols);
@@ -22,17 +22,12 @@ void TerrainMultiTexture::apply(RawMeshData& meshData, int numRows, int numCols)
     
 }
 
-void TerrainMultiTexture::loadTerrainMultiTexture(RawMeshData& meshData, const std::string& texturePath)
+void TerrainMultiTexture::loadTerrainMultiTexture(RawMeshData& meshData, const std::vector<std::string>& texturePath, const std::pair<float, float>& blendParams)
 {
     try {
-        uint32_t textureID = TextureManager::getInstance().createCompositeTexture(
-            { "Assets/Terrain/Textures/Terrain003_2K.png", "Assets/Terrain/Textures/Mountain_01.png", "Assets/Terrain/Textures/Mountain_03.png", "Assets/Terrain/Textures/Mountain_02.png" },
-            { 0.02f, 0.7f}
-        );
-        
-        std::cout << "Loaded multi texture from: " << texturePath << std::endl;
+        // path 0 is the heightmap, 1, 2, 3 are the textures followed by the blend parameters
+        const uint32_t textureID = TextureManager::getInstance().createCompositeTexture({ texturePath[0], texturePath[1], texturePath[2], texturePath[3] }, { blendParams.first, blendParams.second });
         meshData.material.baseColorTextureID = textureID;
-        std::cout << "Multi-Texture ID: " << textureID << std::endl;
     }
     catch (const std::exception& e) {
         std::cerr << "Failed to load terrain multi texture: " << e.what() << std::endl;
