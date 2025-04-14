@@ -46,7 +46,7 @@ for i = 0, 9 do
     scene:loadBoxModelToRegistry(tankPath, name)
 end
 
-baseOffset = { x = 0, y = 10, z = -30 }
+cameraOffset = { x = 0, y = 10, z = 30 }
 playerMovementSpeed = 40
 playerRotationSpeed = 90
 playerStartPos = { x = 0, y = 0, z = 0 }
