@@ -90,7 +90,7 @@ class LuaManager : public ScriptManager
         */
        float getFloatFromLua(const std::string& name) override;
 
-
+        std::string getStringFromLua(const std::string& name) override;
 
     private:
         sol::state m_lua;              // Lua state

@@ -4,17 +4,21 @@
 #include "Physics_DEPRECIATED//TankCollision.h"
 
 
-void Player::update(float deltaTime) {
+void Player::update(float deltaTime,ScriptManager* scriptManager) {
     auto playerView = m_entt->view<PlayerControllerComponent, TransformComponent, BoxColliderComponent>();
-    // auto playerView = m_entt->view<PlayerControllerComponent, TransformComponent>();
-    // auto cannonView = m_entt->view<SphereColliderComponent, TransformComponent>();
 
+    // scriptManager->runScript("GameScripts/GameConfig.lua");
+    //get components needed for player movement
     for (auto entity : playerView) {
         auto& playerTransform = playerView.get<TransformComponent>(entity);
         // auto& boxCollider = playerView.get<BoxColliderComponent>(entity);
         auto& playerCollider = m_entt->get<BoxColliderComponent>(entity);
         TransformComponent originalTransform = playerTransform; // save to revert on collision
         handleMovementInput(playerTransform, playerCollider, deltaTime);
+        //resetting the player transform to original position when pressing R or when moving over the edge
+
+        handlePlayerInput(playerTransform, scriptManager);
+
 
         // Check for collisions
         auto collidableView = m_entt->view<TransformComponent, BoxColliderComponent>(exclude<PlayerControllerComponent>);
@@ -84,4 +88,24 @@ bool Player::checkCollision(const BoxColliderComponent& a, const TransformCompon
     return flag;
 }
 
+void Player::handlePlayerInput(TransformComponent& playerTransform, ScriptManager* scriptManager) {
+    //hugo playertank reset
+    static bool reset = false;
+    glm::vec3 resetPosition = scriptManager->getVec3FromLua("playerResetPosition");
+    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (!reset) {
+            playerTransform.position = resetPosition;
+            reset = true;
+        }
+    } else {
+        reset = false;
+    }
+    //reset when going over edges
+    int rowSize = scriptManager->getTerrainRows();
+    int colSize = scriptManager->getTerrainCols();
+    if (playerTransform.position.x > rowSize / 2 || playerTransform.position.x < -rowSize / 2 ||
+        playerTransform.position.z > colSize / 2 || playerTransform.position.z < -colSize / 2) {
+        playerTransform.position = resetPosition;
+    }
+}
 

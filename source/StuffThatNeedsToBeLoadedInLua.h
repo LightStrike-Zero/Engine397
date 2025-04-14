@@ -26,7 +26,7 @@ inline float playerHeight = 2.0f;
 inline DirectionalLight dirLight(glm::vec3(-0.5f, -0.9f, -0.5f), glm::vec3(0.3f, 0.3f, 0.3f),
                                  glm::vec3(1.0f, 0.99f, 0.99f), glm::vec3(0.09f, 0.09f, 0.09f), 0.05f);
 
-inline std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
+// inline std::string playerTankPath = R"(Assets\game_tank\tank.gltf)";
 // inline glm::vec3 cameraOffset = {-0.f, -5.f, -10.f};
 
 #endif //STUFFTHATNEEDSTOBELOADEDINLUA_H

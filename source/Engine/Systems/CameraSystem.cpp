@@ -20,12 +20,8 @@ void CameraSystem::update(EnttFacade& ecs, float deltaTime, bool& showExitScreen
         }
     }
 
-    auto viewPlayer = ecs.view<PlayerControllerComponent, TransformComponent>();
-    for (auto entity : viewPlayer) {
-        auto& playerTransform = viewPlayer.get<TransformComponent>(entity);
-        handlePlayerInput(playerTransform, deltaTime);
+    // Handle inputs relating to the player tank
 
-    }
     // std::cout << "tank pos is: " << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.x << ", "
     //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.y << ", "
     //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.z << std::endl;
@@ -210,15 +206,4 @@ bool CameraSystem::isActiveCamera(entt::entity entity, entt::registry& registry)
     return entity == getActiveCameraEntity(registry);
 }
 
-void CameraSystem::handlePlayerInput(TransformComponent& playerTransform, float deltaTime) {
-    //hugo playertank reset
-    static bool reset = false;
-    if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS) {
-        if (!reset) {
-            playerTransform.position = glm::vec3(0.0f, 0.0f, 0.0f);
-            reset = true;
-        }
-    } else {
-        reset = false;
-    }
-}
+

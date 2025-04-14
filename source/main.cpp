@@ -98,6 +98,7 @@ int main(int argc, char** argv)
     // empty playerTankEntity = *playerView.begin();
     // }
     //load player tank
+    std::string playerTankPath = scriptManager->getStringFromLua("tankPath");
     scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     //align tank with camera orientation
@@ -149,7 +150,7 @@ int main(int argc, char** argv)
                                 showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] =
                 cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-            player.update(deltaTime);
+            player.update(deltaTime,scriptManager);
 
             for (auto entity : playerView)
             {

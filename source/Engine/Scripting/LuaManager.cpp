@@ -168,5 +168,15 @@ float LuaManager::getFloatFromLua(const std::string& name) {
     }
 }
 
+std::string LuaManager::getStringFromLua(const std::string& name) {
+    sol::object value = m_lua[name];
+    if (value.valid() && value.is<std::string>()) {
+        return value.as<std::string>();
+    } else {
+        std::cerr << "[LuaManager] Warning: '" << name << "' not found or not a string. Returning empty string.\n";
+        return "";
+    }
+}
+
 
 //====================== END OF LUA MANAGER CLASS =============================
