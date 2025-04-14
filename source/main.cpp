@@ -178,19 +178,19 @@ int main(int argc, char** argv)
                 // New camera position
                 auto &cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
                 cameraTransform.position = playerTankTransform.position + rotatedOffset;
-
-                // Let camera face the tank
-                auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
-                glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
-                cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
-                cameraComponent.pitch = glm::degrees(asin(lookDir.y));
                 //
-                // // Update front vector
-                cameraComponent.front = glm::normalize(glm::vec3{
-                    cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
-                    sin(glm::radians(cameraComponent.pitch)),
-                    sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
-                });
+                // // Let camera face the tank
+                // auto &cameraComponent = scene.getEntityManager().get<CameraComponent>(cameraEntity);
+                // glm::vec3 lookDir = glm::normalize(playerTankTransform.position - cameraTransform.position);
+                // cameraComponent.yaw = glm::degrees(atan2(lookDir.z, lookDir.x));
+                // cameraComponent.pitch = glm::degrees(asin(lookDir.y));
+                // //
+                // // // Update front vector
+                // cameraComponent.front = glm::normalize(glm::vec3{
+                //     cos(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch)),
+                //     sin(glm::radians(cameraComponent.pitch)),
+                //     sin(glm::radians(cameraComponent.yaw)) * cos(glm::radians(cameraComponent.pitch))
+                // });
 
 
                 //----------------- THE END ------------------
