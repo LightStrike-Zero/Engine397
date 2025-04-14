@@ -82,7 +82,7 @@ public:
 	 * @param key The key used to identify the texture (e.g., file path).
 	 * @return A shared pointer to the cached texture, or nullptr if not found so check for nullptr.
 	 */
-	std::shared_ptr<ITexture> getTexture(const std::string& key);
+	// std::shared_ptr<ITexture> getTexture(const std::string& key);
 
 	/**
 	 * @brief Load a cubemap texture from an array of six file paths.
@@ -101,6 +101,15 @@ public:
 	 * @return A shared pointer to the cached cubemap, or nullptr if not found.
 	 */
 	std::shared_ptr<ICubeMap> getCubeMap(const std::string& key);
+
+	/**
+	 * @brief Create and cache a composite texture based on heightmap data.
+	 * @param sourceTexturePaths A vector of file paths to the source textures.
+	 * @param blendingParams Parameters for how to blend the textures (e.g., thresholds).
+	 * @return The ID of the created composite texture as uint32_t.
+	 */
+	uint32_t createCompositeTexture(const std::vector<std::string>& sourceTexturePaths,
+	                                const BlendParameters& blendingParams);
 
 	/**
 	* @brief Clear the texture cache.
@@ -131,3 +140,4 @@ private:
 };
 
 #endif // !TEXTURE_MANAGER_H
+

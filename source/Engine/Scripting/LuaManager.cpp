@@ -74,6 +74,7 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
     if (typeStr == "Heightmap") terrainEnum = TerrainTypeEnum::HEIGHTMAP;
     else if (typeStr == "Fractal") terrainEnum = TerrainTypeEnum::FRACTAL;
     else if (typeStr == "TexturedHeightmap") terrainEnum = TerrainTypeEnum::TEXTURED_HEIGHTMAP;
+    else if (typeStr == "MultiTexturedHeightMap") terrainEnum = TerrainTypeEnum::MULTITEXTURED_HEIGHTMAP;
     else if (typeStr == "TexturedFractal") terrainEnum = TerrainTypeEnum::TEXTURED_FRACTAL;
     else throw std::runtime_error("Unknown terrain type: " + typeStr);
 

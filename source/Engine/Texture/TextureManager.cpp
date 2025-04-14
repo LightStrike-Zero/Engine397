@@ -1,7 +1,7 @@
-// TextureManager.cpp
 #include "TextureManager.h"
 #include <sstream>  
 
+#include "TextureLoader.h"
 #include "Factorys/TextureFactory.h"
 
 TextureManager& TextureManager::getInstance() {
@@ -71,6 +71,26 @@ std::shared_ptr<ICubeMap> TextureManager::getCubeMap(const std::string& key) {
     return nullptr;
 }
 
+uint32_t TextureManager::createCompositeTexture(const std::vector<std::string>& sourceTexturePaths,
+                                                const BlendParameters& blendingParams) {
+    std::ostringstream keyStream;
+    keyStream << "composite_";
+    for (const auto& path : sourceTexturePaths) {
+        keyStream << path << "_";
+    }
+    std::string key = keyStream.str();
+
+    auto it = m_textureCache.find(key);
+    if (it != m_textureCache.end())
+        return it->second->getID();
+
+    RawImageData compositeImage = TextureLoader::createCompositeTexture(
+        sourceTexturePaths, blendingParams);
+
+    uint32_t textureID = loadTextureFromData(compositeImage);
+    return textureID;
+}
+
 void TextureManager::clear() {
     m_textureCache.clear();
 }
@@ -78,3 +98,4 @@ void TextureManager::clear() {
 TextureManager::~TextureManager() {
     clear();
 }
+

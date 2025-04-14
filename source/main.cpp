@@ -32,12 +32,13 @@
 #include "Components/NameComponent.h"
 //----------------------
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
     float playerHeight = 1.0f;
     bool showExitScreen = false; // buko
     bool showHelpScreen = false; // buko
 
-    IWindow *window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
+    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
@@ -53,13 +54,13 @@ int main(int argc, char **argv) {
     // --- Buko setting up Lua/Sol -------------------------
     //ScriptManager dynamic allocation using a pointer: flexibility, type of object can be changed at runtime
 
-    ScriptManager* scriptManager = new LuaManager();      // Lua Manager instance is instantiated derived from base class
-    scriptManager->registerScene(scene);// Expose Scene to Lua
+    ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
+    scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/HugoTest.lua");
-    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig();    // create terrain
-    scene.addTerrainEntity(*terrain);                                       // add terrain to scene
+    std::unique_ptr<Terrain> terrain = scriptManager->createTerrainFromConfig(); // create terrain
+    scene.addTerrainEntity(*terrain); // add terrain to scene
 
-    const RawMeshData &terrainMeshData = terrain->getMeshData();
+    const RawMeshData& terrainMeshData = terrain->getMeshData();
 
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
@@ -68,6 +69,7 @@ int main(int argc, char **argv) {
     // --- END OF Buko  Lua/Sol -------------------------
 
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
+
 
     scene.setDirectionalLight(dirLight);
 
@@ -80,10 +82,10 @@ int main(int argc, char **argv) {
     // this set the player/camera start pos
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(
-        static_cast<GLFWwindow *>(window->GetNativeWindow()), aspectRatio);
+        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
     Player player(
         &scene.getEntityManager(),
-        static_cast<GLFWwindow *>(window->GetNativeWindow())); // added by Hugo
+        static_cast<GLFWwindow*>(window->GetNativeWindow())); // added by Hugo
 
     // TODO should make all lua loading into one function
     std::string helpText = FileHandler::readTextFile(
@@ -91,6 +93,10 @@ int main(int argc, char **argv) {
 
     static float lastFrame = 0.0f;
 
+    // entt::entity playerTankEntity = entt::null;
+    // if (playerView.begin() != playerView.end()) {//checking if playerView is
+    // empty playerTankEntity = *playerView.begin();
+    // }
     //load player tank
     scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
@@ -118,14 +124,21 @@ int main(int argc, char **argv) {
     };
     scene.createSkyBox(faces);
 
+    //TODO delete, was test for composite texture
+    // uint32_t compTexture = TextureManager::getInstance().createCompositeTexture(
+    //     { "Assets/Terrain/Textures/Terrain003_2K.png", "Assets/Terrain/Textures/Mountain_01.png", "Assets/Terrain/Textures/Mountain_02.png", "Assets/Terrain/Textures/Mountain_03.png" },
+    //     { 0.2f, 0.5f}
+    // );
+
     float lerpSpeed = 10.0f;
 
-    Gui.loadNamedImage("Click to Exit",
-                       scriptManager->getSplashImagePath()); // buko
+    Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
     unsigned int currentRenderedFrame;
-    while (!window->ShouldClose()) {
+    while (!window->ShouldClose())
+    {
         Gui.BeginFrame();
-        if (!showExitScreen) {
+        if (!showExitScreen)
+        {
             float currentFrame = window->GetTime();
             float deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
@@ -135,11 +148,12 @@ int main(int argc, char **argv) {
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
                                 showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] =
-                    cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+                cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
             player.update(deltaTime);
 
-            for (auto entity: playerView) {
-                auto &playerTankTransform = playerView.get<TransformComponent>(entity);
+            for (auto entity : playerView)
+            {
+                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
                 glm::vec3 playerTankPos = playerTankTransform.position;
 
                 float terrainHeight = collision.getHeightAt(playerTankPos);

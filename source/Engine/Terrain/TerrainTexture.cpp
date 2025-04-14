@@ -22,7 +22,6 @@ void TerrainTexture::apply(RawMeshData& meshData, int numRows, int numCols)
         m_wrappedTerrainType->apply(meshData, numRows, numCols);
     }
 
-    // Apply UV tiling - buko
     for (auto& vertex : meshData.vertices)
     {
         vertex.texCoords.x *= static_cast<float>(m_repeatX);
@@ -33,8 +32,6 @@ void TerrainTexture::apply(RawMeshData& meshData, int numRows, int numCols)
 void TerrainTexture::loadTerrainTexture(RawMeshData& meshData, const std::string& texturePath)
 {
     try {
-        // Use TextureManager to load the texture from file.
-        // This returns a GPU texture ID (e.g., a uint32_t).
         uint32_t textureID = TextureManager::getInstance().loadTextureFromFile(texturePath);
         std::cout << "Loaded texture from: " << texturePath << std::endl;
         meshData.material.baseColorTextureID = textureID;
