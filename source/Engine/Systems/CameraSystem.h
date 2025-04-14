@@ -59,14 +59,13 @@ private:
     void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
     
     void handleMouseInput(CameraComponent& camera);
-    
+
     void updateCameraVectors(CameraComponent& camera);
     
     EnttFacade::Entity getActiveCameraEntity(EnttFacade::Registry& registry); //Hugo: from what i understand, this only returns the first camera entity in the registry, even if there are many
     
     bool isActiveCamera(EnttFacade::Entity entity, EnttFacade::Registry& registry);
 
-    void handlePlayerInput(TransformComponent& playerTransform, float deltaTime);
 
 };
 

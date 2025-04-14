@@ -14,6 +14,8 @@
 
 //#include <entt/entt.hpp>
 
+#include <Scripting/ScriptManager.h>
+
 #include "ResourceManagement/Scene.h"
 #include "Components/TransformComponent.h"
 #include "Components/PlayerControllerComponent.h"
@@ -25,19 +27,21 @@
 class Player {
     // void loadPlayerModelToRegistry(Scene scene, const std::string& filepath);
 public:
-    explicit Player(EnttFacade* ecs, GLFWwindow *window): m_entt(ecs), m_window(window) {}
-    void update( float deltaTime);
+    explicit Player(EnttFacade* ecs, GLFWwindow *window, float movementSpeed, float rotationSpeed): m_entt(ecs), m_window(window), movementSpeed(movementSpeed), rotationSpeed(rotationSpeed) {}
+    void update( float deltaTime , ScriptManager* scriptManager);
     void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, float deltaTime) const;
     void shootCannon(TransformComponent cannonTransform, SphereColliderComponent sphereCollider, float deltaTime);
-    bool checkCollision(const BoxColliderComponent& a, const TransformComponent& aTransform,
-                    const BoxColliderComponent& b, const TransformComponent& bTransform) const;
+
 
 
 private:
+    void handlePlayerInput(TransformComponent& playerTransform, ScriptManager* scriptManager);
+    bool checkCollision(const BoxColliderComponent& a, const TransformComponent& aTransform,
+                const BoxColliderComponent& b, const TransformComponent& bTransform) const;
     EnttFacade* m_entt;
     GLFWwindow* m_window; //this actually calls glfw3.h instead our own facade, may need abstraction later
-    float movementSpeed = 40.f;
-    float rotationSpeed = 90.0f;
+    float movementSpeed;
+    float rotationSpeed;
 };
 
 

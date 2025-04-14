@@ -98,7 +98,7 @@ class ScriptManager
          * @return a float defined in lua
          */
         virtual float getFloatFromLua(const std::string& name) = 0;
-
+        virtual std::string getStringFromLua(const std::string& name) = 0;
 
 };
 
