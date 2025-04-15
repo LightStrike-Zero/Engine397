@@ -139,6 +139,11 @@ public:
         return flag; //no matching entity found
     }
 
+    template<typename Component>
+    void replaceComponent(Entity entity, const Component& component) {
+        m_registry.replace<Component>(entity, component);
+    }
+
 
     /**
      * @brief Provides access to the underlying registry.

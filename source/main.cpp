@@ -86,8 +86,8 @@ int main(int argc, char** argv)
     Player player(
         &scene.getEntityManager(),
         static_cast<GLFWwindow*>(window->GetNativeWindow()),
-        scriptManager->getFloatFromLua("playerMovementSpeed"),
-        scriptManager->getFloatFromLua("playerRotationSpeed")); // added by Hugo
+        scriptManager->getFloat("playerMovementSpeed"),
+        scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
 
     // TODO should make all lua loading into one function
     std::string helpText = FileHandler::readTextFile(
@@ -97,17 +97,17 @@ int main(int argc, char** argv)
 
 
     //load player tank
-    std::string playerTankPath = scriptManager->getStringFromLua("tankPath");
+    std::string playerTankPath = scriptManager->getString("tankPath");
     scene.loadPlayerModelEntity(playerTankPath);
     auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
     //align tank with camera orientation
     auto playerEntity = *playerView.begin();
     auto& playerTankTransform = playerView.get<TransformComponent>(playerEntity);
     playerTankTransform.rotation.y -= 180.f;
-    playerTankTransform.position = scriptManager->getVec3FromLua("playerStartPos");
+    playerTankTransform.position = scriptManager->getVec3("playerStartPos");
     playerTankTransform.position.y = collision.getHeightAt(playerTankTransform.position);
     auto& cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
-    glm::vec3 cameraOffset = scriptManager->getVec3FromLua("cameraOffset");
+    glm::vec3 cameraOffset = scriptManager->getVec3("cameraOffset");
     cameraTransform.position = playerTankTransform.position +cameraOffset;
 
 
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
                 glm::vec3 playerTankPos = playerTankTransform.position;
 
                 float terrainHeight = collision.getHeightAt(playerTankPos);
-                float targetHeight = terrainHeight + scriptManager->getFloatFromLua("playerHeightOffset");
+                float targetHeight = terrainHeight + scriptManager->getFloat("playerHeightOffset");
                 float t = deltaTime * lerpSpeed; // Small factor for smooth interpolation.
                 playerTankTransform.position.y = glm::mix(playerTankTransform.position.y, targetHeight, t);
                 

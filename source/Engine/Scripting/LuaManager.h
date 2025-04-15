@@ -81,16 +81,16 @@ class LuaManager : public ScriptManager
         * @param tableName The name of the Lua table
         * @return The glm::vec3 value from the Lua table
         */
-        glm::vec3 getVec3FromLua(const std::string& tableName) override;
+        glm::vec3 getVec3(const std::string& tableName) override;
 
        /**
         * @brief Get a float from Lua variable
         * @param name The name of the Lua variable
         * @return The float value from the Lua variable
         */
-       float getFloatFromLua(const std::string& name) override;
+       float getFloat(const std::string& name) override;
 
-        std::string getStringFromLua(const std::string& name) override;
+        std::string getString(const std::string& name) override;
 
     private:
         sol::state m_lua;              // Lua state

@@ -52,6 +52,7 @@ playerRotationSpeed = 90
 playerStartPos = { x = 0, y = 0, z = 0 }
 playerHeightOffset = 1.0
 playerResetPosition = { x = 0, y = 0, z = 0 }
+playerResetRotation = { x = 0, y = 180, z = 0 }
 
 
 -- scene:setEntityPosByName("tree0",50,10,50)
