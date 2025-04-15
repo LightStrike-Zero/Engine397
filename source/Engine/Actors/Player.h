@@ -29,7 +29,7 @@ class Player {
 public:
     explicit Player(EnttFacade* ecs, GLFWwindow *window, float movementSpeed, float rotationSpeed): m_entt(ecs), m_window(window), movementSpeed(movementSpeed), rotationSpeed(rotationSpeed) {}
     void update( float deltaTime , ScriptManager* scriptManager);
-    void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, float deltaTime) const;
+    void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, ScriptManager* scriptManager, float deltaTime) const;
     void shootCannon(TransformComponent cannonTransform, SphereColliderComponent sphereCollider, float deltaTime);
 
 

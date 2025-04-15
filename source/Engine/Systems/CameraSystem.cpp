@@ -85,8 +85,6 @@ void CameraSystem::handleCameraInput(TransformComponent& transform, CameraCompon
 
 void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
 {
-    float velocity = camera.movementSpeed * deltaTime;
-    float rotationVelocity = camera.rotationSpeed * deltaTime;
 
     //!!!!!!!!!!!!!!warning
     //this event dispatch lambda function is calling camera by reference and modifying it, use with caution
@@ -105,6 +103,8 @@ void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComp
             keyWasPressed = false;
         }
     });
+
+    float rotationVelocity = camera.rotationSpeed * deltaTime;
 
     if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
         camera.yaw -= rotationVelocity;
