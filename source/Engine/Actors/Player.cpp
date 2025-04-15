@@ -66,7 +66,7 @@ void Player::handleMovementInput(TransformComponent& playerTankTransform, BoxCol
     TransformComponent& cameraTransform = cameraView.get<TransformComponent>(cameraEntity);    //get camera transform
     CameraComponent& camera = cameraView.get<CameraComponent>(cameraEntity);   //get camera component
 
-    glm::vec3 cameraOffset = scriptManager->getVec3FromLua("cameraOffset");
+    glm::vec3 cameraOffset = scriptManager->getVec3("cameraOffset");
     cameraTransform.position.y = playerTankTransform.position.y + cameraOffset.y;//set camera height to tank height, which is modified by terrain
     // Step 1: Get vector from tank to camera
     glm::vec3 radiusVec = cameraTransform.position - playerTankTransform.position;
@@ -143,15 +143,21 @@ void Player::handlePlayerInput(TransformComponent& playerTransform, ScriptManage
     auto cameraEntity = *cameraView.begin();
     TransformComponent& cameraTransform = cameraView.get<TransformComponent>(cameraEntity);    //get camera transform
     CameraComponent& camera = cameraView.get<CameraComponent>(cameraEntity);   //get camera component
-    glm::vec3 cameraOffset = scriptManager->getVec3FromLua("cameraOffset");
+    glm::vec3 cameraOffset = scriptManager->getVec3("cameraOffset");
 
     //hugo playertank reset
     static bool reset = false;
-    glm::vec3 resetPosition = scriptManager->getVec3FromLua("playerResetPosition");
+    glm::vec3 resetPosition = scriptManager->getVec3("playerResetPosition");
+    glm::vec3 resetRotation = scriptManager->getVec3("playerResetRotation");
+    // glm::vec3 resetRotation = {0.f, 180.f, 0.f};
+
     if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS) {
         if (!reset) {
             playerTransform.position = resetPosition;
+            playerTransform.rotation = resetRotation;
+            m_entt->replaceComponent(cameraEntity, CameraComponent());
             cameraTransform.position = playerTransform.position + cameraOffset;
+
             reset = true;
         }
     } else {
@@ -163,6 +169,8 @@ void Player::handlePlayerInput(TransformComponent& playerTransform, ScriptManage
     if (playerTransform.position.x > rowSize / 2 || playerTransform.position.x < -rowSize / 2 ||
         playerTransform.position.z > colSize / 2 || playerTransform.position.z < -colSize / 2) {
         playerTransform.position = resetPosition;
+        playerTransform.rotation = resetRotation;
+        m_entt->replaceComponent(cameraEntity, CameraComponent());
         cameraTransform.position = playerTransform.position + cameraOffset;
     }
 }

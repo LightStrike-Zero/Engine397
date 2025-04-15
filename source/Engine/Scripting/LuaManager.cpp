@@ -163,7 +163,7 @@ std::string LuaManager::getHelpManualPath()
     return m_lua["text_helpManual_path"];
 }
 
-glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName) {
+glm::vec3 LuaManager::getVec3(const std::string& tableName) {
     sol::table t = m_lua[tableName];
     return {
         t["x"].get_or(0.0f),
@@ -172,7 +172,7 @@ glm::vec3 LuaManager::getVec3FromLua(const std::string& tableName) {
     };
 }
 
-float LuaManager::getFloatFromLua(const std::string& name) {
+float LuaManager::getFloat(const std::string& name) {
     sol::object value = m_lua[name];
     if (value.valid() && value.is<float>()) {
         return value.as<float>();
@@ -182,7 +182,7 @@ float LuaManager::getFloatFromLua(const std::string& name) {
     }
 }
 
-std::string LuaManager::getStringFromLua(const std::string& name) {
+std::string LuaManager::getString(const std::string& name) {
     sol::object value = m_lua[name];
     if (value.valid() && value.is<std::string>()) {
         return value.as<std::string>();

@@ -91,14 +91,14 @@ class ScriptManager
          * @param tableName
          * @return a vec3 defined in lua
          */
-        virtual glm::vec3 getVec3FromLua(const std::string& tableName) = 0;
+        virtual glm::vec3 getVec3(const std::string& tableName) = 0;
         /**
          * grabs a float from lua
          * @param name
          * @return a float defined in lua
          */
-        virtual float getFloatFromLua(const std::string& name) = 0;
-        virtual std::string getStringFromLua(const std::string& name) = 0;
+        virtual float getFloat(const std::string& name) = 0;
+        virtual std::string getString(const std::string& name) = 0;
 
         virtual std::array<std::string, 6> getSkyboxFaces() = 0;
 
