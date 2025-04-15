@@ -13,8 +13,8 @@ terrainConfig =
 {
     type = "TexturedHeightmap",
 
-    rows = 3000,
-    cols = 3000,
+    rows = 1000,
+    cols = 1000,
     spacing = 1.0,
 
     parameters =

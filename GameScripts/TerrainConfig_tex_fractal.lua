@@ -24,7 +24,7 @@ terrainConfig =
         heightScale = 150,
         seed = 3,
         smoothness = 0.9,
-        smoothingPasses = 40
+        smoothingPasses = 10
     },
 
     --texture =
