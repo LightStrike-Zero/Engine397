@@ -7,35 +7,45 @@
 
 
 void Player::update(float deltaTime,ScriptManager* scriptManager) {
+    //get player & camera entity's components
     auto playerView = m_entt->view<PlayerControllerComponent, TransformComponent, BoxColliderComponent>();
+    auto playerEntity = *playerView.begin();
+    auto& playerTransform = playerView.get<TransformComponent>(playerEntity);
+    auto& playerCollider = m_entt->get<BoxColliderComponent>(playerEntity);
+    TransformComponent originalPlayerTransform = playerTransform; // save to revert on collision
 
-    //get components needed for player movement
-    for (auto entity : playerView) {
-        auto& playerTransform = playerView.get<TransformComponent>(entity);
-        auto& playerCollider = m_entt->get<BoxColliderComponent>(entity);
-        TransformComponent originalTransform = playerTransform; // save to revert on collision
-        handleMovementInput(playerTransform, playerCollider, scriptManager, deltaTime);
+    auto cameraView = m_entt->view<TransformComponent, CameraComponent>();
+    auto cameraEntity = *cameraView.begin();
+    TransformComponent& cameraTransform = cameraView.get<TransformComponent>(cameraEntity);    //get camera transform
+    CameraComponent& camera = cameraView.get<CameraComponent>(cameraEntity);   //get camera component
+    TransformComponent originalCameraTransform = cameraTransform;
+    CameraComponent originalCamera = camera;
 
-        //resetting the player transform to original position when pressing R or when moving over the edge
-        handlePlayerInput(playerTransform, scriptManager);
+    //WASD movement
+    handleMovementInput(playerTransform, playerCollider, scriptManager, deltaTime);
+
+    //resetting the player transform to original position when pressing R or when moving over the edge
+    handlePlayerInput(playerTransform, scriptManager);
 
 
-        // Check for collisions
-        auto collidableView = m_entt->view<TransformComponent, BoxColliderComponent>(exclude<PlayerControllerComponent>);
-        for (auto other : collidableView) {
-            if (other == entity) continue; // skip self
+    // Check for collisions
+    auto collidableView = m_entt->view<TransformComponent, BoxColliderComponent>(exclude<PlayerControllerComponent>);
+    for (auto other : collidableView) {
+        if (other == playerEntity) continue; // skip self
 
-            auto& otherTransform = collidableView.get<TransformComponent>(other);
-            auto& otherCollider = collidableView.get<BoxColliderComponent>(other);
+        auto& otherTransform = collidableView.get<TransformComponent>(other);
+        auto& otherCollider = collidableView.get<BoxColliderComponent>(other);
 
-            if (checkBoxtoBoxCollision(playerCollider, playerTransform, otherCollider, otherTransform)) {
-                playerTransform = originalTransform; // cancel movement
-                break;
-            }
+        if (checkBoxtoBoxCollision(playerCollider, playerTransform, otherCollider, otherTransform)) {
+            playerTransform = originalPlayerTransform; // cancel movement
+            cameraTransform = originalCameraTransform;
+            camera = originalCamera; // cancel camera movement
+            break;
         }
-
-
     }
+
+
+
     // for (auto entity : cannonView) {
     //     auto& cannonTransform = cannonView.get<TransformComponent>(entity);
     //     auto& sphereCollider = cannonView.get<SphereColliderComponent>(entity);
