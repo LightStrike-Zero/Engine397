@@ -27,7 +27,9 @@ void TerrainMultiTexture::loadTerrainMultiTexture(RawMeshData& meshData, const s
     try {
         // path 0 is the heightmap, 1, 2, 3 are the textures followed by the blend parameters
         const uint32_t textureID = TextureManager::getInstance().createCompositeTexture({ texturePath[0], texturePath[1], texturePath[2], texturePath[3] }, { blendParams.first, blendParams.second });
+        const uint32_t detailMapID = TextureManager::getInstance().loadTextureFromFile(texturePath[4]);
         meshData.material.baseColorTextureID = textureID;
+        meshData.material.detailTextureID = detailMapID;
     }
     catch (const std::exception& e) {
         std::cerr << "Failed to load terrain multi texture: " << e.what() << std::endl;

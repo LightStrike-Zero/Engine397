@@ -95,7 +95,8 @@ std::shared_ptr<TerrainType> TerrainFactory::createTexturedTerrain(std::shared_p
         const std::string texturePath1 = params.at("tex1"); 
         const std::string texturePath2 = params.at("tex2"); 
         const std::string texturePath3 = params.at("tex3"); 
-        std::vector texturePaths = { heightPath, texturePath1, texturePath2, texturePath3 };
+        const std::string texturePath4 = params.at("tex4"); 
+        std::vector texturePaths = { heightPath, texturePath1, texturePath2, texturePath3, texturePath4 };
         std::pair blendParams = { std::stof(params.at("blend1")), std::stof(params.at("blend2")) };
         int repeatX = std::stoi(params.at("repeatX"));
         int repeatY = std::stoi(params.at("repeatY"));

@@ -28,12 +28,10 @@ void HeightmapTerrain::apply(RawMeshData& meshData, const int numRows, const int
         const float v = vertex.texCoords.y;
 
         const float sampledHeight = bilinearSample(u, v);
-
         vertex.position.y = sampledHeight * m_heightScale;
     }
-
-    generateNormals(meshData);
-
+    smoothVertexPositions(meshData, numRows, numCols);
+    computeMeshGradientNormals(meshData, numRows, numCols);
 }
 
 void HeightmapTerrain::loadHeightMap(const std::string& heightMapPath)
@@ -44,6 +42,8 @@ void HeightmapTerrain::loadHeightMap(const std::string& heightMapPath)
     m_heightMapWidth = image.getWidth();
     m_heightMapHeight = image.getHeight();
     m_heightMapChannels = image.getChannels();
+
+    smoothHeightmapData();
 }
 
 
@@ -82,33 +82,121 @@ float HeightmapTerrain::bilinearSample(float xf, float yf)
     return lerp(px1, px2, yp);
 }
 
-void HeightmapTerrain::generateNormals(RawMeshData& meshData)
-{
+void HeightmapTerrain::computeMeshGradientNormals(RawMeshData& meshData, int numRows, int numCols) {
     for (auto& vertex : meshData.vertices) {
         vertex.normal = glm::vec3(0.0f);
     }
-
-
-    for (size_t i = 0; i < meshData.indices.size(); i += 3) {
-        const unsigned int index0 = meshData.indices[i];
-        const unsigned int index1 = meshData.indices[i + 1];
-        const unsigned int index2 = meshData.indices[i + 2];
-
-        Vertex& v0 = meshData.vertices[index0];
-        Vertex& v1 = meshData.vertices[index1];
-        Vertex& v2 = meshData.vertices[index2];
-
-        glm::vec3 edge1 = v1.position - v0.position;
-        glm::vec3 edge2 = v2.position - v0.position;
-
-        glm::vec3 faceNormal = glm::normalize(glm::cross(edge1, edge2));
-
-        v0.normal += faceNormal;
-        v1.normal += faceNormal;
-        v2.normal += faceNormal;
+    
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols; col++) {
+            int idx = row * numCols + col;
+            
+            if (row > 0 && row < numRows - 1 && col > 0 && col < numCols - 1) {
+                float h_left  = meshData.vertices[(row) * numCols + (col-1)].position.y;
+                float h_right = meshData.vertices[(row) * numCols + (col+1)].position.y;
+                float h_up    = meshData.vertices[(row-1) * numCols + (col)].position.y;
+                float h_down  = meshData.vertices[(row+1) * numCols + (col)].position.y;
+                
+                float spacing = meshData.vertices[row * numCols + col + 1].position.x - 
+                               meshData.vertices[row * numCols + col].position.x;
+                
+                glm::vec3 tangent_x(2.0f * spacing, h_right - h_left, 0.0f);
+                glm::vec3 tangent_z(0.0f, h_down - h_up, 2.0f * spacing);
+                
+                meshData.vertices[idx].normal = glm::normalize(glm::cross(tangent_z, tangent_x));
+            }
+        }
     }
+    
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols; col++) {
+            int idx = row * numCols + col;
+            
+            if (row == 0) {
+                meshData.vertices[idx].normal = meshData.vertices[(row+1) * numCols + col].normal;
+            }
+            else if (row == numRows - 1) {
+                meshData.vertices[idx].normal = meshData.vertices[(row-1) * numCols + col].normal;
+            }
+            else if (col == 0) {
+                meshData.vertices[idx].normal = meshData.vertices[row * numCols + (col+1)].normal;
+            }
+            else if (col == numCols - 1) {
+                meshData.vertices[idx].normal = meshData.vertices[row * numCols + (col-1)].normal;
+            }
+        }
+    }
+}
 
-    for (auto& vertex : meshData.vertices) {
-        vertex.normal = glm::normalize(vertex.normal);
+
+void HeightmapTerrain::smoothHeightmapData() {
+    if (!m_heightMapData || m_heightMapWidth <= 2 || m_heightMapHeight <= 2) return;
+    
+    unsigned char* smoothedData = new unsigned char[m_heightMapWidth * m_heightMapHeight * m_heightMapChannels];
+    
+    for (int y = 0; y < m_heightMapHeight; y++) {
+        for (int x = 0; x < m_heightMapWidth; x++) {
+            float sum = 0.0f;
+            float count = 0.0f;
+            
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    
+                    if (nx >= 0 && nx < m_heightMapWidth && ny >= 0 && ny < m_heightMapHeight) {
+                        int pos = (ny * m_heightMapWidth + nx) * m_heightMapChannels;
+                        sum += m_heightMapData[pos];
+                        count++;
+                    }
+                }
+            }
+            
+            int pos = (y * m_heightMapWidth + x) * m_heightMapChannels;
+            smoothedData[pos] = static_cast<unsigned char>(sum / count);
+            
+            for (int c = 1; c < m_heightMapChannels; c++) {
+                smoothedData[pos + c] = m_heightMapData[pos + c];
+            }
+        }
+    }
+    
+    delete[] m_heightMapData;
+    m_heightMapData = smoothedData;
+}
+
+void HeightmapTerrain::smoothVertexPositions(RawMeshData& meshData, int numRows, int numCols)
+{
+    std::vector<glm::vec3> smoothedPositions;
+    smoothedPositions.resize(meshData.vertices.size());
+    
+    for (size_t i = 0; i < meshData.vertices.size(); i++) {
+        smoothedPositions[i] = meshData.vertices[i].position;
+    }
+    
+    const float kernel[3][3] = {
+        {0.0625f, 0.125f, 0.0625f},
+        {0.125f, 0.25f, 0.125f},
+        {0.0625f, 0.125f, 0.0625f}
+    };
+    
+    for (int row = 1; row < numRows - 1; row++) {
+        for (int col = 1; col < numCols - 1; col++) {
+            int idx = row * numCols + col;
+            glm::vec3 weightedSum(0.0f);
+            
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    int nidx = (row + dy) * numCols + (col + dx);
+                    weightedSum += meshData.vertices[nidx].position * kernel[dy+1][dx+1];
+                }
+            }
+            
+            smoothedPositions[idx].y = weightedSum.y;
+        }
+    }
+    
+    for (size_t i = 0; i < meshData.vertices.size(); i++) {
+        meshData.vertices[i].position.y = smoothedPositions[i].y;
     }
 }

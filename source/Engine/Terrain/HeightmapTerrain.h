@@ -53,8 +53,23 @@ protected:
      * @brief Samples heightmap using bilinear filtering.
      */
     float bilinearSample(float xf, float yf);
+    /**
+     * @brief Computes the gradient normals for the mesh.
+     * @param meshData Reference to the mesh data.
+     * @param numRows Number of rows in the mesh.
+     * @param numCols Number of columns in the mesh.
+     */
+    void computeMeshGradientNormals(RawMeshData& meshData, int numRows, int numCols);
 
-    void generateNormals(RawMeshData& meshData);
+    /*
+     * @brief Smooths the heightmap data using a simple averaging filter.
+     */
+    void smoothHeightmapData();
+
+    /*
+     * brief Smooths the vertex positions of the mesh using a Gaussian filter.
+     */
+    void smoothVertexPositions(RawMeshData& meshData, int numRows, int numCols);
 };
 
 #endif //UNTEXTUREDTERRAIN_H

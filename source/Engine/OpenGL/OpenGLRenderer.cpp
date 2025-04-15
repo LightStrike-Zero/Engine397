@@ -136,16 +136,19 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
                 shader->SetUniform1i("hasAlbedoMap", 0);
                 shader->SetUniform3f("fallbackColor", {1.0f, 0.0f, 0.5f});
             }
-            if (material.normalTextureID != 0)
-            {
-                // glActiveTexture(GL_TEXTURE1);
-                // glBindTexture(GL_TEXTURE_2D, material.normalTextureID);
-                // shader->SetUniform1i("normalMap", 1);
+            // Bind the detail texture
+            if (material.detailTextureID != 0) {
+                std::cout << "Detail texture ID: " << material.detailTextureID << std::endl;
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, material.detailTextureID);
+                shader->SetUniform1i("detailMap", 1);
+                shader->SetUniform1i("hasDetailMap", 1);
+                shader->SetUniform1f("detailScale", 40.0); // How much to scale the detail texture UVs
+                shader->SetUniform1f("detailStrength", 0.5); // Blend factor
+            } else {
+                shader->SetUniform1i("hasDetailMap", 0);
             }
-            // glActiveTexture(GL_TEXTURE2);
-            // glBindTexture(GL_TEXTURE_2D, material.roughnessTextureID);
-            // shader->SetUniform1i("roughnessMap", 2);
-
+            
             mesh.meshBuffer->bind();
             mesh.meshBuffer->draw();
             glBindVertexArray(0);

@@ -26,10 +26,12 @@ struct MaterialComponent
 {
     std::string shaderID;                   ///< Identifier for the shader used to render the material
     GLuint baseColorTextureID = 0;          ///< OpenGL texture ID for the albedo/base color map
+    GLuint detailTextureID = 0;              ///< OpenGL texture ID for the detail map
     GLuint metalnessTextureID = 0;          ///< OpenGL texture ID for the metalness map
     GLuint roughnessTextureID = 0;          ///< OpenGL texture ID for the roughness map
     GLuint normalTextureID = 0;             ///< OpenGL texture ID for the normal map
-
+    float detailScale = 10.0f;     ///< How much to scale texture coordinates for the detail map
+    float detailStrength = 0.5f;   ///< How strongly to blend the detail map
     bool isDecal = false;                   ///< Whether this material should be rendered as a decal
 
     MaterialComponent() = default;
@@ -42,6 +44,7 @@ struct MaterialComponent
     MaterialComponent(const RawMaterialData& materialData, const std::string& inShaderID)
         :   shaderID(inShaderID),
             baseColorTextureID(materialData.baseColorTextureID),
+            detailTextureID(materialData.detailTextureID),
             metalnessTextureID(materialData.metalnessTextureID),
             roughnessTextureID(materialData.roughnessTextureID),
             normalTextureID(materialData.normalTextureID),

@@ -40,6 +40,7 @@ terrainConfig =
         tex1 = "Assets/Terrain/Textures/Mountain_01.png",
         tex2 = "Assets/Terrain/Textures/Mountain_03.png",
         tex3 = "Assets/Terrain/Textures/Mountain_02.png",
+        tex4 = "Assets/Terrain/Textures/detail.png",
         blend1 = 0.01,
         blend2 = 0.7,
         repeatX = 1,

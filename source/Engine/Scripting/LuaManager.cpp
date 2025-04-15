@@ -118,6 +118,7 @@ std::unique_ptr<Terrain> LuaManager::createTerrainFromConfig()
         combinedParams["tex1"] = multitexture["tex1"];
         combinedParams["tex2"] = multitexture["tex2"];
         combinedParams["tex3"] = multitexture["tex3"];
+        combinedParams["tex4"] = multitexture["tex4"];
         combinedParams["blend1"] = std::to_string(multitexture["blend1"].get_or<float>(1.0));
         combinedParams["blend2"] = std::to_string(multitexture["blend2"].get_or<float>(1.0));
         combinedParams["repeatX"] = std::to_string(multitexture["repeatX"].get_or(1));

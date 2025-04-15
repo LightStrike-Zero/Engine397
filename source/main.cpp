@@ -61,14 +61,13 @@ int main(int argc, char** argv)
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(
         static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    // PLAYER SET UP
     Player player(
         &scene.getEntityManager(),
         static_cast<GLFWwindow*>(window->GetNativeWindow()),
         scriptManager->getFloat("playerMovementSpeed"),
         scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
 
-    // PLAYER SET UP
-    Player player(&scene.getEntityManager(),static_cast<GLFWwindow*>(window->GetNativeWindow()),scriptManager->getFloatFromLua("playerMovementSpeed"),scriptManager->getFloatFromLua("playerRotationSpeed")); // added by Hugo
 
 
 

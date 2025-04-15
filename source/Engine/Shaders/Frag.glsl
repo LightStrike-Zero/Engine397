@@ -17,6 +17,11 @@ uniform sampler2D roughnessMap;
 uniform bool hasAlbedoMap;
 uniform vec3 fallbackColor;
 
+uniform sampler2D detailMap;
+uniform bool hasDetailMap;
+uniform float detailScale;
+uniform float detailStrength;
+
 struct Material {
     sampler2D diffuse;
     vec3 diffuseColor;
@@ -116,7 +121,6 @@ void main() {
      * --Lighting Calculations--
      * -------------------------
      */
-
     vec3 albedo;
     // Choose texture or fallback based on the uniform flag.
     if (hasAlbedoMap) {
@@ -125,36 +129,29 @@ void main() {
     else {
         albedo = fallbackColor;
     }
-    
+    // Apply detail map if available
+    if (hasDetailMap) {
+        vec2 detailCoords = mod(TexCoords * detailScale, 1.0);
+        vec3 detailColor = texture(detailMap, detailCoords).rgb;
+        albedo = mix(albedo, albedo * detailColor * 2.0, detailStrength);
+    }
+
     // ambient lighting
     vec3 ambient = light.ambient * albedo;
-
     // diffuse lighting
     float diff = max(dot(transformedNormal, tangentLightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * albedo;
-
-
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 tangentViewDir = normalize(TBN * viewDir);
-
-
     const float kEnergyConservation = ( 8.0 + kShininess ) / ( 8.0 * kPi );
     vec3 halfwayDir = normalize(tangentLightDir + tangentViewDir);
     float spec = kEnergyConservation * pow(max(dot(transformedNormal, halfwayDir), 0.0), kShininess);
-
     vec3 specular = light.specular * spec;
-
     float shadow = CalcShadowFactor(LightSpacePos);
     vec3 lighting = ambient + shadow * (diffuse/* + specular*/);
 
-//    FragColor = vec4(transformedNormal * 0.5 + 0.5, 1.0); // Visualize normals
-//    FragColor = vec4(tangentLightDir * 0.5 + 0.5, 1.0);   // Visualize light direction
-
-    // Shadow debug visualization
-//    FragColor = vec4(vec3(CalcShadowFactor(LightSpacePos)), 1.0);
-
     // Lit view
     FragColor = vec4(lighting, 1.0);
-    // No shadows
+//     No shadows
 //    FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

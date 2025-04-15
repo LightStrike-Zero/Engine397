@@ -50,6 +50,7 @@ struct MaterialData {
  */
 struct RawMaterialData {
     uint_fast32_t baseColorTextureID = 0;      ///< Albedo (base colour) texture
+    uint_fast32_t detailTextureID = 0;      ///< Albedo (base colour) texture
     uint_fast32_t metalnessTextureID = 0;      ///< Metalness texture
     uint_fast32_t roughnessTextureID = 0;      ///< Roughness texture
     uint_fast32_t normalTextureID = 0;         ///< Normal map texture
