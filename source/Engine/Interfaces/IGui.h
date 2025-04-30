@@ -67,7 +67,12 @@ public:
      * @return True if the image was clicked.
      */
     virtual bool DisplayClickableImageFlipped(const char* title, unsigned int imagePtr, const glm::vec2& imageSize) = 0; //buko
-    
+
+    // nice and clean image widget
+    virtual void ImageWidget(unsigned int imagePtr, const glm::vec2& size) = 0;
+    // clean image button widget
+    virtual bool ImageButton(const char* id, unsigned int texID, const glm::vec2& size) = 0;
+
 };
 
 #endif //IGUI_H

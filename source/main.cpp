@@ -17,6 +17,8 @@
 #include <fstream>
 #include <glm/gtc/quaternion.hpp>
 
+#include "ResourceManagement/AssetRegistry.h"
+
 //----------------------
 
 //TODO EDITOR
@@ -44,12 +46,23 @@ int main(int argc, char** argv)
     window->SetInputMode(CURSOR, CURSOR_NORMAL);
 
     IRenderer* renderer = RendererFactory::CreateRenderer(type);
+    
+    //TODO EDITOR
+    AssetRegistry::Get().Initialize("Editor/assets/", "Editor/assets/registry.json");
 
+    
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+    
     //TODO EDITOR
+    Gui.loadNamedImage("placeholder", "Assets/editor/icon.png");
     auto native = static_cast<GLFWwindow*>(window->GetNativeWindow());
-    glfwSetDropCallback(native, OnFileDrop);
+    glfwSetDropCallback(native, [](GLFWwindow*, int count, const char** paths) {
+        for (int i = 0; i < count; ++i) {
+            // Copies each file into Assets/ and registers it
+            AssetRegistry::Get().ImportAsset(paths[i]);
+        }
+    });
 
     Scene scene;
     
@@ -156,44 +169,58 @@ int main(int argc, char** argv)
                 window->SetShouldClose(true);
         }
 
-        // 4) Docked panes
+        // Content browser
         Gui.BeginWindow("Content Browser", nullptr, 0);
-        // If no files yet, show a hint
-        if (g_DroppedFiles.empty()) {
-            ImGui::TextUnformatted("Drag asset files here from your OS to import.");
-        } 
 
-        // Otherwise list each dropped file...
-        for (auto& filepath : g_DroppedFiles) {
-            // Show just the filename, not full path
-            const char* fname = std::strrchr(filepath.c_str(), '/');
-            if (!fname) fname = std::strrchr(filepath.c_str(), '\\');
-            fname = fname ? (fname + 1) : filepath.c_str();
-            ImGui::Text("%s", fname);
+        const auto& assets = AssetRegistry::Get().GetAssets();
+        if (assets.empty()) {
+            ImGui::TextUnformatted("Drag asset files here to import.");
+        } else {
+            const int iconSize = 64, padding = 10;
+            float availW = ImGui::GetContentRegionAvail().x;
+            int cols = std::max(1, int(availW / (iconSize + padding)));
+            int i = 0;
 
-            // Make it draggable as a content‐browser item
-            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-                // Payload = full filepath string (including null terminator)
-                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM",
-                                          filepath.c_str(),
-                                          filepath.size() + 1);
-                ImGui::Text("Spawn %s", fname);
-                ImGui::EndDragDropSource();
+            // Show each entry: thumbnail + name + drag source
+            for (auto& entry : assets) {
+                // 1) Draw the placeholder thumbnail
+                //    showNamedClickableImage returns true if clicked, but 
+                //    we can use BeginDragDropSource unconditionally
+                // inside your for(auto& entry : assets)
+                ImGui::PushID(entry.destPath.c_str());
+                ImGui::BeginGroup();
+
+                // draw the thumbnail in-place
+                if (Gui.showNamedClickableImage(entry.thumbKey, {64,64})) {
+                    // optional: select/focus this asset
+                }
+                // drag-and-drop source on that button:
+                if (ImGui::BeginDragDropSource()) {
+                    ImGui::SetDragDropPayload(
+                        "CONTENT_BROWSER_ITEM",
+                        entry.destPath.c_str(),
+                        entry.destPath.size()+1
+                    );
+                    ImGui::Text("Spawn %s", entry.name.c_str());
+                    ImGui::EndDragDropSource();
+                }
+
+                ImGui::TextWrapped("%s", entry.name.c_str());
+                ImGui::EndGroup();
+                ImGui::PopID();
+                if (++i < (int)assets.size() && (i % cols) != 0)
+                    ImGui::SameLine();
             }
         }
         Gui.EndWindow();
 
+        // Viewport window
         Gui.BeginWindow("Viewport", nullptr, 0);
-        Gui.DisplayImage("Viewport", currentRenderedFrame, { windowWidth, windowHeight });
-        // Accept drops of our content‐browser items:
-        // if (auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
-        //     const char* droppedPath = (const char*)payload->Data;
-        //     // 1) decide spawn location (e.g. mouse raycast)
-        //     // 2) call your scene → load model / create entity from droppedPath
-        //     SpawnEntityFromPath(droppedPath, /*spawnPos*/);
-        // }
+        // Gui.DisplayImage("Viewport", currentRenderedFrame, { windowWidth, windowHeight });
+        Gui.ImageWidget(currentRenderedFrame, { windowWidth, windowHeight });
         Gui.EndWindow();
 
+        // Detail panel
         Gui.BeginWindow("Details", nullptr, 0);
         ImGui::Text("(entity inspector)");
         Gui.EndWindow();

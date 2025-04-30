@@ -84,6 +84,10 @@ public:
     void BeginWindow(const char* name, bool* p_open, ImGuiWindowFlags flags) override;
     void EndWindow() override;
 
+    void ImageWidget(unsigned int texID, const glm::vec2& size) override;
+
+    bool ImageButton(const char* id, unsigned int texID, const glm::vec2& size) override;
+
 private:
     std::map<std::string, unsigned int> m_namedImages; // buko
 };

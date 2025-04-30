@@ -1,4 +1,3 @@
-
 #include "ImGui_UI.h"
 
 #include "imgui.h"
@@ -71,7 +70,7 @@ bool ImGuiUI::DisplayClickableImageFlipped(const char* title, const unsigned int
                  ImGuiWindowFlags_NoCollapse |
                  ImGuiWindowFlags_NoScrollbar |
                  ImGuiWindowFlags_NoScrollWithMouse |
-                 ImGuiWindowFlags_NoDocking );
+                 ImGuiWindowFlags_NoDocking);
     ImVec2 availableSize = ImGui::GetContentRegionAvail();
 
     float offsetX = (availableSize.x - imageSize.x) * 0.5f;
@@ -124,15 +123,18 @@ void ImGuiUI::loadNamedImage(const std::string& name, const std::string& path)
     m_namedImages[name] = id;
 }
 
-//buko in use
+//buko - modified by shaun to remove begin/end calls
 bool ImGuiUI::showNamedClickableImage(const std::string& name, const glm::vec2& size)
 {
-    if (m_namedImages.count(name) > 0)
-    {
-        bool clicked = DisplayClickableImageFlipped(name.c_str(), m_namedImages[name], size);
-        return clicked;
-    }
-    return false;
+    auto it = m_namedImages.find(name);
+    if (it == m_namedImages.end())
+        return false;
+
+    // old two‐arg wrap:
+    // return ImageButton(it->second, size);
+
+    // new three‐arg call: use the asset name as the ImGui ID
+    return ImageButton(name.c_str(), it->second, size);
 }
 
 // buko shows the help manual
@@ -140,8 +142,8 @@ void ImGuiUI::ShowHelpManual(bool& show, const std::string& helpText)
 {
     if (!show) return;
 
-    const ImVec2 helpSize = ImVec2(800, 600);  // Set a good size
-    const ImVec2 helpPos  = ImVec2(560, 240);  // Position it somewhere comfy
+    const ImVec2 helpSize = ImVec2(800, 600); // Set a good size
+    const ImVec2 helpPos = ImVec2(560, 240); // Position it somewhere comfy
 
     ImGui::SetNextWindowPos(helpPos, ImGuiCond_Once);
     ImGui::SetNextWindowSize(helpSize, ImGuiCond_Once);
@@ -155,9 +157,31 @@ void ImGuiUI::ShowHelpManual(bool& show, const std::string& helpText)
     ImGui::End();
 }
 
-void ImGuiUI::BeginWindow(const char* name, bool* p_open, ImGuiWindowFlags flags) {
+void ImGuiUI::BeginWindow(const char* name, bool* p_open, ImGuiWindowFlags flags)
+{
     ImGui::Begin(name, p_open, flags);
 }
-void ImGuiUI::EndWindow() {
+
+void ImGuiUI::EndWindow()
+{
     ImGui::End();
+}
+
+void ImGuiUI::ImageWidget(unsigned int texID, const glm::vec2& size)
+{
+    ImGui::Image(reinterpret_cast<ImTextureID>(reinterpret_cast<void*>(static_cast<intptr_t>(texID))),
+                 ImVec2(size.x, size.y), ImVec2{0, 1}, ImVec2{1, 0});
+}
+
+bool ImGuiUI::ImageButton(const char* id,
+                          unsigned int texID,
+                          const glm::vec2& size)
+{
+    ImTextureID img = static_cast<ImTextureID>(static_cast<uintptr_t>(texID));
+    return ImGui::ImageButton(
+        id, // unique string ID
+        img, // your GL texture handle
+        ImVec2(size.x, size.y), // size
+        ImVec2(0, 1), ImVec2(1, 0) // flipped UVs
+    );
 }

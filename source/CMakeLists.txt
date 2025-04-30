@@ -96,6 +96,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Components/NameComponent.h
         Engine/Terrain/TerrainMultiTexture.cpp
         Engine/Terrain/TerrainMultiTexture.h
+        Engine/ResourceManagement/AssetRegistry.cpp
+        Engine/ResourceManagement/AssetRegistry.h
 )
 
 # Add executable based on source files
@@ -113,6 +115,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Utility
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Interaction
         ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/ImGUI
+        
 )
 
 # Link libraries
@@ -148,7 +151,7 @@ elseif (UNIX)
     )
 endif()
 # Include directories for header files
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${Assimp_INCLUDE_DIRS} ${STB_Image_INCLUDE_DIRS} ${Entt_INCLUDE_DIRS} ${ImGUI_INCLUDE_DIRS} headers)
+target_include_directories(${PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${Assimp_INCLUDE_DIRS} ${STB_Image_INCLUDE_DIRS} ${Entt_INCLUDE_DIRS} ${ImGUI_INCLUDE_DIRS} ${JSON_INCLUDE_DIRS} headers)
 
 # Additional dependencies for static linking on Windows
 if (WIN32)
