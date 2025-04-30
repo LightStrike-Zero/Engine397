@@ -19,6 +19,19 @@
 
 //----------------------
 
+//TODO EDITOR
+// Global list of dropped files (persist across frames)
+static std::vector<std::string> g_DroppedFiles;
+//TODO EDITOR
+// GLFW drop callback: called when the user drags files onto the window
+static void OnFileDrop(GLFWwindow* /*wnd*/, int count, const char** paths) {
+    for (int i = 0; i < count; ++i) {
+        g_DroppedFiles.emplace_back(paths[i]);
+    }
+}
+
+
+
 int main(int argc, char** argv)
 {
     bool showExitScreen = false; // buko
@@ -34,6 +47,9 @@ int main(int argc, char** argv)
 
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+    //TODO EDITOR
+    auto native = static_cast<GLFWwindow*>(window->GetNativeWindow());
+    glfwSetDropCallback(native, OnFileDrop);
 
     Scene scene;
     
@@ -59,14 +75,15 @@ int main(int argc, char** argv)
     auto cameraEntity = scene.getEntityManager().createEntity();
     scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
-    CameraSystem cameraSystem(
-        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+
+    
     // PLAYER SET UP
-    Player player(
-        &scene.getEntityManager(),
-        static_cast<GLFWwindow*>(window->GetNativeWindow()),
-        scriptManager->getFloat("playerMovementSpeed"),
-        scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
+    // Player player(
+    //     &scene.getEntityManager(),
+    //     static_cast<GLFWwindow*>(window->GetNativeWindow()),
+    //     scriptManager->getFloat("playerMovementSpeed"),
+    //     scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
 
 
 
@@ -109,72 +126,83 @@ int main(int argc, char** argv)
     while (!window->ShouldClose())
     {
         Gui.BeginFrame();
+
         if (!showExitScreen)
         {
+            // 1) Compute delta
             float currentFrame = window->GetTime();
-            float deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
+            float deltaTime   = currentFrame - lastFrame;
+            lastFrame         = currentFrame;
 
-            // TODO remove flags showExitScreen, showHelpScreen
-            cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
-                                showHelpScreen);
-            auto [viewMatrix, projectionMatrix, viewPos] =
+            // 2) Drive the editor‐viewport camera
+            cameraSystem.update(
+                scene.getEntityManager(),
+                deltaTime,
+                /*showExitScreen=*/ showExitScreen,
+                /*showHelpScreen=*/ showHelpScreen
+            );
+
+            // 3) Grab view/proj and render the entire scene
+            auto [viewMatrix, projMatrix, viewPos] =
                 cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-            player.update(deltaTime,scriptManager);
 
-            for (auto entity : playerView)
-            {
-                auto& playerTankTransform = playerView.get<TransformComponent>(entity);
-                glm::vec3 playerTankPos = playerTankTransform.position;
-
-                float terrainHeight = collision.getHeightAt(playerTankPos);
-                float targetHeight = terrainHeight + scriptManager->getFloat("playerHeightOffset");
-                float t = deltaTime * lerpSpeed; // Small factor for smooth interpolation.
-                playerTankTransform.position.y = glm::mix(playerTankTransform.position.y, targetHeight, t);
-                
-                glm::vec3 terrainNormal = collision.getNormalAt(playerTankPos);
-
-                glm::vec3 forwardDir = glm::normalize(glm::vec3(
-                    sin(glm::radians(playerTankTransform.rotation.y)),
-                    0.0f,
-                    cos(glm::radians(playerTankTransform.rotation.y))
-                ));
-
-                glm::vec3 tankUp = glm::vec3(0.0f, 1.0f, 0.0f);
-                glm::vec3 uphillDir = terrainNormal - glm::dot(terrainNormal, tankUp) * tankUp;
-                if (glm::length(uphillDir) > 0.0001f)
-                    uphillDir = glm::normalize(uphillDir);
-                else
-                    uphillDir = glm::vec3(0.0f); // Terrain is level.
-
-                float dotVal = glm::dot(forwardDir, uphillDir);
-                float sign = (dotVal >= 0.0f) ? -1.0f : 1.0f;
-
-                float sampleDistance = 1.0f; // Adjust based on tank size/responsiveness.
-                glm::vec3 samplePoint = playerTankPos + forwardDir * sampleDistance;
-                float sampleTerrainHeight = collision.getHeightAt(samplePoint);
-
-                float deltaHeight = fabs(sampleTerrainHeight - terrainHeight);
-                float absDesiredPitch = glm::degrees(atan2(deltaHeight, sampleDistance));
-
-                float desiredPitch = sign * absDesiredPitch;
-
-                playerTankTransform.rotation.x = glm::mix(playerTankTransform.rotation.x, desiredPitch, t);
-
-                playerTankTransform.rotation.z = 0.0f;
-            }
             currentRenderedFrame =
-                    renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
-        } else {
-            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510})) {
+                renderer->Render(scene, viewMatrix, projMatrix, viewPos);
+        }
+        else
+        {
+            // still keep your exit‐screen logic
+            if (Gui.showNamedClickableImage("Click to Exit", {880, 510}))
                 window->SetShouldClose(true);
+        }
+
+        // 4) Docked panes
+        Gui.BeginWindow("Content Browser", nullptr, 0);
+        // If no files yet, show a hint
+        if (g_DroppedFiles.empty()) {
+            ImGui::TextUnformatted("Drag asset files here from your OS to import.");
+        } 
+
+        // Otherwise list each dropped file...
+        for (auto& filepath : g_DroppedFiles) {
+            // Show just the filename, not full path
+            const char* fname = std::strrchr(filepath.c_str(), '/');
+            if (!fname) fname = std::strrchr(filepath.c_str(), '\\');
+            fname = fname ? (fname + 1) : filepath.c_str();
+            ImGui::Text("%s", fname);
+
+            // Make it draggable as a content‐browser item
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+                // Payload = full filepath string (including null terminator)
+                ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM",
+                                          filepath.c_str(),
+                                          filepath.size() + 1);
+                ImGui::Text("Spawn %s", fname);
+                ImGui::EndDragDropSource();
             }
         }
-        Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
+        Gui.EndWindow();
 
-        if (showHelpScreen) {
+        Gui.BeginWindow("Viewport", nullptr, 0);
+        Gui.DisplayImage("Viewport", currentRenderedFrame, { windowWidth, windowHeight });
+        // Accept drops of our content‐browser items:
+        // if (auto payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+        //     const char* droppedPath = (const char*)payload->Data;
+        //     // 1) decide spawn location (e.g. mouse raycast)
+        //     // 2) call your scene → load model / create entity from droppedPath
+        //     SpawnEntityFromPath(droppedPath, /*spawnPos*/);
+        // }
+        Gui.EndWindow();
+
+        Gui.BeginWindow("Details", nullptr, 0);
+        ImGui::Text("(entity inspector)");
+        Gui.EndWindow();
+
+        // 5) Help window if requested
+        if (showHelpScreen)
             Gui.ShowHelpManual(showHelpScreen, helpText);
-        }
+
+        // 6) Finish ImGui & swap
         Gui.EndFrame();
         window->SwapBuffers();
         window->PollEvents();

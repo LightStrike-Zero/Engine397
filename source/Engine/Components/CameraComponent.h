@@ -30,7 +30,7 @@ struct CameraComponent {
   float yaw = -90.0f; ///< Horizontal rotation angle in degrees.
   float pitch = 0.0f; ///< Vertical rotation angle in degrees.
 
-  float movementSpeed = 10.0f;   ///< Speed at which the camera moves.
+  float movementSpeed = 50.0f;   ///< Speed at which the camera moves.
   float mouseSensitivity = 0.1f; ///< Sensitivity for mouse movement.
   float rotationSpeed = 90.0f;   ///< Speed at which the camera rotates.
 

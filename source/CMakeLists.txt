@@ -162,3 +162,4 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         "${CMAKE_CURRENT_SOURCE_DIR}/../Dependencies/assimp/bin/Release/assimp-vc143-mt.dll"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
+

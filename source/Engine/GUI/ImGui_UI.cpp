@@ -154,3 +154,10 @@ void ImGuiUI::ShowHelpManual(bool& show, const std::string& helpText)
 
     ImGui::End();
 }
+
+void ImGuiUI::BeginWindow(const char* name, bool* p_open, ImGuiWindowFlags flags) {
+    ImGui::Begin(name, p_open, flags);
+}
+void ImGuiUI::EndWindow() {
+    ImGui::End();
+}

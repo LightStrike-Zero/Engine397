@@ -8,6 +8,7 @@
 #ifndef IGUI_H
 #define IGUI_H
 
+#include <imgui.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
@@ -23,6 +24,11 @@ public:
      * @brief Virtual destructor.
      */
     virtual ~IGui() = default;
+
+    virtual void BeginWindow(const char* name,
+                             bool* p_open = nullptr,
+                             ImGuiWindowFlags flags = 0) = 0;
+    virtual void EndWindow() = 0;
 
     /**
      * @brief Initialise the GUI system with the GLFW window context.

@@ -19,12 +19,7 @@ void CameraSystem::update(EnttFacade& ecs, float deltaTime, bool& showExitScreen
             handleCameraInput(transform, camera, deltaTime, showExitScreen, showHelpScreen);
         }
     }
-
-    // Handle inputs relating to the player tank
-
-    // std::cout << "tank pos is: " << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.x << ", "
-    //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.y << ", "
-    //           << viewPlayer.get<TransformComponent>(viewPlayer.front()).position.z << std::endl;
+    
 }
 
 std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrices(EnttFacade& ecs) {
@@ -50,135 +45,90 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 
 
 //void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
-void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen)
+void CameraSystem::handleCameraInput(TransformComponent& transform,
+                                     CameraComponent& camera,
+                                     float deltaTime,
+                                     bool& showExitScreen,
+                                     bool& showHelpScreen)
 {
-
-
-    static bool exit = false;
-    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS || glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    // --- exit toggle (X/Esc) ---
+    static bool exitPressed = false;
+    if (glfwGetKey(m_window, GLFW_KEY_X) == GLFW_PRESS ||
+        glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
-        if (!exit) {
-            showExitScreen = !showExitScreen; // Toggle the flag
-            exit = true;
+        if (!exitPressed) {
+            showExitScreen = !showExitScreen;
+            exitPressed    = true;
         }
     } else {
-        exit = false;
+        exitPressed = false;
     }
-    
-    // buko help manual screen
-    static bool wasMPressedLastFrame = false;
-    if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS && !wasMPressedLastFrame)
-    {
+
+    // --- help toggle (M) ---
+    static bool mWasDown = false;
+    if (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS && !mWasDown) {
         showHelpScreen = !showHelpScreen;
     }
-    wasMPressedLastFrame = glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS;
-    // end of buko help manual screen
+    mWasDown = (glfwGetKey(m_window, GLFW_KEY_M) == GLFW_PRESS);
 
-
-    //
-    if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
-        handleKeyboardInput(transform, camera, deltaTime);
+    // --- only fly/look while RMB is down ---
+    if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        // hide & capture cursor
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         handleMouseInput(camera);
+        handleKeyboardInput(transform, camera, deltaTime);
+    }
+    else {
+        // release & show cursor, reset first-mouse so we don't jump
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        m_firstMouse = true;
     }
 }
 
-void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+void CameraSystem::handleKeyboardInput(TransformComponent& transform,
+                                       CameraComponent& camera,
+                                       float deltaTime)
 {
+    glm::vec3 dir(0.0f);
+    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+        dir += camera.front;
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+        dir -= camera.front;
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+        dir -= camera.right;
+    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+        dir += camera.right;
 
-    //!!!!!!!!!!!!!!warning
-    //this event dispatch lambda function is calling camera by reference and modifying it, use with caution
-    EventSystem::getInstance().addListener(EventType::KeyPressed, [this](const Event& event) {
-    const auto& keyEvent = dynamic_cast<const KeyPressedEvent&>(event);
-        static bool keyWasPressed = false;
-        if (keyEvent.keyCode == GLFW_KEY_K) {
-            if (!keyWasPressed) {
-                static bool lineMode = false;
-                lineMode = !lineMode;
-                DrawModeChangedEvent drawEvent(lineMode);
-                EventSystem::getInstance().dispatchEvent(drawEvent);
-                keyWasPressed = true;
-            }
-        } else {
-            keyWasPressed = false;
-        }
-    });
-
-    float rotationVelocity = camera.rotationSpeed * deltaTime;
-
-    if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera.yaw -= rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera.yaw += rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
-        camera.pitch += rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        camera.pitch -= rotationVelocity;
-
-
-
-    if (camera.pitch > 89.0f)
-        camera.pitch = 89.0f;
-    if (camera.pitch < -89.0f)
-        camera.pitch = -89.0f;
-
-    glm::vec3 front;
-    front.x = cos(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    front.y = sin(glm::radians(camera.pitch));
-    front.z = sin(glm::radians(camera.yaw)) * cos(glm::radians(camera.pitch));
-    camera.front = glm::normalize(front);
-
-    camera.right = glm::normalize(glm::cross(camera.front, camera.worldUp));
-    camera.up = glm::normalize(glm::cross(camera.right, camera.front));
-
-    static bool keyWasPressed = false;
-    if (glfwGetKey(m_window, GLFW_KEY_K) == GLFW_PRESS) {
-        if (!keyWasPressed) {
-            static bool lineMode = false;
-            lineMode = !lineMode;
-            
-            DrawModeChangedEvent event(lineMode);
-            EventSystem::getInstance().dispatchEvent(event);
-            
-            keyWasPressed = true;
-        }
-    } else {
-        keyWasPressed = false;
+    if (glm::length(dir) > 0.0f) {
+        dir = glm::normalize(dir);
+        transform.position += dir * camera.movementSpeed * deltaTime;
     }
 }
 
 void CameraSystem::handleMouseInput(CameraComponent& camera)
 {
-    static bool firstMouse = true;
-    static float lastX = 0.0f;
-    static float lastY = 0.0f;
-        
     double xpos, ypos;
     glfwGetCursorPos(m_window, &xpos, &ypos);
 
-    if (firstMouse) {
-        lastX = static_cast<float>(xpos);
-        lastY = static_cast<float>(ypos);
-        firstMouse = false;
+    if (m_firstMouse) {
+        m_lastX      = (float)xpos;
+        m_lastY      = (float)ypos;
+        m_firstMouse = false;
     }
 
-    float xOffset = static_cast<float>(xpos) - lastX;
-    float yOffset = lastY - static_cast<float>(ypos);
-
-    lastX = static_cast<float>(xpos);
-    lastY = static_cast<float>(ypos);
+    float xOffset = (float)xpos - m_lastX;
+    float yOffset = m_lastY - (float)ypos;
+    m_lastX = (float)xpos;
+    m_lastY = (float)ypos;
 
     xOffset *= camera.mouseSensitivity;
     yOffset *= camera.mouseSensitivity;
-        
-    camera.yaw += xOffset;
+
+    camera.yaw   += xOffset;
     camera.pitch += yOffset;
-        
-    if (camera.pitch > 89.0f)
-        camera.pitch = 89.0f;
-    if (camera.pitch < -89.0f)
-        camera.pitch = -89.0f;
-        
+    camera.pitch  = glm::clamp(camera.pitch, -89.0f, 89.0f);
+
     updateCameraVectors(camera);
 }
 

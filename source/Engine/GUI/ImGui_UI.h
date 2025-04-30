@@ -81,6 +81,9 @@ public:
      */
     void ShowHelpManual(bool& show, const std::string& helpText);                   // buko
 
+    void BeginWindow(const char* name, bool* p_open, ImGuiWindowFlags flags) override;
+    void EndWindow() override;
+
 private:
     std::map<std::string, unsigned int> m_namedImages; // buko
 };
