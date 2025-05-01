@@ -39,21 +39,21 @@ int main(int argc, char** argv)
     bool showExitScreen = false; // buko
     bool showHelpScreen = false; // buko
 
-    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
+    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", false);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
     window->SetInputMode(CURSOR, CURSOR_NORMAL);
 
     IRenderer* renderer = RendererFactory::CreateRenderer(type);
-    
+
     //TODO EDITOR
     AssetRegistry::Get().Initialize("Editor/assets/", "Editor/assets/registry.json");
 
-    
+
     ImGuiUI Gui;
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-    
+
     //TODO EDITOR
     Gui.loadNamedImage("placeholder", "Assets/editor/icon.png");
     auto native = static_cast<GLFWwindow*>(window->GetNativeWindow());
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     });
 
     Scene scene;
-    
+
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/GameConfig.lua");
@@ -77,20 +77,20 @@ int main(int argc, char** argv)
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
     float terrainScale = scriptManager->getTerrainSpacing();
-    
+
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
 
     scene.setDirectionalLight(dirLight);
 
-    
+
     // CAMERA SET UP
     auto cameraEntity = scene.getEntityManager().createEntity();
     scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
     CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
 
-    
+
     // PLAYER SET UP
     // Player player(
     //     &scene.getEntityManager(),
@@ -126,14 +126,14 @@ int main(int argc, char** argv)
         staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
     }
 
-    
+
     std::array<std::string, 6> skyboxFaces = scriptManager->getSkyboxFaces();
     scene.createSkyBox(skyboxFaces);
-    
+
     std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath());
     static float lastFrame = 0.0f;
     float lerpSpeed = 10.0f;
-
+    static bool showNewArchetypePopup = false;
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
     unsigned int currentRenderedFrame;
     while (!window->ShouldClose())
@@ -170,49 +170,89 @@ int main(int argc, char** argv)
         }
 
         // Content browser
-        Gui.BeginWindow("Content Browser", nullptr, 0);
+         Gui.BeginWindow("Content Browser", nullptr, 0);
 
+    // + New Archetype button
+    if (ImGui::Button("+ New Archetype"))
+        showNewArchetypePopup = true;
+    ImGui::SameLine();
+    // ImGui::TextUnformatted("Content Browser");
+    ImGui::Separator();
+
+    // 1) Raw Assets section
+    if (ImGui::CollapsingHeader("Raw Assets", ImGuiTreeNodeFlags_DefaultOpen))
+    {
         const auto& assets = AssetRegistry::Get().GetAssets();
-        if (assets.empty()) {
+        if (assets.empty())
+        {
             ImGui::TextUnformatted("Drag asset files here to import.");
-        } else {
+        }
+        else
+        {
             const int iconSize = 64, padding = 10;
             float availW = ImGui::GetContentRegionAvail().x;
             int cols = std::max(1, int(availW / (iconSize + padding)));
             int i = 0;
 
-            // Show each entry: thumbnail + name + drag source
-            for (auto& entry : assets) {
-                // 1) Draw the placeholder thumbnail
-                //    showNamedClickableImage returns true if clicked, but 
-                //    we can use BeginDragDropSource unconditionally
-                // inside your for(auto& entry : assets)
+            for (auto& entry : assets)
+            {
                 ImGui::PushID(entry.destPath.c_str());
                 ImGui::BeginGroup();
 
-                // draw the thumbnail in-place
-                if (Gui.showNamedClickableImage(entry.thumbKey, {64,64})) {
+                // Thumbnail-button + drag source
+                if (Gui.showNamedClickableImage(entry.thumbKey, { iconSize, iconSize }))
+                {
                     // optional: select/focus this asset
                 }
-                // drag-and-drop source on that button:
-                if (ImGui::BeginDragDropSource()) {
+                if (ImGui::BeginDragDropSource())
+                {
                     ImGui::SetDragDropPayload(
-                        "CONTENT_BROWSER_ITEM",
+                        "CONTENT_BROWSER_ASSET",
                         entry.destPath.c_str(),
-                        entry.destPath.size()+1
+                        entry.destPath.size() + 1
                     );
-                    ImGui::Text("Spawn %s", entry.name.c_str());
+                    ImGui::Text("Asset: %s", entry.name.c_str());
                     ImGui::EndDragDropSource();
                 }
 
                 ImGui::TextWrapped("%s", entry.name.c_str());
                 ImGui::EndGroup();
                 ImGui::PopID();
+
                 if (++i < (int)assets.size() && (i % cols) != 0)
                     ImGui::SameLine();
             }
         }
-        Gui.EndWindow();
+    }
+
+    // 2) Archetypes section
+    if (ImGui::CollapsingHeader("Archetypes", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        // for now just show placeholder text
+        ImGui::TextUnformatted("(archetypes will go here)");
+        // Later you’ll replace this with a grid similar to Raw Assets,
+        // but using PrototypeRegistry::Get().GetArchetypes()
+    }
+
+    Gui.EndWindow();  // end Content Browser
+
+    // === Create Archetype Modal ===
+    if (showNewArchetypePopup)
+    {
+        ImGui::OpenPopup("Create Archetype");
+        showNewArchetypePopup = false;
+    }
+    if (ImGui::BeginPopupModal("Create Archetype",
+                              nullptr,
+                              ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::TextUnformatted("Archetype Editor (placeholder)\n"
+                               "Here you’ll choose components, assign assets, etc.");
+        ImGui::Separator();
+        if (ImGui::Button("Close"))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
 
         // Viewport window
         Gui.BeginWindow("Viewport", nullptr, 0);
