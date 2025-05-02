@@ -48,6 +48,7 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
     m_frameBuffer.bind();
 
     // probably do the collision debug rendering somewhere around here, must be after the framebuffer has been bound
+
     
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
