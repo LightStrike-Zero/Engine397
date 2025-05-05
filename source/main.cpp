@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     float lerpSpeed = 10.0f;
 
 
-    Water water(3000, 3000, 10.5f, 1.0f);  // rows, columns, height, spacing
+    Water water(1000, 1000, 10.5f, 1.0f);  // rows, columns, height, spacing
     scene.addWaterEntity(water);
 
 

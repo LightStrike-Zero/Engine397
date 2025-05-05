@@ -26,6 +26,7 @@ OpenGLRenderer::OpenGLRenderer()
     m_shaderManager.loadShader("skyboxShader", "skybox_vert.glsl", "skybox_frag.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
+    m_shaderManager.loadShader("waterShader", "WaterVert.glsl", "WaterFrag.glsl");
 
 }
 

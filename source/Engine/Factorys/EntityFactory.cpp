@@ -334,8 +334,7 @@ void EntityFactory::addWaterEntity(const Water& water) {
     transformComponent.setFromModelMatrix(water.getMeshData().transform);
     m_entityFacade->addComponent<TransformComponent>(entity, transformComponent);
 
-    // TODO add a water shader
-    MaterialComponent materialComponent(water.getMeshData().material, "lightingShader");
+    MaterialComponent materialComponent(water.getMeshData().material, "waterShader");
     m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
 
     NameComponent nameComponent = {"water"};
