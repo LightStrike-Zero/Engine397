@@ -317,3 +317,27 @@ void EntityFactory::addTerrainEntity(const Terrain& terrain) {
     MaterialComponent materialComponent(terrain.getMeshData().material, "lightingShader");
     m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
 }
+
+void EntityFactory::addWaterEntity(const Water& water) {
+    RenderableComponent waterComponent(water.getMeshData());
+    waterComponent.meshBuffer = std::make_shared<OpenGLMeshBuffer>(
+        waterComponent.indices.size(),
+        waterComponent.vertices.size(),
+        waterComponent.indices.data(),
+        waterComponent.vertices.data()
+    );
+
+    auto entity = m_entityFacade->createEntity();
+    m_entityFacade->addComponent<RenderableComponent>(entity, waterComponent);
+
+    TransformComponent transformComponent;
+    transformComponent.setFromModelMatrix(water.getMeshData().transform);
+    m_entityFacade->addComponent<TransformComponent>(entity, transformComponent);
+
+    // TODO add a water shader
+    MaterialComponent materialComponent(water.getMeshData().material, "lightingShader");
+    m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
+
+    NameComponent nameComponent = {"water"};
+    m_entityFacade->addComponent<NameComponent>(entity, nameComponent);
+}
