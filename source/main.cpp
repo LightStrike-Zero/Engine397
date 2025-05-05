@@ -17,6 +17,8 @@
 #include <fstream>
 #include <glm/gtc/quaternion.hpp>
 
+#include "Systems/GameStateSystem.h"
+
 //----------------------
 
 int main(int argc, char** argv)
@@ -36,7 +38,9 @@ int main(int argc, char** argv)
     Gui.Initialise(static_cast<GLFWwindow*>(window->GetNativeWindow()));
 
     Scene scene;
-    
+    InputManager inputManager(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+    GameState gameState;
+    GameStateSystem gameStateSystem(gameState);
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/GameConfig.lua");
@@ -115,12 +119,15 @@ int main(int argc, char** argv)
             float deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
+            inputManager.update();
+            gameStateSystem.update(Gui);
+
             // TODO remove flags showExitScreen, showHelpScreen
             cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
                                 showHelpScreen);
             auto [viewMatrix, projectionMatrix, viewPos] =
                 cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-            player.update(deltaTime,scriptManager);
+            player.update(deltaTime,scriptManager, &inputManager);
 
             for (auto entity : playerView)
             {
@@ -172,9 +179,9 @@ int main(int argc, char** argv)
         }
         Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
 
-        if (showHelpScreen) {
-            Gui.ShowHelpManual(showHelpScreen, helpText);
-        }
+        // if (showHelpScreen) {
+        Gui.ShowHelpManual(showHelpScreen, helpText);
+        // }
         Gui.EndFrame();
         window->SwapBuffers();
         window->PollEvents();

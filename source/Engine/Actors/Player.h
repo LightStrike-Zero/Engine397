@@ -22,14 +22,15 @@
 #include "Components/CollisionComponents/SphereColliderComponent.h"
 #include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "ResourceManagement/EnttFacade.h"
+#include "Systems/InputManager.h"
 #include "Window/glfwWindow.h"
 
 class Player {
     // void loadPlayerModelToRegistry(Scene scene, const std::string& filepath);
 public:
     explicit Player(EnttFacade* ecs, GLFWwindow *window, float movementSpeed, float rotationSpeed): m_entt(ecs), m_window(window), movementSpeed(movementSpeed), rotationSpeed(rotationSpeed) {}
-    void update( float deltaTime , ScriptManager* scriptManager);
-    void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, ScriptManager* scriptManager, float deltaTime) const;
+    void update( float deltaTime , ScriptManager* scriptManager, InputManager *inputManager);
+    void handleMovementInput(TransformComponent& transform, BoxColliderComponent& collider, ScriptManager* scriptManager, InputManager *inputManager, float deltaTime) const;
     void shootCannon(TransformComponent cannonTransform, SphereColliderComponent sphereCollider, float deltaTime);
 
 

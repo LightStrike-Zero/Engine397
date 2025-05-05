@@ -19,6 +19,7 @@
 enum class EventType {
     KeyPressed,
     DrawModeChanged,
+    // GameFlagChanged
 };
 
 /**
@@ -62,6 +63,7 @@ struct DrawModeChangedEvent : public Event {
      */
     DrawModeChangedEvent(bool lineMode) : Event(EventType::DrawModeChanged), lineMode(lineMode) {}
 };
+
 
 /// Callback type for event handling
 using EventCallback = std::function<void(const Event&)>;

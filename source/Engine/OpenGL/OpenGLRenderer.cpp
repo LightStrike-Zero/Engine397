@@ -138,7 +138,7 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
             }
             // Bind the detail texture
             if (material.detailTextureID != 0) {
-                std::cout << "Detail texture ID: " << material.detailTextureID << std::endl;
+                // std::cout << "Detail texture ID: " << material.detailTextureID << std::endl;
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, material.detailTextureID);
                 shader->SetUniform1i("detailMap", 1);

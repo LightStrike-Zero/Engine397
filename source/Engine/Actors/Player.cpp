@@ -6,7 +6,7 @@
 #include "Physics_DEPRECIATED//TankCollision.h"
 
 
-void Player::update(float deltaTime,ScriptManager* scriptManager) {
+void Player::update(float deltaTime,ScriptManager* scriptManager, InputManager *inputManager) {
     //get player & camera entity's components
     auto playerView = m_entt->view<PlayerControllerComponent, TransformComponent, BoxColliderComponent>();
     auto playerEntity = *playerView.begin();
@@ -22,7 +22,7 @@ void Player::update(float deltaTime,ScriptManager* scriptManager) {
     CameraComponent originalCamera = camera;
 
     //WASD movement
-    handleMovementInput(playerTransform, playerCollider, scriptManager, deltaTime);
+    handleMovementInput(playerTransform, playerCollider, scriptManager, inputManager, deltaTime);
 
     //resetting the player transform to original position when pressing R or when moving over the edge
     handlePlayerInput(playerTransform, scriptManager);
@@ -52,7 +52,7 @@ void Player::update(float deltaTime,ScriptManager* scriptManager) {
     //     shootCannon(cannonTransform,sphereCollider, deltaTime);
     // }
 }
-void Player::handleMovementInput(TransformComponent& playerTankTransform, BoxColliderComponent& collider, ScriptManager* scriptManager, float deltaTime) const {
+void Player::handleMovementInput(TransformComponent& playerTankTransform, BoxColliderComponent& collider, ScriptManager* scriptManager, InputManager *inputManager, float deltaTime) const {
     float rotationVelocity = rotationSpeed * deltaTime;
     glm::vec3 forward;
     forward.x = -sin(glm::radians(playerTankTransform.rotation.y));
@@ -87,17 +87,17 @@ void Player::handleMovementInput(TransformComponent& playerTankTransform, BoxCol
     glm::vec3 cameraVelocity = tangentDir * arcSpeed;
 
 
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    if (inputManager->isKeyDown(GLFW_KEY_W))
     {
         playerTankTransform.position -= velocity;
         cameraTransform.position -= velocity;
     }
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    if (inputManager->isKeyDown(GLFW_KEY_S))
     {
         playerTankTransform.position += velocity;
         cameraTransform.position += velocity;
     }
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    if (inputManager->isKeyDown(GLFW_KEY_A))
     {
         playerTankTransform.rotation.y += rotationVelocity;
         camera.yaw -= rotationVelocity;
@@ -105,7 +105,7 @@ void Player::handleMovementInput(TransformComponent& playerTankTransform, BoxCol
 
         //---- end ----
     }
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    if (inputManager->isKeyDown(GLFW_KEY_D))
     {
         playerTankTransform.rotation.y -= rotationVelocity;
         camera.yaw += rotationVelocity;
