@@ -2,6 +2,8 @@
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec4 ClipSpace;
+in vec3 WorldPos;
 
 layout(location = 0) out vec4 FragColor;
 
@@ -15,40 +17,48 @@ struct Light {
 
 uniform Light light;
 uniform vec3 viewPos;
+uniform float time;
 
 // Water properties
-uniform vec3 waterColor = vec3(0.0, 0.4, 0.8);  // Base water color (blue)
-uniform float waterAlpha = 0.6;                 // Water transparency
-uniform float reflectivity = 0.6;               // How reflective the water is
-uniform float shineDamper = 20.0;               // Controls the size of specular highlight
+uniform vec3 waterColor;
+uniform float waterAlpha;
+uniform float reflectivity;
+uniform float shineDamper;
 
 void main() {
-    // Use the standard normal without distortion
     vec3 normal = normalize(Normal);
 
-    // Directional light calculations
+    // Add subtle normal variation for water effect
+    float normalStrength = 0.1;
+    float t = time * 0.5;
+    normal.xz += normalStrength * vec2(
+    sin(WorldPos.x * 2.0 + t) * cos(WorldPos.z * 2.0 + t),
+    cos(WorldPos.x * 2.0 + t) * sin(WorldPos.z * 2.0 + t)
+    );
+    normal = normalize(normal);
+
+    vec3 viewDir = normalize(viewPos - FragPos);
     vec3 lightDir = normalize(-light.direction);
 
-    // Basic ambient light
+    // Basic lighting
     vec3 ambient = light.ambient * waterColor;
 
-    // Diffuse lighting
-    float diff = max(dot(normal, lightDir), 0.0);
+    float diff = max(dot(normal, lightDir), 0.0) * 0.5;
     vec3 diffuse = light.diffuse * diff * waterColor;
 
-    // Specular lighting (reflection)
-    vec3 viewDir = normalize(viewPos - FragPos);
+    // Specular highlights
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), shineDamper);
+    vec3 specular = light.specular * spec;
 
-    // Simple Fresnel effect - more reflective at glancing angles
-    float fresnelFactor = dot(viewDir, normal);
-    fresnelFactor = clamp(pow(fresnelFactor, 1.0), 0.0, 1.0);
-    vec3 specular = light.specular * spec * reflectivity * (1.0 - fresnelFactor);
+    // Fresnel effect - more reflective at glancing angles
+    float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 2.0) * 0.5;
 
-    // Combine lighting components
-    vec3 lighting = ambient + diffuse + specular;
+    vec3 result = ambient + diffuse + specular;
 
-    // Set final color with transparency
-    FragColor = vec4(lighting, waterAlpha);
+    // Apply fresnel to strengthen reflections at glancing angles
+    result = mix(result, vec3(1.0), fresnel * reflectivity * 0.2);
+
+    // Final color with alpha
+    FragColor = vec4(result, waterAlpha);
 }
