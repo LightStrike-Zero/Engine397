@@ -1,7 +1,7 @@
 #include "InputManager.h"
+#include "EventSystem.h"
 
-// InputManager::InputManager(GLFWwindow* window, InputState& inputState)
-//     : m_window(window), m_inputState(inputState) {}
+
 
 InputManager::InputManager(GLFWwindow* window)
     : m_window(window) {

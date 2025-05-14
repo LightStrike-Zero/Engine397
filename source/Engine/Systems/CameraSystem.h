@@ -40,7 +40,7 @@ public:
     * @param showExitScreen Flag for toggling exit splash screen.
     * @param showHelpScreen Flag for toggling help overlay.
     */
-    void update(EnttFacade& ecs, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
+    void update(EnttFacade& ecs, float deltaTime);
 
     /**
      * @brief Returns the active camera's view, projection matrices, and position.
@@ -54,7 +54,7 @@ private:
     float m_aspectRatio;
     
     //void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
-    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime, bool& showExitScreen, bool& showHelpScreen);
+    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
 
     void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
     

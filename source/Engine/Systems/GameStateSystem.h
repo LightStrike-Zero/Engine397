@@ -8,11 +8,7 @@
 #include <GUI/ImGui_UI.h>
 
 #include "EventSystem.h"
-// #include "ResourceManagement/GameState.h"
-
-
 #include "ResourceManagement/GameState.h"
-#include "EventSystem.h"
 
 
 
@@ -23,7 +19,7 @@ public:
     void initialize();
     void update(ImGuiUI& Gui); // optional: may still be useful for syncing state
     GameState& getState();         // allow Lua + systems to read/write
-    const GameState& getState() const; // read-only overload
+    [[nodiscard]] const GameState& getState() const; // read-only overload
 
 private:
 

@@ -12,11 +12,25 @@ GameStateSystem::GameStateSystem(): m_state() {}
 void GameStateSystem::initialize() {
     // Register key event listeners
     EventSystem::getInstance().addListener(EventType::KeyPressed,
-        [this](const Event& e) {
-            handleKeyPressed(static_cast<const KeyPressedEvent&>(e));
+        [this](const Event& event) {
+            handleKeyPressed(dynamic_cast<const KeyPressedEvent&>(event));
         }
     );
 
+}
+
+
+void GameStateSystem::update(ImGuiUI& Gui) {
+    Gui.ShowHelpManual(m_state.showHelpScreen, "helpText");
+    //wireframe mode?
+}
+
+GameState& GameStateSystem::getState() {
+    return m_state;
+}
+
+const GameState& GameStateSystem::getState() const {
+    return m_state;
 }
 
 void GameStateSystem::handleKeyPressed(const KeyPressedEvent& event) {
@@ -38,8 +52,3 @@ void GameStateSystem::handleKeyPressed(const KeyPressedEvent& event) {
             break;
     }
 }
-
-void GameStateSystem::update(ImGuiUI& Gui) {
-    Gui.ShowHelpManual(m_state.showHelpScreen, "helpText");
-}
-

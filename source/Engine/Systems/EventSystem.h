@@ -61,7 +61,7 @@ struct DrawModeChangedEvent : public Event {
      * @brief Construct a new Draw Mode Changed Event object.
      * @param lineMode True for wireframe mode, false for solid mode.
      */
-    DrawModeChangedEvent(bool lineMode) : Event(EventType::DrawModeChanged), lineMode(lineMode) {}
+    explicit DrawModeChangedEvent(bool lineMode) : Event(EventType::DrawModeChanged), lineMode(lineMode) {}
 };
 
 

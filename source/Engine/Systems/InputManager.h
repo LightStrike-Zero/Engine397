@@ -7,14 +7,11 @@
 
 #include <unordered_map>
 #include <GLFW/glfw3.h>
-
-#include "Interfaces/IWindow.h"
-#include "Systems/EventSystem.h"
 #include "ResourceManagement/InputState.h"
 
 class InputManager {
 public:
-    InputManager(GLFWwindow* window);
+    explicit InputManager(GLFWwindow* window);
 
     // void initialize();
     void update();
@@ -26,6 +23,7 @@ private:
     void KeyPressed(int key); //When register keys pressed once
     void KeyHeld(int key); //When register keys pressed continuously
 
+    //TODO: use IWindow interface instead of GLFWwindow
     GLFWwindow* m_window;
     InputState m_inputState;
 

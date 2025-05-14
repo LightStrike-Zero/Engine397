@@ -75,7 +75,6 @@ public:
      * @return A pointer to the native GLFWwindow.
      */
     virtual void* GetNativeWindow() const override;
-    void pollInputEvents(); //custom function to poll input events, can be untied from window loop in the future
 
 
 

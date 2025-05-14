@@ -3,6 +3,7 @@
 #include <GL/glew.h> 
 
 #include "Systems/EventSystem.h"
+#include "Window/GLFWWindow.h"
 
 OpenGLMeshBuffer::OpenGLMeshBuffer(const int numIndices, const int numVertices, const std::vector<unsigned int>::pointer indexData, const std::vector<Vertex>::pointer vertexData)
 {
@@ -51,13 +52,14 @@ OpenGLMeshBuffer::OpenGLMeshBuffer(const int numIndices, const int numVertices, 
     m_indexCount = numIndices;
 
     m_lineMode = false;
-        
-    // Register for draw mode change events
-    EventSystem::getInstance().addListener(
-        EventType::DrawModeChanged,
-        [this](const Event& event) {
-            auto& drawEvent = static_cast<const DrawModeChangedEvent&>(event);
-            m_lineMode = drawEvent.lineMode;
+
+      EventSystem::getInstance().addListener(
+        EventType::KeyPressed,
+        [this](const Event& e) {
+            auto& event = dynamic_cast<const KeyPressedEvent&>(e);
+            if (event.keyCode == GLFW_KEY_K) {
+                m_lineMode = !m_lineMode;
+            }
         }
     );
 }

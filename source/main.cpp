@@ -23,9 +23,6 @@
 
 int main(int argc, char** argv)
 {
-    bool showExitScreen = false; // buko
-    bool showHelpScreen = false; // buko
-
     IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", false);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
@@ -40,6 +37,9 @@ int main(int argc, char** argv)
     Scene scene;
     InputManager inputManager(static_cast<GLFWwindow*>(window->GetNativeWindow()));
     GameStateSystem gameStateSystem;
+    gameStateSystem.initialize();
+
+    //TODO: refactor the whole lua management design
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/GameConfig.lua");
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
     while (!window->ShouldClose())
     {
         Gui.BeginFrame();
-        if (!showExitScreen)
+        if (!gameStateSystem.getState().shouldExit)
         {
             float currentFrame = window->GetTime();
             float deltaTime = currentFrame - lastFrame;
@@ -128,8 +128,7 @@ int main(int argc, char** argv)
             gameStateSystem.update(Gui);
 
             // TODO remove flags showExitScreen, showHelpScreen
-            cameraSystem.update(scene.getEntityManager(), deltaTime, showExitScreen,
-                                showHelpScreen);
+            cameraSystem.update(scene.getEntityManager(), deltaTime);
             auto [viewMatrix, projectionMatrix, viewPos] =
                 cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
             player.update(deltaTime,scriptManager, &inputManager);
@@ -185,7 +184,7 @@ int main(int argc, char** argv)
         Gui.DisplayImage("Viewport", currentRenderedFrame, glm::vec2{windowWidth, windowHeight});
 
         // if (showHelpScreen) {
-        Gui.ShowHelpManual(showHelpScreen, helpText);
+        // Gui.ShowHelpManual(showHelpScreen, helpText);
         // }
         Gui.EndFrame();
         window->SwapBuffers();
