@@ -17,11 +17,14 @@ public:
     void update();
     const InputState& getState() { return m_inputState; }
     [[nodiscard]] bool isKeyDown(int key) const;
+    // bool KeyHeld(int key); //When register keys pressed continuously
+
 
 
 private:
     void KeyPressed(int key); //When register keys pressed once
     void KeyHeld(int key); //When register keys pressed continuously
+
 
     //TODO: use IWindow interface instead of GLFWwindow
     GLFWwindow* m_window;

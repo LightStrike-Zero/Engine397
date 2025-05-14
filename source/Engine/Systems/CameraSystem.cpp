@@ -1,13 +1,9 @@
 
 #include "CameraSystem.h"
 
-#include <iostream>
-
-#include "EventSystem.h"
-#include "Components/PlayerControllerComponent.h"
 #include "ResourceManagement/EnttFacade.h"
 
-void CameraSystem::update(EnttFacade& ecs, float deltaTime)
+void CameraSystem::update(EnttFacade& ecs, InputManager& inputManager, float deltaTime)
 {
     auto view = ecs.view<CameraComponent, TransformComponent>();
         
@@ -16,7 +12,7 @@ void CameraSystem::update(EnttFacade& ecs, float deltaTime)
         auto& transform = view.get<TransformComponent>(entity);
             
         if (isActiveCamera(entity, ecs.getRegistry())) {
-            handleCameraInput(transform, camera, deltaTime);
+            handleCameraInput(transform, camera, inputManager, deltaTime);
         }
     }
 
@@ -44,27 +40,27 @@ std::tuple<glm::mat4, glm::mat4, glm::vec3> CameraSystem::getActiveCameraMatrice
 }
 
 
-void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+void CameraSystem::handleCameraInput(TransformComponent& transform, CameraComponent& camera, InputManager &inputManager, float deltaTime)
 {
     if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS) {
-        handleKeyboardInput(transform, camera, deltaTime);
+        handleKeyboardInput(transform, camera, inputManager, deltaTime);
         handleMouseInput(camera);
     }
 }
 
-void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime)
+void CameraSystem::handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, InputManager& inputManager, float deltaTime)
 {
 
     float rotationVelocity = camera.rotationSpeed * deltaTime;
 
-    if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        camera.yaw -= rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        camera.yaw += rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
+    if (inputManager.isKeyDown(GLFW_KEY_UP))
         camera.pitch += rotationVelocity;
-    if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    if (inputManager.isKeyDown(GLFW_KEY_DOWN))
         camera.pitch -= rotationVelocity;
+    if (inputManager.isKeyDown(GLFW_KEY_LEFT))
+        camera.yaw -= rotationVelocity;
+    if (inputManager.isKeyDown(GLFW_KEY_RIGHT))
+        camera.yaw += rotationVelocity;
 
 
     if (camera.pitch > 89.0f)

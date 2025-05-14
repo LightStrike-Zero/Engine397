@@ -15,6 +15,7 @@
 #include <glm/fwd.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 
+#include "InputManager.h"
 #include "Components/CameraComponent.h"
 #include "Components/TransformComponent.h"
 #include "ResourceManagement/EnttFacade.h"
@@ -36,11 +37,12 @@ public:
     /**
     * @brief Updates the camera system per frame.
     * @param ecs Reference to the entity-component system facade.
+    * @param inputManager Reference to the input manager for handling user input.
     * @param deltaTime Time since last update.
     * @param showExitScreen Flag for toggling exit splash screen.
     * @param showHelpScreen Flag for toggling help overlay.
     */
-    void update(EnttFacade& ecs, float deltaTime);
+    void update(EnttFacade& ecs, InputManager& inputManager, float deltaTime);
 
     /**
      * @brief Returns the active camera's view, projection matrices, and position.
@@ -54,9 +56,9 @@ private:
     float m_aspectRatio;
     
     //void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
-    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
+    void handleCameraInput(TransformComponent& transform, CameraComponent& camera, InputManager &inputManager, float deltaTime);
 
-    void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, float deltaTime);
+    void handleKeyboardInput(TransformComponent& transform, CameraComponent& camera, InputManager& inputManager, float deltaTime);
     
     void handleMouseInput(CameraComponent& camera);
 

@@ -20,6 +20,10 @@ void InputManager::update() {
     KeyHeld(GLFW_KEY_A);
     KeyHeld(GLFW_KEY_S);
     KeyHeld(GLFW_KEY_D);
+    KeyHeld(GLFW_KEY_UP);
+    KeyHeld(GLFW_KEY_DOWN);
+    KeyHeld(GLFW_KEY_LEFT);
+    KeyHeld(GLFW_KEY_RIGHT);
 
     KeyPressed(GLFW_KEY_K);
     KeyPressed(GLFW_KEY_M);

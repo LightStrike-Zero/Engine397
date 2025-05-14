@@ -127,11 +127,10 @@ int main(int argc, char** argv)
             inputManager.update();
             gameStateSystem.update(Gui);
 
-            // TODO remove flags showExitScreen, showHelpScreen
-            cameraSystem.update(scene.getEntityManager(), deltaTime);
+            cameraSystem.update(scene.getEntityManager(), inputManager, deltaTime);
             auto [viewMatrix, projectionMatrix, viewPos] =
                 cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-            player.update(deltaTime,scriptManager, &inputManager);
+            player.update(deltaTime,scriptManager, inputManager);
 
             for (auto entity : playerView)
             {
