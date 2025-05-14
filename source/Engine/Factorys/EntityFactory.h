@@ -29,6 +29,7 @@
 #include "Importers/ModelLoader.h"
 #include "Importers/AssimpImporter.h"
 #include "ResourceManagement/EnttFacade.h"
+#include "Water/Water.h"
 
 /**
  * @class EntityFactory
@@ -62,6 +63,8 @@ public:
      * @param terrain Reference to the Terrain object.
      */
     void addTerrainEntity(const Terrain& terrain);
+
+    void addWaterEntity(const Water& water);
 
     /**
      * @brief Adds collision-enabled entities based on a model file.

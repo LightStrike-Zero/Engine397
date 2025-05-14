@@ -8,6 +8,7 @@
 #include <iostream>
 #include <Components/RenderableComponent.h>
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include "OpenGLShadowMapBuffer.h"
 
@@ -18,35 +19,36 @@
 #include "texture/TextureLoader.h"
 
 OpenGLRenderer::OpenGLRenderer()
-    :  m_shaderManager(ShaderManager()),
-        m_shadowMapBuffer(OpenGLShadowMapBuffer(4096, 4096)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)), m_quadBuffer(OpenGLQuadBuffer())
+    : m_shaderManager(ShaderManager()),
+      m_shadowMapBuffer(OpenGLShadowMapBuffer(4096, 4096)), m_frameBuffer(OpenGLFrameBuffer(2048, 2048)),
+      m_quadBuffer(OpenGLQuadBuffer())
 {
-
     m_shaderManager.loadShader("lightingShader", "Vert.glsl", "Frag.glsl");
     m_shaderManager.loadShader("skyboxShader", "skybox_vert.glsl", "skybox_frag.glsl");
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
-
+    m_shaderManager.loadShader("waterShader", "WaterVert.glsl", "WaterFrag.glsl");
 }
 
 OpenGLRenderer::~OpenGLRenderer()
 {
 }
 
-void OpenGLRenderer::Clear() 
+void OpenGLRenderer::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 
-unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
+unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
+                                    const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
 
     ShadowPass(scene, m_shaderManager, m_shadowMapBuffer); // 4
     m_frameBuffer.bind();
-    
+
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
     glEnable(GL_DEPTH_TEST);
@@ -59,7 +61,8 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
         auto& playerTransform = playerView.get<TransformComponent>(entity);
         playerPos = playerTransform.position;
     }
-        glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection(), playerPos);
+    glm::mat4 lightSpaceMatrix = OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(
+        scene.getDirectionalLight().getDirection(), playerPos);
     lightingShader->bind(); //1
     m_currentShaderID = lightingShader->getID();
     lightingShader->SetUniformMat4("view", viewMatrix);
@@ -71,17 +74,19 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
     lightingShader->SetUniform3f("light.diffuse", scene.getDirectionalLight().getDiffuse());
     lightingShader->SetUniform3f("light.specular", scene.getDirectionalLight().getSpecular());
     lightingShader->SetUniformMat4("lightSpaceMatrix", lightSpaceMatrix);
-    
+
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, m_shadowMapBuffer.GetDepthTexture());
     lightingShader->SetUniform1i("shadowMap", 4);
     lightingShader->SetUniform2f("gMapSize", glm::vec2(4096.0f, 4096.0f));
-    
+
     LightingPass(scene, m_shaderManager); //1
+    WaterPass(scene, viewMatrix, projectionMatrix, viewPos);
+
 
     m_frameBuffer.unbind();
 
-    
+
     framebufferShader->bind(); //7
     m_currentShaderID = framebufferShader->getID();
     m_quadBuffer.bind();
@@ -97,9 +102,8 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
         std::cerr << "OpenGL Error: " << error << std::endl;
     }
     return m_frameBuffer.getTextureColorBuffer();
-    
 }
- 
+
 void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
 {
     glEnable(GL_CULL_FACE);
@@ -107,12 +111,15 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
 
     // Iterate over entities with Mesh, Transform, and Material components
     auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent, MaterialComponent>();
-    for (auto entity : view) {
-        auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
-        auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
-        auto& material = scene.getEntityManager().get<MaterialComponent>(entity);
-        
+    for (auto entity : view)
+    {
+        auto& mesh = view.get<RenderableComponent>(entity);
+        auto& transform = view.get<TransformComponent>(entity);
+        auto& material = view.get<MaterialComponent>(entity);
+
         auto shader = shaderManager.getShader(material.shaderID);
+        if (material.shaderID == "waterShader") //TODO messy :( need water component so we can separate them out
+            continue;
         // essentially we just want to check if the currently bound shader is the same as the shader we want to use
         if (shader->getID() != m_currentShaderID)
         {
@@ -123,43 +130,46 @@ void OpenGLRenderer::LightingPass(Scene& scene, ShaderManager& shaderManager)
         glm::mat4 modelMatrix = transform.getModelMatrix();
         shader->SetUniformMat4("model", modelMatrix);
 
-        if (!material.isDecal)
+
+        // Bind the diffuse texture
+        if (material.baseColorTextureID != 0)
         {
-
-            // Bind the diffuse texture
-            if (material.baseColorTextureID != 0) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, material.baseColorTextureID);
-                shader->SetUniform1i("albedoMap", 0);
-                shader->SetUniform1i("hasAlbedoMap", 1);
-            } else {
-                shader->SetUniform1i("hasAlbedoMap", 0);
-                shader->SetUniform3f("fallbackColor", {1.0f, 0.0f, 0.5f});
-            }
-            // Bind the detail texture
-            if (material.detailTextureID != 0) {
-                // std::cout << "Detail texture ID: " << material.detailTextureID << std::endl;
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, material.detailTextureID);
-                shader->SetUniform1i("detailMap", 1);
-                shader->SetUniform1i("hasDetailMap", 1);
-                shader->SetUniform1f("detailScale", 40.0); // How much to scale the detail texture UVs
-                shader->SetUniform1f("detailStrength", 0.5); // Blend factor
-            } else {
-                shader->SetUniform1i("hasDetailMap", 0);
-            }
-            
-            mesh.meshBuffer->bind();
-            mesh.meshBuffer->draw();
-            glBindVertexArray(0);
-            // don't unbind the shader, since we are LIKELY to use it again
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, material.baseColorTextureID);
+            shader->SetUniform1i("albedoMap", 0);
+            shader->SetUniform1i("hasAlbedoMap", 1);
         }
-    }
+        else
+        {
+            shader->SetUniform1i("hasAlbedoMap", 0);
+            shader->SetUniform3f("fallbackColor", {1.0f, 0.0f, 0.5f});
+        }
+        // Bind the detail texture
+        if (material.detailTextureID != 0)
+        {
+            // std::cout << "Detail texture ID: " << material.detailTextureID << std::endl;
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, material.detailTextureID);
+            shader->SetUniform1i("detailMap", 1);
+            shader->SetUniform1i("hasDetailMap", 1);
+            shader->SetUniform1f("detailScale", 40.0); // How much to scale the detail texture UVs
+            shader->SetUniform1f("detailStrength", 0.5); // Blend factor
+        }
+        else
+        {
+            shader->SetUniform1i("hasDetailMap", 0);
+        }
 
+        mesh.meshBuffer->bind();
+        mesh.meshBuffer->draw();
+        glBindVertexArray(0);
+        // don't unbind the shader, since we are LIKELY to use it again
+    }
 }
 
 
-void OpenGLRenderer::SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, Scene& scene, ShaderManager& shaderManager)
+void OpenGLRenderer::SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, Scene& scene,
+                                ShaderManager& shaderManager)
 {
     glDepthMask(GL_FALSE);
 
@@ -175,7 +185,8 @@ void OpenGLRenderer::SkyboxPass(const glm::mat4& viewMatrix, const glm::mat4& pr
 
     // Iterate over all entities that have the SkyboxComponent, RenderableComponent, and TransformComponent.
     auto skyboxView = scene.getEntityManager().view<SkyboxComponent, RenderableComponent, TransformComponent>();
-    for (auto entity : skyboxView) {
+    for (auto entity : skyboxView)
+    {
         auto& skyboxComp = skyboxView.get<SkyboxComponent>(entity);
         auto& renderable = skyboxView.get<RenderableComponent>(entity);
         auto& transform = skyboxView.get<TransformComponent>(entity);
@@ -208,10 +219,11 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
 
     shadowMap.bind();
     glClear(GL_DEPTH_BUFFER_BIT);
-    
+
     // Iterate over entities with Mesh and Transform components but exclude SkyboxComponent
     auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent>(exclude<SkyboxComponent>);
-    for (auto entity : view) {
+    for (auto entity : view)
+    {
         auto& mesh = scene.getEntityManager().get<RenderableComponent>(entity);
         auto& transform = scene.getEntityManager().get<TransformComponent>(entity);
 
@@ -220,25 +232,81 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
         {
             shadowShader->bind();
             m_currentShaderID = shadowShader->getID();
-
         }
         auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
-        for (auto entity : playerView) {
+        for (auto entity : playerView)
+        {
             auto& playerTransform = playerView.get<TransformComponent>(entity);
             glm::vec3 playerPos = playerTransform.position;
-            shadowShader->SetUniformMat4("lightSpaceMatrix", OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(scene.getDirectionalLight().getDirection(), playerPos));
+            shadowShader->SetUniformMat4("lightSpaceMatrix",
+                                         OpenGLShadowMapBuffer::CalculateLightSpaceMatrix(
+                                             scene.getDirectionalLight().getDirection(), playerPos));
         }
-            
-        
 
-            glm::mat4 modelMatrix = transform.getModelMatrix();
-            shadowShader->SetUniformMat4("model", modelMatrix);
 
-            mesh.meshBuffer->bind();
-            mesh.meshBuffer->draw();
-            glBindVertexArray(0);
+        glm::mat4 modelMatrix = transform.getModelMatrix();
+        shadowShader->SetUniformMat4("model", modelMatrix);
+
+        mesh.meshBuffer->bind();
+        mesh.meshBuffer->draw();
+        glBindVertexArray(0);
     }
     shadowMap.unbind();
     glCullFace(GL_BACK); // Reset to default cull face
     glDepthMask(GL_TRUE);
+}
+
+void OpenGLRenderer::WaterPass(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
+{
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_CULL_FACE);            // water visible from above and below
+
+    
+    auto waterShader = m_shaderManager.getShader("waterShader");
+    waterShader->bind();
+    m_currentShaderID = waterShader->getID();
+    auto currentTime = static_cast<float>(glfwGetTime());  //TODO this is purely as a test - will not stay like this at all
+
+    waterShader->SetUniform1f("time", currentTime);
+
+    waterShader->SetUniformMat4("view", viewMatrix);
+    waterShader->SetUniformMat4("projection", projectionMatrix);
+    waterShader->SetUniform3f("viewPos", viewPos);
+
+    waterShader->SetUniform3f("light.direction", scene.getDirectionalLight().getDirection());
+    waterShader->SetUniform3f("light.ambient", scene.getDirectionalLight().getAmbient());
+    waterShader->SetUniform3f("light.diffuse", scene.getDirectionalLight().getDiffuse());
+    waterShader->SetUniform3f("light.specular", scene.getDirectionalLight().getSpecular());
+
+    // glDepthFunc(GL_LEQUAL);
+    
+    glDepthFunc(GL_LESS);               // default test
+    glDepthMask(GL_FALSE);              // don’t write depth, we only need the test
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent, MaterialComponent>();
+    for (auto entity : view) {
+        auto& material = view.get<MaterialComponent>(entity);
+        if (material.shaderID != "waterShader") continue;
+
+        auto& mesh = view.get<RenderableComponent>(entity);
+        auto& transform = view.get<TransformComponent>(entity);
+
+        waterShader->SetUniformMat4("model", transform.getModelMatrix());
+        
+        waterShader->SetUniform3f("waterColor", glm::vec3(0.0f, 0.4f, 0.8f)); // Ocean blue
+        waterShader->SetUniform1f("waterAlpha", 0.8f); 
+        waterShader->SetUniform1f("reflectivity", 1.5f);
+        waterShader->SetUniform1f("shineDamper", 32.0f);
+       
+        mesh.meshBuffer->bind();
+        mesh.meshBuffer->draw();
+        glBindVertexArray(0);
+    }
+
+
+    glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);               // restore
+    glEnable(GL_CULL_FACE);             // restore
 }

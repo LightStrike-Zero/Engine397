@@ -107,6 +107,12 @@ int main(int argc, char** argv)
     static float lastFrame = 0.0f;
     float lerpSpeed = 10.0f;
 
+
+    Water water(1000, 1000, 10.5f, 1.0f);  // rows, columns, height, spacing
+    scene.addWaterEntity(water);
+
+
+
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
     unsigned int currentRenderedFrame;
     while (!window->ShouldClose())

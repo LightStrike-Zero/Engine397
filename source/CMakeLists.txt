@@ -95,6 +95,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Components/NameComponent.h
         Engine/Terrain/TerrainMultiTexture.cpp
         Engine/Terrain/TerrainMultiTexture.h
+        Engine/Water/Water.h
+        Engine/Water/Water.cpp
         Engine/Systems/GameStateSystem.cpp
         Engine/Systems/GameStateSystem.h
         Engine/Systems/InputManager.cpp

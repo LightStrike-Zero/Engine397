@@ -65,6 +65,8 @@ public:
      */
     void addTerrainEntity(const Terrain& terrain);
 
+    void addWaterEntity(const Water& water);
+
     /**
      * @deprecated USE box, capsule, or sphere instead.
      */

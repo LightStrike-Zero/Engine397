@@ -37,6 +37,12 @@ void Scene::addTerrainEntity(const Terrain& terrain) {
         m_entityFactory->addTerrainEntity(terrain);
 }
 
+void Scene::addWaterEntity(const Water &water) {
+    if(m_entityFactory) {
+        m_entityFactory->addWaterEntity(water);
+    }
+}
+
 void Scene::loadCollidableBoxEntity(const std::string& filepath, const std::string& name) {
     if (m_entityFactory)
         m_entityFactory->createCollidableBoxEntitiesFromModel(filepath, name);

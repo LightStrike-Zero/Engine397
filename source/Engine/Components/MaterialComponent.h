@@ -18,6 +18,8 @@
 
 class Texture;
 
+
+
 /**
  * @struct MaterialComponent
  * @brief Contains PBR texture IDs and shader reference for rendering.
