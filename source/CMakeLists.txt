@@ -15,7 +15,6 @@ set(SOURCE_FILES
         Engine/Components/TransformComponent.h
         Engine/Components/MaterialComponent.h
         Engine/GUI/ImGui_UI.cpp
-
 )
 
 # Add ImGUI source files

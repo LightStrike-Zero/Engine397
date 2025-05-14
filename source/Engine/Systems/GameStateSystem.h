@@ -8,27 +8,28 @@
 #include <GUI/ImGui_UI.h>
 
 #include "EventSystem.h"
-#include "ResourceManagement/GameState.h"
+// #include "ResourceManagement/GameState.h"
 
 
 #include "ResourceManagement/GameState.h"
 #include "EventSystem.h"
 
+
+
 class GameStateSystem {
 public:
-    explicit GameStateSystem(GameState& state);
+    explicit GameStateSystem();
 
     void initialize();
     void update(ImGuiUI& Gui); // optional: may still be useful for syncing state
+    GameState& getState();         // allow Lua + systems to read/write
+    const GameState& getState() const; // read-only overload
 
 private:
-    GameState& m_state;
-    bool m_lastWireframe = false;
-    bool m_lastHelpScreen = false;
 
+    GameState m_state;
     void handleKeyPressed(const KeyPressedEvent& event);
-    static void enableWireframeMode();
-    static void disableWireframeMode();
+
 };
 
 

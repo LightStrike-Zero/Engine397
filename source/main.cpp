@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     bool showExitScreen = false; // buko
     bool showHelpScreen = false; // buko
 
-    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", true);
+    IWindow* window = new GLFWWindow(1920, 1080, "Game Engine SHB", false);
     int windowWidth, windowHeight;
     window->GetFramebufferSize(windowWidth, windowHeight);
     float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
@@ -39,8 +39,7 @@ int main(int argc, char** argv)
 
     Scene scene;
     InputManager inputManager(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-    GameState gameState;
-    GameStateSystem gameStateSystem(gameState);
+    GameStateSystem gameStateSystem;
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
     scriptManager->registerScene(scene); // Expose Scene to Lua
     scriptManager->runScript("GameScripts/GameConfig.lua");
