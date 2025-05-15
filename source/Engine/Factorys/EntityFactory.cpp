@@ -18,6 +18,9 @@
 #include <Texture/TextureManager.h>
 #include <iostream>
 
+#include "Components/AIScriptComponent.h"
+#include "Components/EnemyComponent.h"
+
 EntityFactory::EntityFactory(EnttFacade* enttFacade)
     : m_entityFacade(enttFacade)
 {
@@ -339,4 +342,37 @@ void EntityFactory::addWaterEntity(const Water& water) {
 
     NameComponent nameComponent = {"water"};
     m_entityFacade->addComponent<NameComponent>(entity, nameComponent);
+}
+
+void EntityFactory::createEnemyEntitiesFromModel(const std::string& filepath, const std::string& name) {
+    ModelLoader& loader = ModelLoader::getInstance();
+    LoadedModel modelData = loader.loadModel(filepath);
+    AssimpImporter importer;
+
+    for (const auto& rawMesh : modelData.meshes) {
+        auto entity = m_entityFacade->createEntity();
+
+        NameComponent name_component = { name };
+        m_entityFacade->addComponent<NameComponent>(entity, name_component);
+
+        RenderableComponent meshComponent(rawMesh);
+        importer.setupMesh(meshComponent);
+        m_entityFacade->addComponent<RenderableComponent>(entity, meshComponent);
+
+        TransformComponent transformComponent;
+        transformComponent.setFromModelMatrix(rawMesh.transform);
+        m_entityFacade->addComponent<TransformComponent>(entity, transformComponent);
+
+        MaterialComponent materialComponent(rawMesh.material, "lightingShader");
+        m_entityFacade->addComponent<MaterialComponent>(entity, materialComponent);
+
+        EnemyComponent enemyComponent;
+        m_entityFacade->addComponent<EnemyComponent>(entity, enemyComponent);
+
+        AIScriptComponent aiScriptComponent;
+        m_entityFacade->addComponent<AIScriptComponent>(entity, aiScriptComponent);
+
+        BoxColliderComponent collider = generateBoxCollider(extractPositions(meshComponent.vertices));
+        m_entityFacade->addComponent<BoxColliderComponent>(entity, collider);
+    }
 }

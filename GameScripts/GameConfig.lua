@@ -14,6 +14,7 @@ tree1Path = "Assets/game_tree1_dead_small/tree1.gltf";
 tree2Path = "Assets/game_tree2_dead_big/tree2.gltf";
 tree3Path = "Assets/game_tree3_pine_narrow/tree3.gltf";
 tree4Path = "Assets/game_tree4_pine2_wide/tree4.gltf";
+enemyPath = "Assets/game_tank/tank.gltf";
 
 
 for i = 0, 5 do

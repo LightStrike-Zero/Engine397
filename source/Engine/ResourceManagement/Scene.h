@@ -74,6 +74,7 @@ public:
     void loadCollidableBoxEntity(const std::string& filepath, const std::string& name);
     void loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name);
     void loadCollidableSphereEntity(const std::string& filepath, const std::string& name);
+    void Scene::loadEnemyModelEntity(const std::string& filepath, const std::string& name);
 
     /**
      * @brief Returns access to the entity manager (EnTT facade).

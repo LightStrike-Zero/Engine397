@@ -63,6 +63,9 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Window/glfwWindow.cpp
         Engine/Window/glfwWindow.h
         Engine/Scripting/LuaManager.cpp
+        Engine/Scripting/LuaManager.h
+        Engine/Scripting/ScriptController.cpp
+        Engine/Scripting/ScriptController.h
         Engine/Components/PlayerControllerComponent.h
         Engine/Actors/Player.cpp
         Engine/Actors/Player.h
@@ -93,12 +96,16 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Texture/OpenGL/OGL_CubeMap.cpp
         Engine/Components/SkyboxComponent.h
         Engine/Components/NameComponent.h
+        Engine/Components/AIScriptComponent.h
+        Engine/Components/EnemyComponent.h
         Engine/Terrain/TerrainMultiTexture.cpp
         Engine/Terrain/TerrainMultiTexture.h
         Engine/Water/Water.h
         Engine/Water/Water.cpp
         Engine/Systems/GameStateSystem.cpp
         Engine/Systems/GameStateSystem.h
+        Engine/Systems/EnemyActionSystem.cpp
+        Engine/Systems/EnemyActionSystem.h
         Engine/Systems/InputManager.cpp
         Engine/Systems/InputManager.h
         Engine/ResourceManagement/InputState.h

@@ -75,6 +75,7 @@ public:
     void createCollidableBoxEntitiesFromModel(const std::string& filepath, const std::string& name);
     void createCollidableCapsuleEntitiesFromModel(const std::string& filepath, const std::string& name);
     void createCollidableSphereEntitiesFromModel(const std::string& filepath, const std::string& name);
+    void createEnemyEntitiesFromModel(const std::string& filepath, const std::string& name);
 
     void createSkyBox(const std::array<std::string, 6>& faces);
 private:

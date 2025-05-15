@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <glm/vec3.hpp>
 
 /**
  * @brief Types of events that can be dispatched.
@@ -19,6 +20,7 @@
 enum class EventType {
     KeyPressed,
     DrawModeChanged,
+    EnemySpottedPlayerEvent
     // GameFlagChanged
 };
 
@@ -63,6 +65,12 @@ struct DrawModeChangedEvent : public Event {
      */
     explicit DrawModeChangedEvent(bool lineMode) : Event(EventType::DrawModeChanged), lineMode(lineMode) {}
 };
+
+struct EnemySpottedPlayerEvent : public Event {
+    glm::vec3 position;  // where the player was spotted
+    explicit EnemySpottedPlayerEvent(glm::vec3 position) : Event(EventType::EnemySpottedPlayerEvent), position(position) {}
+};
+
 
 
 /// Callback type for event handling

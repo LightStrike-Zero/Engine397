@@ -56,9 +56,12 @@ void Scene::loadCollidableCapsuleEntity(const std::string& filepath, const std::
 void Scene::loadCollidableSphereEntity(const std::string& filepath, const std::string& name) {
     if (m_entityFactory)
         m_entityFactory->createCollidableSphereEntitiesFromModel(filepath, name);
-
 }
 
+void Scene::loadEnemyModelEntity(const std::string& filepath, const std::string& name) {
+    if (m_entityFactory)
+        m_entityFactory->createEnemyEntitiesFromModel(filepath, name);
+}
 
 void Scene::createSkyBox(const std::array<std::string, 6> &faces) {
     m_entityFactory->createSkyBox(faces);
