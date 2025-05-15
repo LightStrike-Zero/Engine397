@@ -12,3 +12,145 @@ std::cout << "[DEBUG] Terrain has " << terrainMeshData.vertices.size() << " vert
                   << v.position.y << ", "
                   << v.position.z << ")\n";
     }
+
+
+
+
+/**
+ * @file DierctionalLight.h
+ * @brief Defines the DierctionalLight class used to represent a directional light source.
+ * @author Shaun
+ * @date 2025-02-11
+ */
+
+
+/**
+ * @class DirectionalLight
+ * @brief A class representing a directional light source.
+ * 
+ * This class inherits from the Light class and provides additional
+ * functionality specific to directional lights, such as setting and
+ * getting the direction of the light.
+ */
+
+
+   /// @copydoc Light::setAmbient
+
+
+for functions:
+
+    /**
+     * @brief Set the direction of the directional light.
+     * @param direction Normalised direction vector.
+     */
+
+members:     ///< Direction the light is coming from	
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+old splash screen:
+
+            // buko splash screen
+            if (showExitScreen)
+            {
+                //Gui.showNamedImage("Splash", glm::vec2{880, 510});
+                Gui.ShowExitOverlay(window, showExitScreen, "Splash");
+
+                const ImVec2 imageSize = ImVec2(880, 510); // ⬅️ Set your PNG size (adjust as needed)
+
+                // Get screen center
+                ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+                ImVec2 windowPos = ImVec2((screenSize.x - imageSize.x) * 0.5f, (screenSize.y - imageSize.y) * 0.5f);
+
+                // Transparent, no decorations
+                ImGui::SetNextWindowPos(windowPos);
+                ImGui::SetNextWindowSize(imageSize);
+                ImGui::Begin("ExitOverlay", nullptr,
+                             ImGuiWindowFlags_NoTitleBar |
+                             ImGuiWindowFlags_NoResize |
+                             ImGuiWindowFlags_NoMove |
+                             ImGuiWindowFlags_NoBackground |
+                             ImGuiWindowFlags_NoCollapse |
+                             ImGuiWindowFlags_NoScrollbar |
+                             ImGuiWindowFlags_NoScrollWithMouse
+                );
+
+                ImGui::Image(ImTextureID(exitTextureID), imageSize);
+
+                if (ImGui::IsItemClicked())
+                {
+                    glfwSetWindowShouldClose(static_cast<GLFWwindow*>(window->GetNativeWindow()), true);
+                }
+
+                ImGui::End();
+            }
+            // END OF buko splash screen
+
+
+------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+// buko -----------------------------------------------------------------------
+// possibly need to abstrcat further so no lua inside this class
+std::unique_ptr<Terrain> TerrainFactory::createFromLuaConfig(const sol::table& config)
+{
+    std::string type = config["type"].get<std::string>();
+    int rows = config["rows"].get<int>();
+    int cols = config["cols"].get<int>();
+    float spacing = config["spacing"].get<float>();
+
+    std::unique_ptr<Terrain> terrain = std::make_unique<Terrain>(rows, cols, spacing);
+    sol::table params = config["parameters"];
+
+    std::shared_ptr<TerrainType> terrainType;
+
+    if (type == "Heightmap" || type == "TexturedHeightmap")
+    {
+        terrainType = std::make_shared<HeightmapTerrain>(
+                params["file"].get<std::string>(),
+                params.get_or("heightScale", 1.0f)
+        );
+    }
+    else if (type == "Fractal" || type == "TexturedFractal")
+    {
+        terrainType = std::make_shared<FractalTerrain>(
+                params["iterations"].get<int>(),
+                params["initialDisplacement"].get<float>(),
+                params["displacementDecay"].get<float>(),
+                params["heightScale"].get<float>(),
+                params["seed"].get<int>(),
+                params["smoothness"].get<float>(),
+                params["smoothingPasses"].get<int>()
+        );
+    }
+    else
+    {
+        throw std::runtime_error("Unsupported terrain type in Lua config: " + type);
+    }
+
+    // Wrap in texture decorator if needed
+    if (type == "TexturedFractal" || type == "TexturedHeightmap")
+    {
+        sol::table tex = config["texture"];
+        std::map<std::string, std::string> texParams;
+        texParams["path"] = tex["path"];
+        texParams["repeatX"] = std::to_string(static_cast<int>(tex["repeatX"]));
+        texParams["repeatY"] = std::to_string(static_cast<int>(tex["repeatY"]));
+
+        terrainType = createTexturedTerrain(terrainType, texParams);
+    }
+
+    terrain->setTerrainType(terrainType);
+    terrain->generateTerrain();
+
+    return terrain;
+}

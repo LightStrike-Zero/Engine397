@@ -98,6 +98,10 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Components/NameComponent.h
         Engine/Terrain/TerrainMultiTexture.cpp
         Engine/Terrain/TerrainMultiTexture.h
+        Engine/GUI/HUDSystem.cpp
+        Engine/GUI/HUDSystem.h
+        Engine/GUI/HUDElement.cpp
+        Engine/GUI/HUDElement.h
 )
 
 # Add executable based on source files
