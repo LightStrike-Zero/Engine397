@@ -47,6 +47,12 @@ public:
      */
     void render() const;
 
+    /**
+     * @author buko
+     * @brief initialises buffer
+     */
+    void initialise();
+
 private:
     unsigned int m_vao, m_vbo;
     

@@ -50,5 +50,40 @@ void OpenGLQuadBuffer::unbind() {
 }
 
 void OpenGLQuadBuffer::render() const {
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(m_vao); // added by buko
+    glDrawArrays(GL_TRIANGLES, 0, 6);  // this line was alreayd here
+    glBindVertexArray(0); // added by buko
+}
+
+// buko ---------------------------------------------
+void OpenGLQuadBuffer::initialise()
+{
+    float vertices[] = {
+            // positions   // texCoords
+            0.0f, 1.0f,    0.0f, 1.0f,
+            1.0f, 0.0f,    1.0f, 0.0f,
+            0.0f, 0.0f,    0.0f, 0.0f,
+
+            0.0f, 1.0f,    0.0f, 1.0f,
+            1.0f, 1.0f,    1.0f, 1.0f,
+            1.0f, 0.0f,    1.0f, 0.0f
+    };
+
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Position (2 floats)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Texture Coordinates (2 floats)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }

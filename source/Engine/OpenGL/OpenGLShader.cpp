@@ -12,12 +12,13 @@
 OpenGLShader::OpenGLShader(const std::string& vs_filepath, const std::string& fs_filepath)
     : m_VSFilePath(vs_filepath), m_FSFilePath(fs_filepath)
 {
+//    std::cout << "[vs_filepath]" << vs_filepath << std::endl; // buko - this works
+//    std::cout << "[fs_filepath]" << fs_filepath << std::endl; // buko - this works
 
     ShaderProgramSource source;
     source.FragmentSource = ParseShader(shaderDir + fs_filepath);
     source.VertexSource = ParseShader(shaderDir +  vs_filepath);
     m_shaderID = CreateShader(source.VertexSource, source.FragmentSource);
-
 }
 
 OpenGLShader::~OpenGLShader()
@@ -109,8 +110,18 @@ unsigned int OpenGLShader::CompileShader(unsigned int type, const std::string& s
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
+
+    // buko testing
+//    std::cout << "[ID]" << id << std::endl;
+//    std::cout << "[SOURCE]" << source << std::endl;
+//    std::cout << "[SRC]" << src << std::endl;
+
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
+
+    // buko testing the paths
+    //std::string thing = ParseShader("source/Engine/Shaders/HUD.frag");
+    //std::cout << "[DEBUG] Shader source (" << "source/Engine/Shaders/HUD.frag" << "):\n" << thing << std::endl;
 
     int result;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
@@ -120,7 +131,7 @@ unsigned int OpenGLShader::CompileShader(unsigned int type, const std::string& s
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
         char* message = (char*)alloca(length * sizeof(char));
         glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
+        std::cout << "ERROR: Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
         std::cout << message << std::endl;
         glDeleteShader(id);
         return 0;
@@ -132,6 +143,10 @@ unsigned int OpenGLShader::CompileShader(unsigned int type, const std::string& s
 unsigned int OpenGLShader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
     unsigned int program = glCreateProgram();
+
+//    std::cout << "[DEBUG] Vertex Shader: " << vertexShader << std::endl;   // buko test
+//    std::cout << "[DEBUG] Fragment Shader: " << fragmentShader << std::endl; // buko test
+
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
     unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 

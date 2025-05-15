@@ -31,6 +31,12 @@
 #include "imgui.h"
 #include "Components/NameComponent.h"
 //----------------------
+// HUD
+#include "GUI/HUDSystem.h"
+#include "OpenGL/OpenGLQuadBuffer.h"
+#include "Interfaces/IShader.h"
+#include "Shaders/Shader.h"
+//---------------------------
 
 int main(int argc, char** argv)
 {
@@ -135,6 +141,21 @@ int main(int argc, char** argv)
     //     { 0.2f, 0.5f}
     // );
 
+    // HUD code BUKO will need to be out of main later
+    // --- HUD System Setup ---
+    ShaderManager shaderManager;
+    shaderManager.loadShader("HUD", "HUD.vert", "HUD.frag");
+    std::shared_ptr<IShader> hudShader = shaderManager.getShader("HUD");
+
+    std::shared_ptr<OpenGLQuadBuffer> hudQuad = std::make_shared<OpenGLQuadBuffer>();
+    hudQuad->initialise();
+
+    HUDSystem hudSystem;
+    hudSystem.initialise(hudShader.get(), hudQuad); // pass raw pointer
+    //hudSystem.addHUDItem("icon", "Assets/images/test.png", {50, 50}, {64, 64});
+    hudSystem.addHUDItem("icon", "Assets/images/test.png", {928, 508}, {64, 64});
+    // --------------- end of hud code
+
     float lerpSpeed = 10.0f;
 
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
@@ -198,6 +219,8 @@ int main(int argc, char** argv)
             }
             currentRenderedFrame =
                     renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+
+            hudSystem.renderAll(); // render hud
         } else {
             if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510})) {
                 window->SetShouldClose(true);
