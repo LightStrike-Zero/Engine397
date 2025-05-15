@@ -66,6 +66,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Scripting/LuaManager.h
         Engine/Scripting/ScriptController.cpp
         Engine/Scripting/ScriptController.h
+        Engine/Scripting/EnemyScriptController.cpp
+        Engine/Scripting/EnemyScriptController.h
         Engine/Components/PlayerControllerComponent.h
         Engine/Actors/Player.cpp
         Engine/Actors/Player.h
