@@ -103,6 +103,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Systems/InputManager.h
         Engine/ResourceManagement/InputState.h
         Engine/ResourceManagement/GameState.h
+        Engine/Entity/EntityBuilder.cpp
+        Engine/Entity/EntityBuilder.h
 )
 
 # Add executable based on source files
