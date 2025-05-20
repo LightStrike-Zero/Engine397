@@ -122,16 +122,15 @@ entt::entity EntityBuilder::build() {
     // Always add transform component
     m_entityFacade->addComponent<TransformComponent>(m_currentEntity, m_transform);
 
-    // Add NPC-specific components
+    // Add NPC-specific components if requested
     if (m_isNPC) {
-        // We need to create these components first
-        // For now, just leaving a comment as placeholder
-        // TODO: Implement NPCComponent and BehaviorComponent classes
-        
+        // We'll keep this commented for now until NPC components are implemented
+        // This preserves the structure for future implementation
+        // TODO: Implement NPCComponent class
         // NPCComponent npcComponent { m_npcType };
         // m_entityFacade->addComponent<NPCComponent>(m_currentEntity, npcComponent);
-
-        // // Add behavior component if specified
+        
+        // TODO: Implement BehaviorComponent when FSM is ready
         // if (m_behaviorType != BehaviorType::None) {
         //     BehaviorComponent behaviorComponent { m_behaviorType, m_waypoints };
         //     m_entityFacade->addComponent<BehaviorComponent>(m_currentEntity, behaviorComponent);
@@ -156,9 +155,10 @@ entt::entity EntityBuilder::build() {
             if (m_transform.position == glm::vec3(0.0f) &&
                 m_transform.rotation == glm::vec3(0.0f) &&
                 m_transform.scale == glm::vec3(1.0f)) {
-                TransformComponent transformComponent;
-                transformComponent.setFromModelMatrix(rawMesh.transform);
-                m_entityFacade->addComponent<TransformComponent>(m_currentEntity, transformComponent);
+                m_transform.setFromModelMatrix(rawMesh.transform);
+                //TODO: this is a bit of a hack, we should probably have a better way to set the transform
+                // need to create getComponent
+                m_entityFacade->getComponent<TransformComponent>(m_currentEntity) = m_transform;
             }
 
             // Add material component
@@ -168,7 +168,7 @@ entt::entity EntityBuilder::build() {
             // Add collision component if requested
             if (m_colliderType != ColliderType::None) {
                 std::vector<glm::vec3> positions = extractPositions(meshComponent.vertices);
-                
+
                 switch (m_colliderType) {
                     case ColliderType::Box: {
                         BoxColliderComponent collider = generateBoxCollider(positions);
@@ -200,13 +200,12 @@ entt::entity EntityBuilder::build() {
 
     // Store the created entity ID
     entt::entity result = m_currentEntity;
-    
+
     // Reset after build completes
     reset();
-    
+
     return result;
 }
-
 std::vector<entt::entity> EntityBuilder::buildMultiple() {
     std::vector<entt::entity> entities;
     
@@ -307,7 +306,6 @@ void EntityBuilder::reset() {
     m_colliderType = ColliderType::None;
     m_modelLoaded = false;
 }
-
 void EntityBuilder::loadModelData() {
     if (!m_hasModel || m_modelPath.empty()) {
         std::cerr << "Error: Cannot load model data, no model path specified" << std::endl;

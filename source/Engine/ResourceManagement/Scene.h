@@ -16,6 +16,7 @@
 #include <string>
 
 #include "EnttFacade.h"
+#include "Entity/EntityBuilder.h"
 #include "Factorys/EntityFactory.h"
 #include "Lights/DirectionalLight.h"
 #include "Terrain/Terrain.h"
@@ -96,9 +97,41 @@ public:
     bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z); //not using glm::vec3 because lua cannot bind user type
   void createSkyBox(const std::array<std::string, 6>& faces);
 
+    /*
+     * ###############################################################################################################################################
+     * ###############################################################################################################################################
+     * adding all the new entity building code here
+     */
+
+    
+    /**
+     * @brief Create a generic entity with the builder pattern
+     * @return An EntityBuilder instance to configure the entity
+     */
+    EntityBuilder createEntity();
+
+    /**
+     * @brief Create an NPC entity
+     * @param modelPath Path to the NPC model
+     * @param npcType Type of NPC
+     * @param position Initial position
+     * @return The created entity ID
+     */
+    entt::entity createNPC(const std::string& modelPath, const std::string& npcType, const glm::vec3& position);
+
+    /**
+     * @brief Create a player entity
+     * @param modelPath Path to the player model
+     * @param playerID Player identifier
+     * @param position Initial position
+     * @return The created entity ID
+     */
+    entt::entity createPlayer(const std::string& modelPath, int playerID, const glm::vec3& position);
+
 private:
 
     EnttFacade m_entityFacade;                         // The ECS world managed as a facade.
+    std::unique_ptr<EntityBuilder> m_entityBuilder;
 
     std::unique_ptr<EntityFactory> m_entityFactory;   // The factory tat loads models and creates entities.
 
