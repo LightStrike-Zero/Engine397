@@ -1,6 +1,6 @@
 //
 // Created by Hugo on 15/05/2025.
-//
+// for loading game configuration and assets from Lua scripts
 
 #ifndef SCRIPTCONTROLLER_H
 #define SCRIPTCONTROLLER_H
@@ -19,7 +19,7 @@ public:
     glm::vec3 getVec3(const std::string& tableName) ;
     float getFloat(const std::string& name);
     std::string getString(const std::string& name);
-    virtual void registerClass() = 0;
+    // virtual void registerClass(){}; //
 
 
 

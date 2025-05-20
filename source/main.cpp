@@ -17,8 +17,8 @@
 #include "StuffThatNeedsToBeLoadedInLua.h"
 #include <fstream>
 #include <glm/gtc/quaternion.hpp>
-
-#include "Systems/EnemyActionSystem.h"
+#include "Scripting/EnemyScriptController.h"
+#include "Systems/EnemyScriptSystem.h"
 #include "Systems/GameStateSystem.h"
 
 //----------------------
@@ -39,10 +39,11 @@ int main(int argc, char** argv)
     Scene scene;
 
     InputManager inputManager(static_cast<GLFWwindow*>(window->GetNativeWindow()));
+
     GameStateSystem gameStateSystem;
     gameStateSystem.initialize();
-    EnemyActionSystem enemyActionSystem;
-    enemyActionSystem.initialise(scene.getEntityManager());
+    // EnemyScriptSystem enemyActionSystem;
+    // enemyActionSystem.initialise(scene.getEntityManager());
 
     //TODO: refactor the whole lua management design
     ScriptManager* scriptManager = new LuaManager(); // Lua Manager instance is instantiated derived from base class
@@ -111,10 +112,13 @@ int main(int argc, char** argv)
     for (auto entity : enemyView) {
         auto& enemyTransform = enemyView.get<TransformComponent>(entity);
         enemyTransform.position.x = 30.f;
-        enemyTransform.position.z = 30.f;
+        enemyTransform.position.z = -30.f;
         enemyTransform.position.y = collision.getHeightAt(enemyTransform.position);
     }
 
+    //this has to be here because the enemy script system needs to register enemies
+    EnemyScriptController script_controller;
+    script_controller.initialize(scene.getEntityManager());
     
     std::array<std::string, 6> skyboxFaces = scriptManager->getSkyboxFaces();
     scene.createSkyBox(skyboxFaces);
@@ -142,7 +146,8 @@ int main(int argc, char** argv)
 
             inputManager.update();
             gameStateSystem.update(Gui);
-            enemyActionSystem.update(deltaTime, scene.getEntityManager());
+            script_controller.update(scene.getEntityManager(), deltaTime);
+            // enemyActionSystem.update(deltaTime, scene.getEntityManager());
 
             cameraSystem.update(scene.getEntityManager(), inputManager, deltaTime);
             auto [viewMatrix, projectionMatrix, viewPos] =

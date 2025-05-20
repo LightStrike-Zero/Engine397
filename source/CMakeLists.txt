@@ -106,8 +106,8 @@ set(SOURCE_FILES ${SOURCE_FILES} ${IMGUI_SOURCES}
         Engine/Water/Water.cpp
         Engine/Systems/GameStateSystem.cpp
         Engine/Systems/GameStateSystem.h
-        Engine/Systems/EnemyActionSystem.cpp
-        Engine/Systems/EnemyActionSystem.h
+        Engine/Systems/EnemyScriptSystem.cpp
+        Engine/Systems/EnemyScriptSystem.h
         Engine/Systems/InputManager.cpp
         Engine/Systems/InputManager.h
         Engine/ResourceManagement/InputState.h

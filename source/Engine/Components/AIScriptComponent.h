@@ -7,7 +7,7 @@
 #include <string>
 
 struct AIScriptComponent {
-    enum State {patrol, attack, flee};
+    enum State {patrol, attack, flee, destroyed};
     State currentState = patrol;
 };
 

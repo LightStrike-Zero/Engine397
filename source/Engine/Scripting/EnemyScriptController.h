@@ -5,22 +5,21 @@
 #ifndef ENEMYSCRIPTCONTROLLER_H
 #define ENEMYSCRIPTCONTROLLER_H
 #include "ScriptController.h"
-#include "Systems/EnemyActionSystem.h"
+#include "Systems/EnemyScriptSystem.h"
 
 
 class EnemyScriptController: public ScriptController {
 public:
-    void registerClass(EnemyActionSystem & enemyActionSystem) {;
-        m_lua.new_usertype<EnemyActionSystem>(
-            "EnemyActionSystem",
-            sol::constructors<EnemyActionSystem()>()
-            //register methods here
-            //need to decide how much control we give to Lua
-            //Parameters only?
-            //Entire behaviour logic?
-            //Anything in between?
-        );
-    }
+    EnemyScriptController() = default;
+
+    // void registerClass(EnemyScriptSystem & enemyActionSystem);
+    void initialize(EnttFacade& entt);
+    void update(EnttFacade& entt, float deltaTime);
+private:
+    void exposeClassesToLua();
+    void getEnemiesTable(EnttFacade& entt);
+    static glm::vec3 getPlayerPos(EnttFacade& entt);
+
 };
 
 
