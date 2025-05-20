@@ -128,6 +128,7 @@ public:
      */
     entt::entity createPlayer(const std::string& modelPath, int playerID, const glm::vec3& position);
 
+
 private:
 
     EnttFacade m_entityFacade;                         // The ECS world managed as a facade.

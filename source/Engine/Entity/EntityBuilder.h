@@ -49,14 +49,7 @@ public:
     EntityBuilder& asNPC(const std::string& npcType);
 
     // TODO this is a placeholder for behavior types once FSM is implemented
-    // EntityBuilder& withBehavior(BehaviorType behaviorType, const std::vector<glm::vec3>& waypoints = {});
-
-    
-    //we might move the terrain, water & skybox building to another builder
-    // EntityBuilder& asSkybox(const std::array<std::string, 6>& faces);
-    // EntityBuilder& asTerrain(const Terrain& terrain);
-    // EntityBuilder& asWater(const Water& water);
-    
+   
     // Finalize and build the entity
     entt::entity build();
     
@@ -80,13 +73,7 @@ private:
     std::string m_npcType;
     // BehaviorType m_behaviorType = BehaviorType::None;
     // std::vector<glm::vec3> m_waypoints;
-    
-    // bool m_isSkybox = false;
-    // std::array<std::string, 6> m_skyboxFaces;
-    // bool m_isTerrain = false;
-    // const Terrain* m_terrain = nullptr;
-    // bool m_isWater = false;
-    // const Water* m_water = nullptr;
+
     
     // TODO not sure if we really need these in here 
     enum class ColliderType {
@@ -111,9 +98,6 @@ private:
     
     // Helper methods
     void loadModelData();
-    // entt::entity createSkyboxEntity(const std::array<std::string, 6>& faces); 
-    // entt::entity createTerrainEntity(const Terrain& terrain);
-    // entt::entity createWaterEntity(const Water& water);
     std::vector<glm::vec3> extractPositions(const std::vector<Vertex>& meshVertices);
     BoxColliderComponent generateBoxCollider(const std::vector<glm::vec3>& positions);
     SphereColliderComponent generateSphereCollider(const std::vector<glm::vec3>& positions);

@@ -71,7 +71,6 @@ void Scene::createSkyBox(const std::array<std::string, 6> &faces) {
 
 bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z) { //not using glm::vec3 because lua cannot bind user type
     auto view = m_entityFacade.getRegistry().view<NameComponent,TransformComponent>();
-    //essentially grabbing everything else in a transform, because we only want to change position, not others
     for (auto entity : view) {
         if (view.get<NameComponent>(entity).name == name) {
             TransformComponent transform = view.get<TransformComponent>(entity);
@@ -107,7 +106,7 @@ entt::entity Scene::createPlayer(const std::string& modelPath, int playerID,  co
         .fromModel(modelPath)
         .withPosition(position)
         .asPlayer(playerID)
-        .withCapsuleCollider()
+        .withBoxCollider()
         .build();
 }
 

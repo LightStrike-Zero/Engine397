@@ -74,20 +74,42 @@ int main(int argc, char** argv)
 
 
 
-    //load player tank
+    // load player tank
+    //  std::string playerTankPath = scriptManager->getString("tankPath");
+    //  scene.loadPlayerModelEntity(playerTankPath);
+    //  auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
+    //  //align tank with camera orientation
+    //  auto playerEntity = *playerView.begin();
+    //  auto& playerTankTransform = playerView.get<TransformComponent>(playerEntity);
+    //  playerTankTransform.rotation.y -= 180.f;
+    //  playerTankTransform.position = scriptManager->getVec3("playerStartPos");
+    //  playerTankTransform.position.y = collision.getHeightAt(playerTankTransform.position);
+    //  auto& cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
+    //  glm::vec3 cameraOffset = scriptManager->getVec3("cameraOffset");
+    //  cameraTransform.position = playerTankTransform.position +cameraOffset;
+
+    // Load player tank using EntityBuilder
     std::string playerTankPath = scriptManager->getString("tankPath");
-    scene.loadPlayerModelEntity(playerTankPath);
-    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
-    //align tank with camera orientation
-    auto playerEntity = *playerView.begin();
-    auto& playerTankTransform = playerView.get<TransformComponent>(playerEntity);
-    playerTankTransform.rotation.y -= 180.f;
-    playerTankTransform.position = scriptManager->getVec3("playerStartPos");
-    playerTankTransform.position.y = collision.getHeightAt(playerTankTransform.position);
+    glm::vec3 playerStartPos = scriptManager->getVec3("playerStartPos");
+    glm::vec3 playerRotation = glm::vec3(0.0f, -180.0f, 0.0f); // Initial rotation flipped 180 degrees
+
+    // Create player entity with EntityBuilder
+    auto playerEntity = scene.createPlayer(playerTankPath, 1, playerStartPos);
+
+    // Get transform component to adjust height based on terrain
+    auto& playerTransform = scene.getEntityManager().get<TransformComponent>(playerEntity);
+    playerTransform.rotation = playerRotation;
+
+    // Adjust player position based on terrain height
+    playerTransform.position.y = collision.getHeightAt(playerTransform.position);
+
+    // Update camera position relative to player
     auto& cameraTransform = scene.getEntityManager().get<TransformComponent>(cameraEntity);
     glm::vec3 cameraOffset = scriptManager->getVec3("cameraOffset");
-    cameraTransform.position = playerTankTransform.position +cameraOffset;
+    cameraTransform.position = playerTransform.position + cameraOffset;
 
+    // Create the player view for later use in the game loop
+    auto playerView = scene.getEntityManager().view<TransformComponent, PlayerControllerComponent>();
 
 
     // SPAWN STATIC OBJECTS
