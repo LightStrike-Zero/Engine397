@@ -39,7 +39,6 @@ int main(int argc, char** argv)
     Scene scene;
 
     InputManager inputManager(static_cast<GLFWwindow*>(window->GetNativeWindow()));
-
     GameStateSystem gameStateSystem;
     gameStateSystem.initialize();
     // EnemyScriptSystem enemyActionSystem;
