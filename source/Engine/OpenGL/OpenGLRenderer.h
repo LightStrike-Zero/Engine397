@@ -13,6 +13,7 @@
 #define OPENGLRENDERER_H
 
 #include "OpenGLFrameBuffer.h"
+#include "OpenGLMeshBuffer.h"
 #include "OpenGLQuadBuffer.h"
 #include "OpenGLShadowMapBuffer.h"
 #include "ShaderManager.h"
@@ -39,10 +40,7 @@ public:
      * @param viewPos The position of the viewer or camera.
      * @return The OpenGL texture ID of the rendered output.
      */
-    [[nodiscard]] unsigned int Render(Scene& scene, 
-                                      const glm::mat4& viewMatrix,
-                                      const glm::mat4& projectionMatrix,
-                                      const glm::vec3& viewPos) override;
+    [[nodiscard]] unsigned int Render(Scene& scene,const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos) override;
 
     /// @brief Clears the OpenGL buffers.
     void Clear() override;
@@ -54,6 +52,10 @@ public:
     /// @return A reference to the OpenGLFrameBuffer.
     [[nodiscard]] const OpenGLFrameBuffer& getFrameBuffer() const { return m_frameBuffer; }
 
+    void toggleColliderDebug() { m_showColliders = !m_showColliders; }
+
+    void DebugCollidersPass(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+
 private:
     // Camera removed from here
     unsigned int m_currentShaderID = 0;
@@ -61,6 +63,9 @@ private:
     OpenGLShadowMapBuffer m_shadowMapBuffer;
     OpenGLFrameBuffer m_frameBuffer;
     OpenGLQuadBuffer m_quadBuffer;
+    //TODO improve debug rendering later
+    OpenGLMeshBuffer* m_debugWireframeCube;
+    bool m_showColliders = false;
     Texture* defaultTexture;
 
     void LightingPass(Scene& scene, ShaderManager& shaderManager);

@@ -2,7 +2,6 @@
 // Created by Shaun on 15/03/2025.
 
 
-
 #include "OpenGLRenderer.h"
 
 #include <iostream>
@@ -15,6 +14,7 @@
 #include "Components/MaterialComponent.h"
 #include "Components/SkyboxComponent.h"
 #include "Components/TransformComponent.h"
+#include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "ResourceManagement/Scene.h"
 #include "texture/TextureLoader.h"
 
@@ -28,10 +28,89 @@ OpenGLRenderer::OpenGLRenderer()
     m_shaderManager.loadShader("shadowShader", "shadow_vertex.glsl", "shadow_fragment.glsl");
     m_shaderManager.loadShader("framebufferShader", "Frame_Vert.glsl", "Frame_Frag.glsl");
     m_shaderManager.loadShader("waterShader", "WaterVert.glsl", "WaterFrag.glsl");
+    m_shaderManager.loadShader("debugShader", "debug_vs.glsl", "debug_fs.glsl");
+
+    //TODO this stuff is for the debug wireframe cube - will move it somewhere else later
+    std::vector<Vertex> vertices = {
+        // Front face
+        {{-0.5f, -0.5f, 0.5f}}, {{0.5f, -0.5f, 0.5f}},
+        {{0.5f, 0.5f, 0.5f}}, {{-0.5f, 0.5f, 0.5f}},
+        // Back face
+        {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, -0.5f}},
+        {{0.5f, 0.5f, -0.5f}}, {{-0.5f, 0.5f, -0.5f}}
+    };
+
+    // Indices for wireframe rendering
+    std::vector<unsigned int> indices = {
+        // Front face
+        0, 1, 1, 2, 2, 3, 3, 0,
+        // Back face
+        4, 5, 5, 6, 6, 7, 7, 4,
+        // Connecting edges
+        0, 4, 1, 5, 2, 6, 3, 7
+    };
+
+    m_debugWireframeCube = new OpenGLMeshBuffer(indices.size(), vertices.size(), indices.data(), vertices.data());
+    m_debugWireframeCube->m_lineMode = true;
+
+    m_showColliders = true;
+    
 }
 
 OpenGLRenderer::~OpenGLRenderer()
 {
+    if (m_debugWireframeCube)
+    {
+        delete m_debugWireframeCube;
+        m_debugWireframeCube = nullptr;
+    }
+    
+}
+
+void OpenGLRenderer::DebugCollidersPass(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+{
+    if (!m_showColliders) return;
+    const auto debugShader = m_shaderManager.getShader("debugShader");
+   
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    debugShader->bind();
+    debugShader->SetUniformMat4("u_ViewMatrix", viewMatrix);
+    debugShader->SetUniformMat4("u_ProjectionMatrix", projectionMatrix);
+
+    const auto view = scene.getEntityManager().view<TransformComponent, BoxColliderComponent>();
+
+    for (const auto entity : view)
+    {
+        auto& transform = view.get<TransformComponent>(entity);
+        auto& collider = view.get<BoxColliderComponent>(entity);
+
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, transform.position + collider.offset);
+
+        // Apply rotation
+        if (transform.rotation != glm::vec3(0.0f))
+        {
+            model = glm::rotate(model, glm::radians(transform.rotation.y), glm::vec3(0, 1, 0));
+            model = glm::rotate(model, glm::radians(transform.rotation.x), glm::vec3(1, 0, 0));
+            model = glm::rotate(model, glm::radians(transform.rotation.z), glm::vec3(0, 0, 1));
+        }
+
+        // Scale by the half extents * 2 since our cube is from -0.5 to 0.5
+        model = glm::scale(model, collider.halfExtents * 2.0f);
+
+        debugShader->SetUniformMat4("u_ModelMatrix", model);
+        debugShader->SetUniform3f("u_Color", glm::vec3(1.0f, 0.64f, 0.0f)); 
+
+        m_debugWireframeCube->bind();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        m_debugWireframeCube->draw();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    glDepthMask(GL_TRUE);
+    debugShader->unbind();
 }
 
 void OpenGLRenderer::Clear()
@@ -40,8 +119,7 @@ void OpenGLRenderer::Clear()
 }
 
 
-unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix,
-                                    const glm::vec3& viewPos)
+unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     const auto& lightingShader = m_shaderManager.getShader("lightingShader");
     const auto& framebufferShader = m_shaderManager.getShader("framebufferShader");
@@ -84,8 +162,8 @@ unsigned int OpenGLRenderer::Render(Scene& scene, const glm::mat4& viewMatrix, c
     WaterPass(scene, viewMatrix, projectionMatrix, viewPos);
 
 
+    DebugCollidersPass(scene, viewMatrix, projectionMatrix);
     m_frameBuffer.unbind();
-
 
     framebufferShader->bind(); //7
     m_currentShaderID = framebufferShader->getID();
@@ -259,13 +337,13 @@ void OpenGLRenderer::ShadowPass(Scene& scene, ShaderManager& shaderManager, IDat
 void OpenGLRenderer::WaterPass(Scene& scene, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& viewPos)
 {
     glDisable(GL_POLYGON_OFFSET_FILL);
-    glDisable(GL_CULL_FACE);            // water visible from above and below
+    glDisable(GL_CULL_FACE); // water visible from above and below
 
-    
+
     auto waterShader = m_shaderManager.getShader("waterShader");
     waterShader->bind();
     m_currentShaderID = waterShader->getID();
-    auto currentTime = static_cast<float>(glfwGetTime());  //TODO this is purely as a test - will not stay like this at all
+    auto currentTime = static_cast<float>(glfwGetTime()); //TODO this is purely as a test - will not stay like this at all
 
     waterShader->SetUniform1f("time", currentTime);
 
@@ -279,14 +357,15 @@ void OpenGLRenderer::WaterPass(Scene& scene, const glm::mat4& viewMatrix, const 
     waterShader->SetUniform3f("light.specular", scene.getDirectionalLight().getSpecular());
 
     // glDepthFunc(GL_LEQUAL);
-    
-    glDepthFunc(GL_LESS);               // default test
-    glDepthMask(GL_FALSE);              // don’t write depth, we only need the test
+
+    glDepthFunc(GL_LESS); // default test
+    glDepthMask(GL_FALSE); // don’t write depth, we only need the test
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     auto view = scene.getEntityManager().view<RenderableComponent, TransformComponent, MaterialComponent>();
-    for (auto entity : view) {
+    for (auto entity : view)
+    {
         auto& material = view.get<MaterialComponent>(entity);
         if (material.shaderID != "waterShader") continue;
 
@@ -294,12 +373,12 @@ void OpenGLRenderer::WaterPass(Scene& scene, const glm::mat4& viewMatrix, const 
         auto& transform = view.get<TransformComponent>(entity);
 
         waterShader->SetUniformMat4("model", transform.getModelMatrix());
-        
+
         waterShader->SetUniform3f("waterColor", glm::vec3(0.0f, 0.4f, 0.8f)); // Ocean blue
-        waterShader->SetUniform1f("waterAlpha", 0.8f); 
+        waterShader->SetUniform1f("waterAlpha", 0.8f);
         waterShader->SetUniform1f("reflectivity", 1.5f);
         waterShader->SetUniform1f("shineDamper", 32.0f);
-       
+
         mesh.meshBuffer->bind();
         mesh.meshBuffer->draw();
         glBindVertexArray(0);
@@ -307,6 +386,6 @@ void OpenGLRenderer::WaterPass(Scene& scene, const glm::mat4& viewMatrix, const 
 
 
     glDisable(GL_BLEND);
-    glDepthMask(GL_TRUE);               // restore
-    glEnable(GL_CULL_FACE);             // restore
+    glDepthMask(GL_TRUE); // restore
+    glEnable(GL_CULL_FACE); // restore
 }
