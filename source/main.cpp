@@ -56,27 +56,21 @@ int main(int argc, char** argv)
     int terrainGridRows = scriptManager->getTerrainRows();
     int terrainGridCols = scriptManager->getTerrainCols();
     float terrainScale = scriptManager->getTerrainSpacing();
-    
+
     GridCollision collision(terrainGridRows, terrainGridCols, terrainScale, terrainMeshData.vertices);
 
 
+    //TODO move to lua
     scene.setDirectionalLight(dirLight);
 
-    
+
     // CAMERA SET UP
     auto cameraEntity = scene.getEntityManager().createEntity();
     scene.getEntityManager().addComponent<TransformComponent>(cameraEntity, glm::vec3(0.0f, 20.0f, 0.0f));
     scene.getEntityManager().addComponent<CameraComponent>(cameraEntity);
-    CameraSystem cameraSystem(
-        static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
+    CameraSystem cameraSystem(static_cast<GLFWwindow*>(window->GetNativeWindow()), aspectRatio);
     // PLAYER SET UP
-    Player player(
-        &scene.getEntityManager(),
-        static_cast<GLFWwindow*>(window->GetNativeWindow()),
-        scriptManager->getFloat("playerMovementSpeed"),
-        scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
-
-
+    Player player(&scene.getEntityManager(), static_cast<GLFWwindow*>(window->GetNativeWindow()), scriptManager->getFloat("playerMovementSpeed"), scriptManager->getFloat("playerRotationSpeed")); // added by Hugo
 
 
     // load player tank
@@ -118,40 +112,65 @@ int main(int argc, char** argv)
 
 
     // SPAWN STATIC OBJECTS
-    auto staticObjectsView = scene.getEntityManager().view<TransformComponent,BoxColliderComponent>(exclude<PlayerControllerComponent>);
-    for (auto entity : staticObjectsView) {
+    auto staticObjectsView = scene.getEntityManager().view<TransformComponent, BoxColliderComponent>( exclude<PlayerControllerComponent>);
+    for (auto entity : staticObjectsView)
+    {
         auto& staticObjectTransform = staticObjectsView.get<TransformComponent>(entity);
-        float a = staticObjectTransform.position.x = rand()%terrainGridRows-terrainGridRows/2;
-        float b = staticObjectTransform.position.z = rand()%terrainGridCols-terrainGridCols/2;
-        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f,b});
+        float a = staticObjectTransform.position.x = rand() % terrainGridRows - terrainGridRows / 2;
+        float b = staticObjectTransform.position.z = rand() % terrainGridCols - terrainGridCols / 2;
+        staticObjectTransform.position.y = collision.getHeightAt({a, 0.f, b});
     }
 
     //Hugo: enemy spawn
-    std::string enemyPath = scriptManager->getString("enemyPath");
-    scene.loadEnemyModelEntity(enemyPath, "enemy1");
-    auto enemyView = scene.getEntityManager().view<TransformComponent, EnemyComponent>();
-    for (auto entity : enemyView) {
-        auto& enemyTransform = enemyView.get<TransformComponent>(entity);
-        enemyTransform.position.x = 30.f;
-        enemyTransform.position.z = -30.f;
-        enemyTransform.position.y = collision.getHeightAt(enemyTransform.position);
-    }
+    // std::string enemyPath = scriptManager->getString("enemyPath");
+    // scene.loadEnemyModelEntity(enemyPath, "enemy1");
+    // auto enemyView = scene.getEntityManager().view<TransformComponent, EnemyComponent>();
+    // for (auto entity : enemyView)
+    // {
+    //     auto& enemyTransform = enemyView.get<TransformComponent>(entity);
+    //     enemyTransform.position.x = 30.f;
+    //     enemyTransform.position.z = -30.f;
+    //     enemyTransform.position.y = collision.getHeightAt(enemyTransform.position);
+    // }
 
+    // ENEMY SPAWN
+    std::string enemyPath = scriptManager->getString("enemyPath");
+
+    // Define a specific position for the enemy
+    glm::vec3 enemyPosition = {30.0f, 0.0f, -30.0f};
+    // Set the correct terrain height
+    enemyPosition.y = collision.getHeightAt(enemyPosition);
+
+    // Create enemy using EntityBuilder with explicit name and position
+    auto enemyEntity = scene.createEntity()
+        .createEntity() // Add TransformComponent
+        .withName("enemy1") // Name is important for debugging/finding
+        .fromModel(enemyPath)
+        .withPosition(enemyPosition)
+        .withBoxCollider()
+        .asEnemy()  // Add EnemyComponent
+        .withAI()   // Add AIScriptComponent
+        .build();
+
+    // Verify enemy was created
+    std::cout << "Enemy created with ID: " << (uint32_t)enemyEntity << std::endl;
+
+
+    
     //this has to be here because the enemy script system needs to register enemies
     EnemyScriptController script_controller;
     script_controller.initialize(scene.getEntityManager());
-    
+
     std::array<std::string, 6> skyboxFaces = scriptManager->getSkyboxFaces();
     scene.createSkyBox(skyboxFaces);
-    
+
     std::string helpText = FileHandler::readTextFile(scriptManager->getHelpManualPath());
     static float lastFrame = 0.0f;
     float lerpSpeed = 10.0f;
 
 
-    Water water(1000, 1000, 10.5f, 1.0f);  // rows, columns, height, spacing
+    Water water(1000, 1000, 10.5f, 1.0f); // rows, columns, height, spacing
     scene.addWaterEntity(water);
-
 
 
     Gui.loadNamedImage("Click to Exit", scriptManager->getSplashImagePath()); // buko
@@ -171,9 +190,8 @@ int main(int argc, char** argv)
             // enemyActionSystem.update(deltaTime, scene.getEntityManager());
 
             cameraSystem.update(scene.getEntityManager(), inputManager, deltaTime);
-            auto [viewMatrix, projectionMatrix, viewPos] =
-                cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
-            player.update(deltaTime,scriptManager, inputManager);
+            auto [viewMatrix, projectionMatrix, viewPos] = cameraSystem.getActiveCameraMatrices(scene.getEntityManager());
+            player.update(deltaTime, scriptManager, inputManager);
 
             for (auto entity : playerView)
             {
@@ -184,14 +202,10 @@ int main(int argc, char** argv)
                 float targetHeight = terrainHeight + scriptManager->getFloat("playerHeightOffset");
                 float t = deltaTime * lerpSpeed; // Small factor for smooth interpolation.
                 playerTankTransform.position.y = glm::mix(playerTankTransform.position.y, targetHeight, t);
-                
+
                 glm::vec3 terrainNormal = collision.getNormalAt(playerTankPos);
 
-                glm::vec3 forwardDir = glm::normalize(glm::vec3(
-                    sin(glm::radians(playerTankTransform.rotation.y)),
-                    0.0f,
-                    cos(glm::radians(playerTankTransform.rotation.y))
-                ));
+                glm::vec3 forwardDir = glm::normalize(glm::vec3(sin(glm::radians(playerTankTransform.rotation.y)), 0.0f, cos(glm::radians(playerTankTransform.rotation.y))));
 
                 glm::vec3 tankUp = glm::vec3(0.0f, 1.0f, 0.0f);
                 glm::vec3 uphillDir = terrainNormal - glm::dot(terrainNormal, tankUp) * tankUp;
@@ -216,10 +230,12 @@ int main(int argc, char** argv)
 
                 playerTankTransform.rotation.z = 0.0f;
             }
-            currentRenderedFrame =
-                    renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
-        } else {
-            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510})) {
+            currentRenderedFrame = renderer->Render(scene, viewMatrix, projectionMatrix, viewPos);
+        }
+        else
+        {
+            if (Gui.showNamedClickableImage("Click to Exit", glm::vec2{880, 510}))
+            {
                 window->SetShouldClose(true);
             }
         }
@@ -237,4 +253,3 @@ int main(int argc, char** argv)
     delete window;
     return 0;
 }
-

@@ -7,6 +7,7 @@
 
 #include <glm/fwd.hpp>
 
+#include "Components/AIScriptComponent.h"
 #include "Components/TransformComponent.h"
 #include "Components/CollisionComponents/BoxColliderComponent.h"
 #include "Components/CollisionComponents/CapsuleColliderComponent.h"
@@ -43,12 +44,12 @@ public:
     EntityBuilder& withBoxCollider();
     EntityBuilder& withSphereCollider();
     EntityBuilder& withCapsuleCollider();
+    EntityBuilder& withAI(AIScriptComponent::State initialState = AIScriptComponent::patrol);
     
     // Special entity types (what kind of entity is this?)
     EntityBuilder& asPlayer(int playerID = 1);
     EntityBuilder& asNPC(const std::string& npcType);
-
-    // TODO this is a placeholder for behavior types once FSM is implemented
+    EntityBuilder& asEnemy();
    
     // Finalize and build the entity
     entt::entity build();
@@ -71,6 +72,10 @@ private:
     int m_playerID = 0;
     bool m_isNPC = false;
     std::string m_npcType;
+    bool m_isEnemy = false;
+    bool m_hasAI = false;
+    AIScriptComponent::State m_initialAIState = AIScriptComponent::patrol;
+    
     // BehaviorType m_behaviorType = BehaviorType::None;
     // std::vector<glm::vec3> m_waypoints;
 

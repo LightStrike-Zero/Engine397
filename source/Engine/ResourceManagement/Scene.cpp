@@ -26,58 +26,72 @@ void Scene::update(float deltaTime)
     // Update
 }
 
-void Scene::loadModelEntity(const std::string& modelFilePath, const std::string& name) {
+void Scene::loadModelEntity(const std::string& modelFilePath, const std::string& name)
+{
     if (m_entityFactory)
         m_entityFactory->createEntitiesFromModel(modelFilePath, name);
 }
 
-void Scene::loadPlayerModelEntity(const std::string& modelFilePath) {
+void Scene::loadPlayerModelEntity(const std::string& modelFilePath)
+{
     if (m_entityFactory)
         m_entityFactory->createPlayerEntitiesFromModel(modelFilePath);
 }
 
-void Scene::addTerrainEntity(const Terrain& terrain) {
+void Scene::addTerrainEntity(const Terrain& terrain)
+{
     if (m_entityFactory)
         m_entityFactory->addTerrainEntity(terrain);
 }
 
-void Scene::addWaterEntity(const Water &water) {
-    if(m_entityFactory) {
+void Scene::addWaterEntity(const Water& water)
+{
+    if (m_entityFactory)
+    {
         m_entityFactory->addWaterEntity(water);
     }
 }
 
-void Scene::loadCollidableBoxEntity(const std::string& filepath, const std::string& name) {
+void Scene::loadCollidableBoxEntity(const std::string& filepath, const std::string& name)
+{
     if (m_entityFactory)
         m_entityFactory->createCollidableBoxEntitiesFromModel(filepath, name);
 }
 
-void Scene::loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name) {
+void Scene::loadCollidableCapsuleEntity(const std::string& filepath, const std::string& name)
+{
     if (m_entityFactory)
         m_entityFactory->createCollidableCapsuleEntitiesFromModel(filepath, name);
 }
 
-void Scene::loadCollidableSphereEntity(const std::string& filepath, const std::string& name) {
+void Scene::loadCollidableSphereEntity(const std::string& filepath, const std::string& name)
+{
     if (m_entityFactory)
         m_entityFactory->createCollidableSphereEntitiesFromModel(filepath, name);
 }
 
-void Scene::loadEnemyModelEntity(const std::string& filepath, const std::string& name) {
+void Scene::loadEnemyModelEntity(const std::string& filepath, const std::string& name)
+{
     if (m_entityFactory)
         m_entityFactory->createEnemyEntitiesFromModel(filepath, name);
 }
 
-void Scene::createSkyBox(const std::array<std::string, 6> &faces) {
+void Scene::createSkyBox(const std::array<std::string, 6>& faces)
+{
     m_entityFactory->createSkyBox(faces);
 }
 
 
-bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z) { //not using glm::vec3 because lua cannot bind user type
-    auto view = m_entityFacade.getRegistry().view<NameComponent,TransformComponent>();
-    for (auto entity : view) {
-        if (view.get<NameComponent>(entity).name == name) {
+bool Scene::setEntityPosByName(const std::string& name, float x, float y, float z)
+{
+    //not using glm::vec3 because lua cannot bind user type
+    auto view = m_entityFacade.getRegistry().view<NameComponent, TransformComponent>();
+    for (auto entity : view)
+    {
+        if (view.get<NameComponent>(entity).name == name)
+        {
             TransformComponent transform = view.get<TransformComponent>(entity);
-            transform.position = {x,y,z}; //the actual data we're modifying
+            transform.position = {x, y, z}; //the actual data we're modifying
             m_entityFacade.setComponentByName(name, transform);
             std::cout << "i am called and used!" << std::endl;
             return true;
@@ -92,24 +106,25 @@ EntityBuilder Scene::createEntity()
     return EntityBuilder(&m_entityFacade);
 }
 
-entt::entity Scene::createNPC(const std::string& modelPath, const std::string& npcType, const glm::vec3& position)
+entt::entity Scene::createNPC(const std::string& modelPath, const glm::vec3& position)
 {
     return EntityBuilder(&m_entityFacade)
-        .createEntity()
-        .fromModel(modelPath)
-        .withPosition(position)
-        .asNPC(npcType)
-        .withBoxCollider()
-        .build();
+           .createEntity()
+           .fromModel(modelPath)
+           .withPosition(position)
+           .asEnemy() 
+           .withAI()
+           .withBoxCollider()
+           .build();
 }
 
-entt::entity Scene::createPlayer(const std::string& modelPath, int playerID,  const glm::vec3& position) {
+entt::entity Scene::createPlayer(const std::string& modelPath, int playerID, const glm::vec3& position)
+{
     return EntityBuilder(&m_entityFacade)
-        .createEntity()
-        .fromModel(modelPath)
-        .withPosition(position)
-        .asPlayer(playerID)
-        .withBoxCollider()
-        .build();
+           .createEntity()
+           .fromModel(modelPath)
+           .withPosition(position)
+           .asPlayer(playerID)
+           .withBoxCollider()
+           .build();
 }
-

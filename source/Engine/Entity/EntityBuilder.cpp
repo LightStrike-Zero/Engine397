@@ -4,6 +4,8 @@
 #include <iostream>
 #include <glm/gtx/norm.inl>
 
+#include "Components/AIScriptComponent.h"
+#include "Components/EnemyComponent.h"
 #include "Components/MaterialComponent.h"
 #include "Components/PlayerControllerComponent.h"
 #include "Components/SkyboxComponent.h"
@@ -81,6 +83,13 @@ EntityBuilder& EntityBuilder::withCapsuleCollider()
     return *this;
 }
 
+EntityBuilder& EntityBuilder::withAI(AIScriptComponent::State initialState)
+{
+    m_hasAI = true;
+    m_initialAIState = initialState;
+    return *this;
+}
+
 EntityBuilder& EntityBuilder::asPlayer(int playerID)
 {
     m_isPlayer = true;
@@ -92,6 +101,12 @@ EntityBuilder& EntityBuilder::asNPC(const std::string& npcType)
 {
     m_isNPC = true;
     m_npcType = npcType;
+    return *this;
+}
+
+EntityBuilder& EntityBuilder::asEnemy()
+{
+    m_isEnemy = true;
     return *this;
 }
 
@@ -109,13 +124,26 @@ entt::entity EntityBuilder::build()
         m_entityFacade->addComponent<NameComponent>(m_currentEntity, nameComponent);
     }
 
+    if (m_isEnemy)
+    {
+        EnemyComponent enemyComponent{};
+        m_entityFacade->addComponent<EnemyComponent>(m_currentEntity, enemyComponent);
+    }
     
-    // Add NPC-specific components
+    if (m_hasAI)
+    {
+        AIScriptComponent aiComponent{};
+        aiComponent.currentState = m_initialAIState;
+        m_entityFacade->addComponent<AIScriptComponent>(m_currentEntity, aiComponent);
+    }
+    //TODO remove this part about NPC (replaced with individual parts)
     if (m_isNPC)
     {
-        // TODO: Implement NPCComponent class
-
-        // TODO: Implement BehaviorComponent when FSM is ready
+        EnemyComponent enemyComponent{};
+        m_entityFacade->addComponent<EnemyComponent>(m_currentEntity, enemyComponent);
+    
+        AIScriptComponent aiComponent{};
+        m_entityFacade->addComponent<AIScriptComponent>(m_currentEntity, aiComponent);
     }
 
     if (m_hasModel)
@@ -303,10 +331,11 @@ void EntityBuilder::reset()
     m_playerID = 0;
     m_isNPC = false;
     m_npcType = "";
-    // m_behaviorType = BehaviorType::None;
-    // m_waypoints.clear();
     m_colliderType = ColliderType::None;
     m_modelLoaded = false;
+    m_isEnemy = false;
+    m_hasAI = false;
+    m_initialAIState = AIScriptComponent::patrol;
 }
 
 void EntityBuilder::loadModelData()

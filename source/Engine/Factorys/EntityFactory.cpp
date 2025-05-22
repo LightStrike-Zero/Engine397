@@ -352,8 +352,8 @@ void EntityFactory::createEnemyEntitiesFromModel(const std::string& filepath, co
     for (const auto& rawMesh : modelData.meshes) {
         auto entity = m_entityFacade->createEntity();
 
-        NameComponent name_component = { name };
-        m_entityFacade->addComponent<NameComponent>(entity, name_component);
+        // NameComponent name_component = { name };
+        // m_entityFacade->addComponent<NameComponent>(entity, name_component);
 
         RenderableComponent meshComponent(rawMesh);
         importer.setupMesh(meshComponent);

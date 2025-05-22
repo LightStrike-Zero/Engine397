@@ -18,6 +18,8 @@
 #include "EnttFacade.h"
 #include "Entity/EntityBuilder.h"
 #include "Factorys/EntityFactory.h"
+#include "Importers/AssimpImporter.h"
+#include "Importers/AssimpImporter.h"
 #include "Lights/DirectionalLight.h"
 #include "Terrain/Terrain.h"
 
@@ -114,11 +116,10 @@ public:
     /**
      * @brief Create an NPC entity
      * @param modelPath Path to the NPC model
-     * @param npcType Type of NPC
      * @param position Initial position
      * @return The created entity ID
      */
-    entt::entity createNPC(const std::string& modelPath, const std::string& npcType, const glm::vec3& position);
+    entt::entity createNPC(const std::string& modelPath, const glm::vec3& position);
 
     /**
      * @brief Create a player entity
